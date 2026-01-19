@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Alora",
+    "slug": "alora",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "alora",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.alora.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.alora.app",
+      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      ["expo-local-authentication", { "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID." }]
+    ],
+    "extra": {
+      "router": { "origin": false },
+      "clerkPublishableKey": "pk_test_xxxx"
+    },
+    "experiments": { "typedRoutes": true }
+  }
+}
