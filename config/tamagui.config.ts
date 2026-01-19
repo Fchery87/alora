@@ -1,6 +1,6 @@
 import { createTamagui } from "@tamagui/core";
 
-export const tamaguiConfig = createTamagui({
+export default createTamagui({
   tokens: {
     color: {
       primary: "#6366f1",
@@ -57,5 +57,3 @@ export const tamaguiConfig = createTamagui({
     },
   },
 });
-
-export type TamaguiConfig = typeof tamaguiConfig;

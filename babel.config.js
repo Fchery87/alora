@@ -6,8 +6,9 @@ module.exports = function (api) {
       [
         "@tamagui/babel-plugin",
         {
-          components: ["react-native-reusables"],
+          components: ["tamagui"],
           config: "./config/tamagui.config.ts",
+          logTimings: true,
         },
       ],
     ],

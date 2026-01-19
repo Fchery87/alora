@@ -6,7 +6,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useMemo } from "react";
 import { TamaguiProvider } from "@tamagui/core";
-import { tamaguiConfig } from "@/config/tamagui.config";
+import tamaguiConfig from "@/config/tamagui.config";
 import { convex } from "@/lib/convex";
 
 SplashScreen.preventAutoHideAsync();
