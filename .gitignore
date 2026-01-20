@@ -62,3 +62,4 @@ expo-env.d.ts
 
 # OS specific
 Thumbs.db
+.worktrees/
