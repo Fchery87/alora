@@ -36,8 +36,7 @@
       ["expo-local-authentication", { "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID." }]
     ],
     "extra": {
-      "router": { "origin": false },
-      "clerkPublishableKey": "pk_test_xxxx"
+      "router": { "origin": false }
     },
     "experiments": { "typedRoutes": true }
   }

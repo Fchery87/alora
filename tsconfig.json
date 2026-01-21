@@ -28,7 +28,10 @@
     "babel.config.js",
     "metro.config.js",
     "**/*.config.js",
-    "**/*.config.ts"
+    "**/*.config.ts",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ],
   "extends": "expo/tsconfig.base",
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]

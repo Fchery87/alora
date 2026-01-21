@@ -37,4 +37,167 @@ export default defineSchema({
   })
     .index("by_family", ["clerkOrganizationId"])
     .index("by_family_and_birth", ["clerkOrganizationId", "birthDate"]),
+
+  feeds: defineTable({
+    babyId: v.id("babies"),
+    type: v.union(
+      v.literal("breast"),
+      v.literal("formula"),
+      v.literal("solid")
+    ),
+    side: v.optional(
+      v.union(v.literal("left"), v.literal("right"), v.literal("both"))
+    ),
+    amount: v.optional(v.string()),
+    duration: v.optional(v.number()),
+    startTime: v.number(),
+    endTime: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    createdById: v.id("users"),
+  })
+    .index("by_baby", ["babyId"])
+    .index("by_baby_and_time", ["babyId", "startTime"])
+    .index("by_time", ["startTime"]),
+
+  diapers: defineTable({
+    babyId: v.id("babies"),
+    type: v.union(
+      v.literal("wet"),
+      v.literal("solid"),
+      v.literal("both"),
+      v.literal("mixed")
+    ),
+    color: v.optional(
+      v.union(
+        v.literal("yellow"),
+        v.literal("orange"),
+        v.literal("green"),
+        v.literal("brown"),
+        v.literal("red")
+      )
+    ),
+    notes: v.optional(v.string()),
+    startTime: v.number(),
+    endTime: v.optional(v.number()),
+    createdById: v.id("users"),
+  })
+    .index("by_baby", ["babyId"])
+    .index("by_baby_and_time", ["babyId", "startTime"])
+    .index("by_time", ["startTime"]),
+
+  sleep: defineTable({
+    babyId: v.id("babies"),
+    type: v.union(v.literal("nap"), v.literal("night"), v.literal("day")),
+    startTime: v.number(),
+    endTime: v.optional(v.number()),
+    duration: v.optional(v.number()),
+    quality: v.union(
+      v.literal("awake"),
+      v.literal("drowsy"),
+      v.literal("sleeping"),
+      v.literal("deep"),
+      v.literal("awake")
+    ),
+    notes: v.optional(v.string()),
+    createdById: v.id("users"),
+  })
+    .index("by_baby", ["babyId"])
+    .index("by_baby_and_time", ["babyId", "startTime"])
+    .index("by_time", ["startTime"]),
+
+  growth: defineTable({
+    babyId: v.id("babies"),
+    type: v.union(
+      v.literal("weight"),
+      v.literal("length"),
+      v.literal("head_circumference")
+    ),
+    value: v.number(),
+    unit: v.string(),
+    date: v.string(),
+    notes: v.optional(v.string()),
+    percentile: v.optional(v.number()),
+  })
+    .index("by_baby", ["babyId"])
+    .index("by_baby_and_date", ["babyId", "date"]),
+
+  milestones: defineTable({
+    babyId: v.id("babies"),
+    title: v.string(),
+    description: v.optional(v.string()),
+    category: v.union(
+      v.literal("motor"),
+      v.literal("cognitive"),
+      v.literal("language"),
+      v.literal("social"),
+      v.literal("custom")
+    ),
+    date: v.optional(v.string()),
+    ageMonths: v.optional(v.number()),
+    isCustom: v.boolean(),
+    isCelebrated: v.boolean(),
+    photoUrl: v.optional(v.string()),
+  })
+    .index("by_baby", ["babyId"])
+    .index("by_baby_and_date", ["babyId", "date"]),
+
+  journal: defineTable({
+    userId: v.id("users"),
+    title: v.optional(v.string()),
+    content: v.string(),
+    mood: v.optional(
+      v.union(
+        v.literal("great"),
+        v.literal("good"),
+        v.literal("okay"),
+        v.literal("low"),
+        v.literal("struggling")
+      )
+    ),
+    tags: v.optional(v.array(v.string())),
+    babyId: v.optional(v.id("babies")),
+    isGratitude: v.optional(v.boolean()),
+    isWin: v.optional(v.boolean()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_user", ["userId"]),
+
+  moodCheckIns: defineTable({
+    userId: v.id("users"),
+    babyId: v.optional(v.id("babies")),
+    mood: v.union(
+      v.literal("great"),
+      v.literal("good"),
+      v.literal("okay"),
+      v.literal("low"),
+      v.literal("struggling")
+    ),
+    energy: v.optional(
+      v.union(v.literal("high"), v.literal("medium"), v.literal("low"))
+    ),
+    anxiety: v.optional(v.boolean()),
+    notes: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
+
+  reminders: defineTable({
+    babyId: v.id("babies"),
+    userId: v.id("users"),
+    type: v.union(
+      v.literal("feeding"),
+      v.literal("sleep"),
+      v.literal("diaper"),
+      v.literal("custom")
+    ),
+    title: v.string(),
+    message: v.optional(v.string()),
+    intervalMinutes: v.optional(v.number()),
+    specificTime: v.optional(v.string()),
+    isEnabled: v.boolean(),
+    daysOfWeek: v.optional(v.array(v.number())),
+  })
+    .index("by_baby", ["babyId"])
+    .index("by_user", ["userId"])
+    .index("by_baby_and_enabled", ["babyId", "isEnabled"]),
 });

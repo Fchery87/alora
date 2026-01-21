@@ -1161,7 +1161,78 @@ alora/
 
 ---
 
-## 13. Next Steps
+ ### 12.6 Key Rotation Strategy
+ 
+ - Goals: Minimize risk from long-lived keys; rotate keys on defined triggers (session-bound, time-based, or manual rotation).
+ - Approach:
+   - Keep the active encryption key in expo-secure-store under a versioned key id (e.g., "alora-key-v1").
+   - When rotation is triggered, generate a new 256-bit key and store it as a new version (e.g., "alora-key-v2") in SecureStore.
+   - Re-encrypt existing AsyncStorage payloads (LargeSecureStore data) with the new key in a background migration task.
+   - Maintain a grace period where both old and new keys are accepted for decryption, then purge older keys after verification.
+ - Migration details:
+   - Data flagged for rotation will be migrated incrementally; show user-visible progress if needed (e.g., during a login or app startup).
+   - If decryption with the old key fails for an item, log and skip that item temporarily; require a manual recovery flow.
+ - Key lifecycle policy:
+   - Rotate keys at a defined cadence or on user-triggered events; keep a minimum of two versions during a grace window.
+   - Purge old keys after a successful migration window.
+ - Testing:
+   - Unit tests for rotate-encrypt/decrypt across both keys.
+   - Integration tests simulating rotation during normal usage.
+ 
+ ### 12.7 Data Migration Plan
+ 
+ - Objective: Safely re-encrypt existing encrypted data with the new rotation key.
+ - Steps:
+   1) Enumerate AsyncStorage items with encrypted payloads.
+   2) For each item, decrypt using the old key, then re-encrypt with the new key.
+   3) Write the new ciphertext back to storage; update any metadata/versioning.
+   4) Validate a read-back round-trip for a sample of items.
+   5) On success, purge references to the old key after the grace period.
+ - Backward compatibility:
+   - If an item cannot be decrypted, log and skip; provide a manual recovery path.
+ - Testing:
+   - End-to-end migration tests with synthetic data; simulate partial failures and ensure graceful rollback.
+ 
+ ### 12.8 Backups, Compliance & Portability
+ 
+ - Backups:
+   - Ensure encrypted payloads stored in AsyncStorage are included in device backups and protected by the key-management policy.
+ - Portability:
+   - Plan for moving data between devices (secure key transfer method, device-binding considerations).
+ - Compliance:
+   - Document data privacy alignment; maintain rotation audit logs.
+ - Testing:
+   - Backup/restore tests with encrypted data to ensure decryptability after restore.
+ 
+ ### 12.9 Security Validation & Testing
+ 
+ - Security tests:
+   - Unit tests for all crypto helpers; integration tests covering end-to-end encryption, rotation, and decryption flows.
+ - Threat modeling:
+   - Update the threat model to include rotation flows, key leakage, and backup exposure.
+ - Runbooks:
+   - Rotation, migration, incident response, and rollback procedures.
+ 
+ ## 13. Next Steps (Expanded)
+ 
+ 13.1 Kickoff & Foundations
+ 13.2 Core Auth & Backend Setup
+ 13.3 LargeSecureStore Implementation
+ 13.4 UI Component Library Skeleton
+ 13.5 Real-time Data & Offline
+ 13.6 First Tracker MVP
+ 13.7 Testing Strategy
+ 13.8 CI/CD & Release
+ 13.9 Observability & Reliability
+ 13.10 Documentation & Runbooks
+ 13.11 Security Review & Sign-off
+ 13.12 Risks & Mitigations
+ 
+ ### Risks & Mitigations
+ 
+ - Data risk during rotation: mitigate via staged migrations with progress reporting and user notifications.
+ - Key management risk: mitigate via device-binding, re-auth triggers, and audit logging.
+ - Implementation risk: mitigate via feature flags, incremental rollout, and thorough testing.
 
 1. Initialize Expo project with Convex
 2. Set up Clerk authentication (with Organizations)

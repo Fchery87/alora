@@ -2,12 +2,14 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
 import { useAuth } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
+import { isAuthBypassEnabled } from "@/lib/auth-bypass";
 
 export default function ProfileScreen() {
   const { user } = useUser();
   const { signOut } = useAuth();
+  const authBypass = isAuthBypassEnabled();
 
-  if (!user) {
+  if (!user && !authBypass) {
     return <Redirect href="/(auth)/login" />;
   }
 
@@ -20,14 +22,14 @@ export default function ProfileScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {user.firstName?.[0] ||
-              user.emailAddresses[0]?.emailAddress[0]?.toUpperCase() ||
-              "?"}
-          </Text>
+        <Text style={styles.avatarText}>
+          {user?.firstName?.[0] ||
+            user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() ||
+            "?"}
+        </Text>
         </View>
         <Text style={styles.name}>
-          {user.fullName || user.emailAddresses[0]?.emailAddress}
+          {user?.fullName || user?.emailAddresses[0]?.emailAddress}
         </Text>
       </View>
 
@@ -36,7 +38,7 @@ export default function ProfileScreen() {
         <View style={styles.item}>
           <Text style={styles.itemText}>Email</Text>
           <Text style={styles.itemValue}>
-            {user.emailAddresses[0]?.emailAddress}
+            {user?.emailAddresses[0]?.emailAddress}
           </Text>
         </View>
       </View>

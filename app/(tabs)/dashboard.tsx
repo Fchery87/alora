@@ -1,17 +1,12 @@
 import { View, Text } from "react-native";
-import { useAuth } from "@clerk/clerk-expo";
-import { Redirect } from "expo-router";
+import { Header } from "@/components/layout/Header";
+import { Dashboard } from "@/components/organisms/Dashboard";
 
 export default function DashboardScreen() {
-  const { isSignedIn } = useAuth();
-
-  if (!isSignedIn) {
-    return <Redirect href="/(auth)/login" />;
-  }
-
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Dashboard - Coming Soon</Text>
+    <View style={{ flex: 1 }}>
+      <Header title="Home" showBackButton={false} />
+      <Dashboard todayFeeds={3} todayDiapers={5} todaySleep="2h 30m" />
     </View>
   );
 }

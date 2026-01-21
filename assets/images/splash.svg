@@ -1,0 +1,7 @@
+<svg width="1284" height="2778" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1284" height="2778" fill="#7C3AED"/>
+  <circle cx="642" cy="1200" r="300" fill="#FFFFFF" opacity="0.2"/>
+  <circle cx="642" cy="1200" r="200" fill="#FFFFFF" opacity="0.3"/>
+  <text x="642" y="1200" font-family="Arial, sans-serif" font-size="96" fill="#FFFFFF" text-anchor="middle">Alora</text>
+  <text x="642" y="1300" font-family="Arial, sans-serif" font-size="36" fill="#FFFFFF" text-anchor="middle" opacity="0.8">Baby Tracker</text>
+</svg>

@@ -4,20 +4,38 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
-import { useSignIn } from "@clerk/clerk-expo";
+import {
+  useSignIn,
+  useOrganization,
+  useOrganizationList,
+} from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function LoginScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const { setActive: setActiveOrg } = useOrganizationList();
+  const { organization } = useOrganization();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [needsOrgSelection, setNeedsOrgSelection] = useState(false);
+
+  useEffect(() => {
+    if (organization) {
+      router.replace("/(tabs)/dashboard");
+    }
+  }, [organization]);
 
   const handleLogin = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || loading) return;
+
+    setLoading(true);
+    setError("");
 
     try {
       const result = await signIn.create({
@@ -27,14 +45,45 @@ export default function LoginScreen() {
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
-        router.replace("/(tabs)/dashboard");
+        setNeedsOrgSelection(true);
       } else {
-        console.error(JSON.stringify(result, null, 2));
+        setError("Login failed. Please try again.");
       }
     } catch (err: any) {
       setError(err.errors?.[0]?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleCreateOrganization = async () => {
+    router.push("/(auth)/onboarding");
+  };
+
+  if (needsOrgSelection) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Select Organization</Text>
+        <Text style={styles.subtitle}>
+          Choose or create an organization to continue
+        </Text>
+
+        <TouchableOpacity
+          style={styles.createButton}
+          onPress={handleCreateOrganization}
+        >
+          <Text style={styles.createButtonText}>Create New Organization</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => setNeedsOrgSelection(false)}
+        >
+          <Text style={styles.backButtonText}>Back to Login</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -60,8 +109,16 @@ export default function LoginScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Sign In</Text>
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={handleLogin}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Sign In</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
@@ -87,6 +144,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#666",
     marginBottom: 32,
+    textAlign: "center",
   },
   error: {
     color: "#ef4444",
@@ -109,6 +167,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 8,
   },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
   buttonText: {
     color: "#fff",
     fontSize: 18,
@@ -118,5 +179,40 @@ const styles = StyleSheet.create({
     color: "#6366f1",
     marginTop: 24,
     fontSize: 16,
+  },
+  orgList: {
+    width: "100%",
+    marginBottom: 24,
+  },
+  orgCard: {
+    width: "100%",
+    padding: 16,
+    backgroundColor: "#f3f4f6",
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  orgName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#0f172a",
+  },
+  createButton: {
+    width: "100%",
+    padding: 16,
+    backgroundColor: "#10b981",
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  createButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  backButton: {
+    marginTop: 16,
+  },
+  backButtonText: {
+    color: "#6366f1",
+    fontSize: 14,
   },
 });
