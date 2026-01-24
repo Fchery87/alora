@@ -1,4 +1,5 @@
 import React from "react";
+import type { MotiTransition } from "@/lib/moti-types";
 import { View, StyleSheet, Pressable, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -71,10 +72,9 @@ export function ModernTabBar({
     <MotiView
       from={{ translateY: 100 }}
       animate={{ translateY: 0 }}
-      transition={{ type: "spring", 
-        ...softSpring,
-        delay: 300,
-      }}
+      transition={
+        { ...softSpring, delay: 300 } as MotiTransition
+      }
       style={styles.container}
     >
       {/* Glass background */}
@@ -106,7 +106,9 @@ export function ModernTabBar({
                   <MotiView
                     from={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ type: "spring",  ...softSpring, delay: index * 30 }}
+                    transition={
+                      { ...softSpring, delay: index * 30 } as MotiTransition
+                    }
                     style={[styles.activeGlow, { backgroundColor: `${tab.color}20` }]}
                   />
                 )}

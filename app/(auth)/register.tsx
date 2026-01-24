@@ -1,23 +1,67 @@
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
+import { LinearGradient } from "expo-linear-gradient";
+import { MotiView } from "moti";
+import { Ionicons } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
+import { useSignUp, useOAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+
+import { AloraLogo } from "@/components/atoms/AloraLogo";
+import { GlassCard } from "@/components/atoms/GlassCard";
+import {
+  GRADIENTS,
+  SHADOWS,
+  RADIUS,
+  SPACING,
+  TYPOGRAPHY,
+  TEXT,
+  COLORS,
+} from "@/lib/theme";
+import type { MotiTransition } from "@/lib/moti-types";
+
+// Warm up browser on Android for better UX
+export const useWarmUpBrowser = () => {
+  useEffect(() => {
+    if (Platform.OS === "web") return;
+    void WebBrowser.warmUpAsync();
+    return () => {
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function RegisterScreen() {
+  useWarmUpBrowser();
+
   const { signUp, setActive, isLoaded } = useSignUp();
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleRegister = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || loading) return;
+
+    setLoading(true);
+    setError("");
 
     try {
       const result = await signUp.create({
@@ -30,93 +74,356 @@ export default function RegisterScreen() {
         router.replace("/(auth)/onboarding");
       } else {
         console.error(JSON.stringify(result, null, 2));
+        setError("Registration requires additional verification.");
       }
     } catch (err: any) {
       setError(err.errors?.[0]?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleGoogleSignUp = useCallback(async () => {
+    if (googleLoading) return;
+
+    setGoogleLoading(true);
+    setError("");
+
+    try {
+      const { createdSessionId, setActive } = await startOAuthFlow({
+        redirectUrl: Linking.createURL("/(auth)/onboarding", { scheme: "alora" }),
+      });
+
+      if (createdSessionId && setActive) {
+        await setActive({ session: createdSessionId });
+        router.replace("/(auth)/onboarding");
+      }
+    } catch (err: any) {
+      console.error("OAuth error:", err);
+      setError("Google sign-up failed. Please try again.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  }, [startOAuthFlow, googleLoading, router]);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Start your parenting journey</Text>
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
+    <LinearGradient
+      colors={[GRADIENTS.secondary.start, GRADIENTS.secondary.end]}
+      style={styles.gradient}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      {/* Decorative floating circles */}
+      <MotiView
+        from={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 0.1, scale: 1 }}
+        transition={
+          { type: "timing", duration: 800, delay: 200 } as MotiTransition
+        }
+        style={[styles.floatingCircle, styles.circle1]}
+      />
+      <MotiView
+        from={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 0.08, scale: 1 }}
+        transition={
+          { type: "timing", duration: 800, delay: 400 } as MotiTransition
+        }
+        style={[styles.floatingCircle, styles.circle2]}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoid}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Logo */}
+          <MotiView
+            from={{ opacity: 0, translateY: -20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={
+              { type: "timing", duration: 500 } as MotiTransition
+            }
+            style={styles.logoContainer}
+          >
+            <AloraLogo size={80} showText />
+          </MotiView>
 
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
+          {/* Register Card */}
+          <MotiView
+            from={{ opacity: 0, translateY: 30 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            transition={
+              { type: "timing", duration: 500, delay: 200 } as MotiTransition
+            }
+          >
+            <GlassCard style={styles.card}>
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.subtitle}>Start your parenting journey</Text>
 
-      <TouchableOpacity onPress={() => router.back()}>
-        <Text style={styles.linkText}>Already have an account? Sign in</Text>
-      </TouchableOpacity>
-    </View>
+              {error ? (
+                <MotiView
+                  from={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  style={styles.errorContainer}
+                >
+                  <Ionicons name="alert-circle" size={18} color={COLORS.rose} />
+                  <Text style={styles.error}>{error}</Text>
+                </MotiView>
+              ) : null}
+
+              {/* Google OAuth Button */}
+              <TouchableOpacity
+                style={styles.oauthButton}
+                onPress={handleGoogleSignUp}
+                disabled={googleLoading}
+              >
+                {googleLoading ? (
+                  <ActivityIndicator color={TEXT.primary} />
+                ) : (
+                  <>
+                    <Ionicons name="logo-google" size={20} color={TEXT.primary} />
+                    <Text style={styles.oauthButtonText}>
+                      Continue with Google
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
+              {/* Divider */}
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              {/* Email Input */}
+              <View style={styles.inputContainer}>
+                <Ionicons
+                  name="mail-outline"
+                  size={20}
+                  color={TEXT.tertiary}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor={TEXT.tertiary}
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
+
+              {/* Password Input */}
+              <View style={styles.inputContainer}>
+                <Ionicons
+                  name="lock-closed-outline"
+                  size={20}
+                  color={TEXT.tertiary}
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  placeholderTextColor={TEXT.tertiary}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                />
+              </View>
+
+              {/* Sign Up Button */}
+              <TouchableOpacity
+                style={[styles.primaryButton, loading && styles.buttonDisabled]}
+                onPress={handleRegister}
+                disabled={loading}
+              >
+                <LinearGradient
+                  colors={[GRADIENTS.secondary.start, GRADIENTS.secondary.end]}
+                  style={styles.buttonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  {loading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <>
+                      <Ionicons name="person-add-outline" size={20} color="#fff" />
+                      <Text style={styles.buttonText}>Sign Up</Text>
+                    </>
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
+
+              {/* Sign In Link */}
+              <TouchableOpacity
+                style={styles.linkButton}
+                onPress={() => router.back()}
+              >
+                <Text style={styles.linkTextSecondary}>
+                  Already have an account?{" "}
+                </Text>
+                <Text style={styles.linkText}>Sign in</Text>
+              </TouchableOpacity>
+            </GlassCard>
+          </MotiView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  gradient: {
     flex: 1,
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: "center",
+    padding: SPACING.lg,
+  },
+  logoContainer: {
     alignItems: "center",
-    padding: 24,
+    marginBottom: SPACING.xl,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 400,
+    alignSelf: "center",
   },
   title: {
-    fontSize: 32,
-    fontWeight: "bold",
-    marginBottom: 8,
+    ...TYPOGRAPHY.headings.h2,
+    color: TEXT.primary,
+    textAlign: "center",
+    marginBottom: SPACING.xs,
   },
   subtitle: {
-    fontSize: 18,
-    color: "#666",
-    marginBottom: 32,
+    ...TYPOGRAPHY.body.regular,
+    color: TEXT.secondary,
+    textAlign: "center",
+    marginBottom: SPACING.lg,
+  },
+  errorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(244, 63, 94, 0.1)",
+    padding: SPACING.sm,
+    borderRadius: RADIUS.sm,
+    marginBottom: SPACING.md,
+    gap: SPACING.xs,
   },
   error: {
-    color: "#ef4444",
-    marginBottom: 16,
+    ...TYPOGRAPHY.body.small,
+    color: COLORS.rose,
+    flex: 1,
+  },
+  oauthButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    padding: SPACING.md,
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.slate[200],
+    gap: SPACING.sm,
+    ...SHADOWS.sm,
+  },
+  oauthButtonText: {
+    ...TYPOGRAPHY.body.large,
+    fontWeight: "600",
+    color: TEXT.primary,
+  },
+  divider: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: SPACING.lg,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: COLORS.slate[200],
+  },
+  dividerText: {
+    ...TYPOGRAPHY.body.small,
+    color: TEXT.tertiary,
+    marginHorizontal: SPACING.md,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.slate[200],
+    marginBottom: SPACING.md,
+    ...SHADOWS.sm,
+  },
+  inputIcon: {
+    paddingLeft: SPACING.md,
   },
   input: {
-    width: "100%",
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 12,
-    marginBottom: 16,
+    flex: 1,
+    padding: SPACING.md,
     fontSize: 16,
+    color: TEXT.primary,
   },
-  button: {
-    width: "100%",
-    padding: 16,
-    backgroundColor: "#6366f1",
-    borderRadius: 12,
+  primaryButton: {
+    borderRadius: RADIUS.md,
+    overflow: "hidden",
+    marginTop: SPACING.sm,
+    ...SHADOWS.md,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  buttonGradient: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: 8,
+    justifyContent: "center",
+    padding: SPACING.md,
+    gap: SPACING.sm,
   },
   buttonText: {
+    ...TYPOGRAPHY.button,
     color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
+  },
+  linkButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: SPACING.lg,
+  },
+  linkTextSecondary: {
+    ...TYPOGRAPHY.body.regular,
+    color: TEXT.secondary,
   },
   linkText: {
-    color: "#6366f1",
-    marginTop: 24,
-    fontSize: 16,
+    ...TYPOGRAPHY.body.regular,
+    color: COLORS.emerald,
+    fontWeight: "600",
+  },
+  floatingCircle: {
+    position: "absolute",
+    borderRadius: 999,
+    backgroundColor: "#fff",
+  },
+  circle1: {
+    width: 200,
+    height: 200,
+    top: -50,
+    right: -50,
+  },
+  circle2: {
+    width: 150,
+    height: 150,
+    bottom: 100,
+    left: -30,
   },
 });

@@ -1,4 +1,5 @@
 import { MotiView } from "moti";
+import type { MotiTransition } from "@/lib/moti-types";
 
 interface FadeContainerProps {
   children: React.ReactNode;
@@ -9,10 +10,9 @@ export function FadeContainer({ children }: FadeContainerProps) {
     <MotiView
       from={{ opacity: 0, translateY: 20 }}
       animate={{ opacity: 1, translateY: 0 }}
-      transition={{ type: "spring", 
-        dampingRatio: 0.1,
-        stiffness: 250,
-      }}
+      transition={
+        { type: "spring", dampingRatio: 0.1, stiffness: 250 } as MotiTransition
+      }
     >
       {children}
     </MotiView>
@@ -28,10 +28,9 @@ export function ScaleContainer({ children }: ScaleContainerProps) {
     <MotiView
       from={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: "spring", 
-        dampingRatio: 0.1,
-        stiffness: 250,
-      }}
+      transition={
+        { type: "spring", dampingRatio: 0.1, stiffness: 250 } as MotiTransition
+      }
     >
       {children}
     </MotiView>

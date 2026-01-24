@@ -3,6 +3,8 @@ module.exports = function (api) {
   return {
     presets: ["babel-preset-expo"],
     plugins: [
+      // Reanimated plugin MUST run first to properly instrument worklets
+      "react-native-reanimated/plugin",
       [
         "@tamagui/babel-plugin",
         {
@@ -11,7 +13,6 @@ module.exports = function (api) {
           logTimings: true,
         },
       ],
-      "react-native-reanimated/plugin",
     ],
   };
 };

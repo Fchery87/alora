@@ -1,3 +1,6 @@
+// Load Reanimated web shim before any animations
+import "@/lib/reanimated-web-shim";
+
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";

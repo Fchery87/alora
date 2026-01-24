@@ -84,7 +84,6 @@ export const create = mutation({
 
     return await ctx.db.insert("reminders", {
       ...args,
-      createdAt: Date.now(),
       isEnabled: args.isEnabled ?? true,
     });
   },

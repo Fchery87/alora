@@ -1,18 +1,15 @@
-import type { UserIdentity } from "convex/server";
+import type { UserIdentity, QueryCtx, MutationCtx } from "convex/server";
 import type { Id } from "../_generated/dataModel";
 
 const DEFAULT_EMAIL = "unknown@local";
 
-type UserQueryDb = any;
-type UserWriteDb = any;
-
 export async function getUserId(
-  ctx: { db: UserQueryDb },
+  ctx: QueryCtx,
   identity: UserIdentity
 ): Promise<Id<"users"> | null> {
   const existing = await ctx.db
     .query("users")
-    .withIndex("by_clerk_user_id", (q: any) =>
+    .withIndex("by_clerk_user_id", (q) =>
       q.eq("clerkUserId", identity.subject)
     )
     .first();
@@ -21,7 +18,7 @@ export async function getUserId(
 }
 
 export async function getOrCreateUserId(
-  ctx: { db: UserWriteDb },
+  ctx: MutationCtx,
   identity: UserIdentity
 ): Promise<Id<"users">> {
   const existingId = await getUserId(ctx, identity);
@@ -41,9 +38,7 @@ export async function getOrCreateUserId(
   });
 }
 
-export async function requireIdentity(ctx: {
-  auth: { getUserIdentity: () => Promise<UserIdentity | null> };
-}) {
+export async function requireIdentity(ctx: QueryCtx | MutationCtx) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     throw new Error("Not authenticated");
@@ -51,9 +46,7 @@ export async function requireIdentity(ctx: {
   return identity;
 }
 
-export async function requireOrganizationId(ctx: {
-  auth: { getUserIdentity: () => Promise<UserIdentity | null> };
-}) {
+export async function requireOrganizationId(ctx: QueryCtx | MutationCtx) {
   const identity = await requireIdentity(ctx);
   if (!identity.orgId) {
     throw new Error("Organization not found");
@@ -61,10 +54,7 @@ export async function requireOrganizationId(ctx: {
   return identity.orgId;
 }
 
-export async function requireUserId(ctx: {
-  auth: { getUserIdentity: () => Promise<UserIdentity | null> };
-  db: UserQueryDb;
-}) {
+export async function requireUserId(ctx: QueryCtx): Promise<Id<"users">> {
   const identity = await requireIdentity(ctx);
   const userId = await getUserId(ctx, identity);
   if (!userId) {
@@ -73,19 +63,13 @@ export async function requireUserId(ctx: {
   return userId;
 }
 
-export async function requireMutationUserId(ctx: {
-  auth: { getUserIdentity: () => Promise<UserIdentity | null> };
-  db: UserWriteDb;
-}) {
+export async function requireMutationUserId(ctx: MutationCtx): Promise<Id<"users">> {
   const identity = await requireIdentity(ctx);
   return await getOrCreateUserId(ctx, identity);
 }
 
 export async function requireBabyAccess(
-  ctx: {
-    auth: { getUserIdentity: () => Promise<UserIdentity | null> };
-    db: UserQueryDb;
-  },
+  ctx: QueryCtx,
   babyId: Id<"babies">
 ) {
   const orgId = await requireOrganizationId(ctx);

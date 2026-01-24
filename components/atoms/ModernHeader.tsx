@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { GRADIENTS, SHADOWS, RADIUS, TYPOGRAPHY, COLORS } from "@/lib/theme";
 import { softSpring, iconTap } from "@/lib/animations";
+import type { MotiTransition } from "@/lib/moti-types";
 
 interface ModernHeaderProps {
   title: string;
@@ -35,10 +36,9 @@ export function ModernHeader({
     <MotiView
       from={{ translateY: -50, opacity: 0 }}
       animate={{ translateY: 0, opacity: 1 }}
-      transition={{ type: "spring", 
-        ...softSpring,
-        delay: 100,
-      }}
+      transition={
+        { ...softSpring, delay: 100 } as MotiTransition
+      }
       style={[styles.container, backgroundColor === "transparent" && styles.transparentBg]}
     >
       {/* Gradient or glass background */}

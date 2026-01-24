@@ -1,4 +1,5 @@
-import { ConvexProvider } from "convex/react";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
+import { useAuth } from "@clerk/clerk-expo";
 import { convex } from "@/lib/convex";
 
 interface ConvexProviderWrapperProps {
@@ -6,5 +7,9 @@ interface ConvexProviderWrapperProps {
 }
 
 export function ConvexProviderWrapper({ children }: ConvexProviderWrapperProps) {
-  return <ConvexProvider client={convex}>{children}</ConvexProvider>;
+  return (
+    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+      {children}
+    </ConvexProviderWithClerk>
+  );
 }

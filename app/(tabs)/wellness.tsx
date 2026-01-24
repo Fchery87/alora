@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
+import type { MotiTransition } from "@/lib/moti-types";
 import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import { MotiView } from "moti";
@@ -99,7 +100,9 @@ export default function WellnessScreen() {
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
         animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "spring",  type: "spring" }}
+        transition={
+          { type: "spring" } as MotiTransition
+        }
         style={styles.affirmationSection}
       >
         <LinearGradient
@@ -161,7 +164,9 @@ export default function WellnessScreen() {
       <MotiView
         from={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ type: "spring",  delay: 100, type: "spring", damping: 10 }}
+        transition={
+          { type: "spring", delay: 100, damping: 10 } as MotiTransition
+        }
       >
         <Pressable
           style={styles.checkInButton}
@@ -186,7 +191,9 @@ export default function WellnessScreen() {
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
         animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "spring",  delay: 200, type: "spring", damping: 10 }}
+        transition={
+          { type: "spring", delay: 200, damping: 10 } as MotiTransition
+        }
         style={styles.section}
       >
         <View style={styles.sectionHeader}>
@@ -231,7 +238,9 @@ export default function WellnessScreen() {
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
         animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "spring",  delay: 300, type: "spring", damping: 10 }}
+        transition={
+          { type: "spring", delay: 300, damping: 10 } as MotiTransition
+        }
         style={styles.section}
       >
         <Text style={styles.sectionTitle}>Gentle Reminders</Text>
@@ -275,7 +284,9 @@ export default function WellnessScreen() {
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
         animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "spring",  delay: 400, type: "spring", damping: 10 }}
+        transition={
+          { type: "spring", delay: 400, damping: 10 } as MotiTransition
+        }
         style={styles.quickActionsSection}
       >
         <Text style={styles.sectionTitle}>Quick Actions</Text>

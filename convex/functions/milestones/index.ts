@@ -61,8 +61,6 @@ export const create = mutation({
 
     return await ctx.db.insert("milestones", {
       ...args,
-      createdById: userId,
-      createdAt: Date.now(),
       isCelebrated: false,
     });
   },

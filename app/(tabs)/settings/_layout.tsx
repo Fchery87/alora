@@ -48,22 +48,22 @@ export default function SettingsScreen() {
         {
           icon: "person-outline",
           label: "Profile",
-          onPress: () => router.push("/settings/profile"),
+          onPress: () => router.push("profile" as any),
         },
         {
           icon: "notifications-outline",
           label: "Notifications",
-          onPress: () => router.push("/settings/notifications"),
+          onPress: () => router.push("notifications" as any),
         },
         {
           icon: "color-palette-outline",
           label: "Appearance",
-          onPress: () => router.push("/settings/appearance"),
+          onPress: () => router.push("appearance" as any),
         },
         {
           icon: "lock-closed-outline",
           label: "Privacy & Security",
-          onPress: () => router.push("/settings/privacy"),
+          onPress: () => router.push("privacy" as any),
         },
       ],
     },

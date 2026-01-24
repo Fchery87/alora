@@ -10,13 +10,9 @@ export const get = query({
     const family = await ctx.db.get(args.id);
     if (!family) throw new Error("Family not found");
 
-    // Verify user belongs to this family
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", userId))
-      .first();
-
-    if (user?.familyId !== id) {
+    // Verify user can access this family via organization
+    const userOrgId = await requireOrganizationId(ctx);
+    if (family.clerkOrganizationId !== userOrgId) {
       throw new Error("Not authorized to view this family");
     }
 
