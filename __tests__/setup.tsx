@@ -1,5 +1,9 @@
 import { vi, beforeEach, afterEach } from "vitest";
 import "@testing-library/jest-dom";
+import { render as rtlRender } from "@testing-library/react-native";
+import React from "react";
+import { ToastProvider } from "@/components/atoms/Toast";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 globalThis.__DEV__ = true;
 globalThis.React = require("react");
@@ -72,3 +76,24 @@ global.localStorage = {
   key: vi.fn(),
   length: 0,
 };
+
+// Custom render function that includes ToastProvider
+export function renderWithProviders(ui: React.ReactNode) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+      },
+      mutations: {
+        retry: false,
+      },
+    },
+  });
+
+  return rtlRender(
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{ui}</ToastProvider>
+    </QueryClientProvider>
+  );
+}

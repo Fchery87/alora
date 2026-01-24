@@ -8,12 +8,14 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useMemo } from "react";
 import { VictoryPie } from "victory-native";
+import { ReactNode } from "react";
 
 interface DashboardStatsProps {
   todayFeeds?: number;
   todayDiapers?: number;
   todaySleep?: string;
   moodData?: { mood: string; count: number }[];
+  activityFeed?: ReactNode;
 }
 
 export function Dashboard({
@@ -21,6 +23,7 @@ export function Dashboard({
   todayDiapers = 0,
   todaySleep = "0h 0m",
   moodData = [],
+  activityFeed,
 }: DashboardStatsProps) {
   const quickActions = [
     { id: "feed", label: "Log Feed", icon: "restaurant", color: "#f97316" },
@@ -91,13 +94,15 @@ export function Dashboard({
           </TouchableOpacity>
         </View>
 
-        <View style={styles.emptyState}>
-          <Ionicons name="time-outline" size={48} color="#d1d5db" />
-          <Text style={styles.emptyStateText}>No activity yet today</Text>
-          <Text style={styles.emptyStateSubtext}>
-            Tap a quick action above to get started
-          </Text>
-        </View>
+        {activityFeed || (
+          <View style={styles.emptyState}>
+            <Ionicons name="time-outline" size={48} color="#d1d5db" />
+            <Text style={styles.emptyStateText}>No activity yet today</Text>
+            <Text style={styles.emptyStateSubtext}>
+              Tap a quick action above to get started
+            </Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.moodSection}>

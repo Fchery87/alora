@@ -20,7 +20,6 @@ export default function TrackersLayout() {
           title: "Log Feeding",
           headerShown: true,
           headerTitle: "Log Feeding",
-          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -29,7 +28,6 @@ export default function TrackersLayout() {
           title: "Log Diaper",
           headerShown: true,
           headerTitle: "Log Diaper",
-          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -38,7 +36,6 @@ export default function TrackersLayout() {
           title: "Log Sleep",
           headerShown: true,
           headerTitle: "Log Sleep",
-          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -47,7 +44,6 @@ export default function TrackersLayout() {
           title: "Mood Check-In",
           headerShown: true,
           headerTitle: "Mood Check-In",
-          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -56,7 +52,6 @@ export default function TrackersLayout() {
           title: "Growth Tracking",
           headerShown: true,
           headerTitle: "Growth Tracking",
-          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -65,7 +60,6 @@ export default function TrackersLayout() {
           title: "Milestones",
           headerShown: true,
           headerTitle: "Milestones",
-          headerBackTitleVisible: false,
         }}
       />
     </Stack>

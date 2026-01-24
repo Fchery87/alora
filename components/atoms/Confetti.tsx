@@ -29,7 +29,6 @@ export function Confetti() {
             translateY: Math.random() * 200 - 100,
           }}
           transition={{
-            type: "timing",
             duration: 1000 + Math.random() * 500,
             delay: Math.random() * 100,
           }}

@@ -10,6 +10,9 @@ import { MoodTrendChart } from "./MoodTrendChart";
 import { SleepTrendChart } from "./SleepTrendChart";
 import { FeedingTrendChart } from "./FeedingTrendChart";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
+import { BabySelectorModal } from "./BabySelectorModal";
+import { CreateBaby } from "./CreateBaby";
+import { EntryList } from "./EntryList";
 
 export {
   FeedForm,
@@ -24,4 +27,7 @@ export {
   SleepTrendChart,
   FeedingTrendChart,
   AnalyticsDashboard,
+  BabySelectorModal,
+  CreateBaby,
+  EntryList,
 };

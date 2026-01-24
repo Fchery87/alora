@@ -102,7 +102,7 @@ export default function PartnerSupportScreen() {
             <MotiView
               from={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", damping: 20 }}
+              transition={{ stiffness: 200, damping: 20 }}
             >
               <Text style={styles.promptMessage}>{currentPrompt.message}</Text>
             </MotiView>

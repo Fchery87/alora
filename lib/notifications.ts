@@ -1,10 +1,11 @@
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
+import { getRandomSelfCareNudge, getDailyAffirmation } from "./self-care";
 
 export interface NotificationReminder {
   id: string;
   babyId: string;
-  type: "feeding" | "sleep" | "diaper" | "custom";
+  type: "feeding" | "sleep" | "diaper" | "custom" | "self-care" | "affirmation";
   title: string;
   message?: string;
   intervalMinutes?: number;
@@ -130,6 +131,10 @@ function getDefaultMessage(type: NotificationReminder["type"]): string {
       return "Time for a diaper change";
     case "custom":
       return "Reminder";
+    case "self-care":
+      return getRandomSelfCareNudge().message;
+    case "affirmation":
+      return getDailyAffirmation().message;
     default:
       return "Reminder";
   }

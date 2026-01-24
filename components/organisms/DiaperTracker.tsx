@@ -5,10 +5,19 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useCreateDiaper } from "@/hooks/queries/useDiapers";
+import {
+  validateDiaper,
+  type DiaperFormData,
+  getErrorMessage,
+  hasFieldError,
+} from "@/lib/validation";
+import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
+import { useToast } from "@/components/atoms/Toast";
 
 type DiaperType = "wet" | "solid" | "mixed";
 type DiaperColor = "yellow" | "orange" | "green" | "brown" | "red" | null;
@@ -23,7 +32,13 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
   const [color, setColor] = useState<DiaperColor>(null);
   const [notes, setNotes] = useState("");
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const toast = useToast();
   const createDiaperMutation = useCreateDiaper();
   const createDiaper = createDiaperMutation as unknown as (args: any) => void;
 
@@ -41,9 +56,48 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
     { value: "red", label: "Red ⚠️", color: "#ef4444" },
   ];
 
+  // Validate form in real-time
+  const validate = () => {
+    const formData: Partial<DiaperFormData> = {
+      type,
+      color: color || undefined,
+      notes: notes || undefined,
+    };
+
+    const result = validateDiaper(formData);
+    const errors: Record<string, string> = {};
+
+    result.errors.forEach((error) => {
+      errors[error.field] = error.message;
+    });
+
+    setValidationErrors(errors);
+    return result.isValid;
+  };
+
+  // Handle field blur
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validate();
+  };
+
+  // Handle submit
   const handleSubmit = async () => {
+    Keyboard.dismiss();
+
+    // Mark all fields as touched
+    setTouched({ type: true });
+
+    // Validate
+    if (!validate()) {
+      toast.error("Validation Error", "Please fix errors before submitting");
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      createDiaper({
+      await createDiaper({
         babyId: babyId as any,
         type,
         color: color || undefined,
@@ -53,27 +107,59 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
 
       setNotes("");
       setColor(null);
+      setTouched({});
+      setValidationErrors({});
+      toast.success(
+        "Diaper Logged",
+        "The diaper record has been saved successfully"
+      );
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to log diaper:", error);
+      const appError = parseError(error);
+      logError(error, { context: "DiaperTracker", type, color });
+
+      toast.error("Failed to Log Diaper", getUserFriendlyMessage(appError));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  // Check if form is valid
+  const isValid = () => {
+    const formData: Partial<DiaperFormData> = { type };
+    const result = validateDiaper(formData);
+    return result.isValid;
+  };
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+    >
       <Text style={styles.title}>Log Diaper</Text>
 
+      {/* Type Selection */}
       <View style={styles.section}>
         <Text style={styles.label}>Type</Text>
         <View style={styles.typeContainer}>
           {diaperTypes.map((diaperType) => (
             <TouchableOpacity
               key={diaperType.value}
-              style={[
+              style={StyleSheet.flatten([
                 styles.typeButton,
                 type === diaperType.value && styles.typeButtonActive,
-              ]}
-              onPress={() => setType(diaperType.value)}
+                touched.type &&
+                  hasFieldError(
+                    validateDiaper({ type: diaperType.value }),
+                    "type"
+                  ) &&
+                  styles.typeButtonError,
+              ])}
+              onPress={() => {
+                setType(diaperType.value);
+                handleBlur("type");
+              }}
             >
               <Ionicons
                 name={diaperType.icon as keyof typeof Ionicons.glyphMap}
@@ -91,8 +177,12 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
             </TouchableOpacity>
           ))}
         </View>
+        {touched.type && validationErrors.type && (
+          <Text style={styles.errorText}>{validationErrors.type}</Text>
+        )}
       </View>
 
+      {/* Color Selection */}
       <View style={styles.section}>
         <TouchableOpacity
           style={styles.colorToggle}
@@ -112,9 +202,7 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
               style={[styles.colorButton, !color && styles.colorButtonActive]}
               onPress={() => setColor(null)}
             >
-              <Text
-                style={[!color ? styles.colorTextActive : styles.colorText]}
-              >
+              <Text style={!color ? styles.colorTextActive : styles.colorText}>
                 N/A
               </Text>
             </TouchableOpacity>
@@ -138,6 +226,7 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
         )}
       </View>
 
+      {/* Notes Input */}
       <View style={styles.section}>
         <Text style={styles.label}>Notes (optional)</Text>
         <TextInput
@@ -147,11 +236,22 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
           onChangeText={setNotes}
           multiline
           numberOfLines={3}
+          textAlignVertical="top"
         />
       </View>
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Log Diaper</Text>
+      {/* Submit Button */}
+      <TouchableOpacity
+        style={[
+          styles.submitButton,
+          (!isValid() || isSubmitting) && styles.submitButtonDisabled,
+        ]}
+        onPress={handleSubmit}
+        disabled={!isValid() || isSubmitting}
+      >
+        <Text style={styles.submitButtonText}>
+          {isSubmitting ? "Logging..." : "Log Diaper"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -197,6 +297,9 @@ const styles = StyleSheet.create({
     borderColor: "#6366f1",
     backgroundColor: "#6366f1",
   },
+  typeButtonError: {
+    borderColor: "#ef4444",
+  },
   typeText: {
     marginTop: 8,
     fontSize: 12,
@@ -205,6 +308,12 @@ const styles = StyleSheet.create({
   },
   typeTextActive: {
     color: "#ffffff",
+  },
+  errorText: {
+    fontSize: 12,
+    color: "#ef4444",
+    marginTop: 6,
+    marginLeft: 4,
   },
   colorToggle: {
     flexDirection: "row",

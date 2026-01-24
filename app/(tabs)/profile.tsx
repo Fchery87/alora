@@ -2,14 +2,13 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
 import { useAuth } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
-import { isAuthBypassEnabled } from "@/lib/auth-bypass";
 
 export default function ProfileScreen() {
   const { user } = useUser();
   const { signOut } = useAuth();
-  const authBypass = isAuthBypassEnabled();
+  // auth bypass removed
 
-  if (!user && !authBypass) {
+  if (!user) {
     return <Redirect href="/(auth)/login" />;
   }
 

@@ -58,7 +58,7 @@ export const listSleep = query({
       );
     }
 
-    return sleepRecords.filter((record) => record.createdById === userId);
+    return sleepRecords;
   },
 });
 
@@ -67,13 +67,10 @@ export const getSleep = query({
     id: v.id("sleep"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
     const record = await ctx.db.get(args.id);
     if (!record) {
       return null;
-    }
-    if (record.createdById !== userId) {
-      throw new Error("Not authorized");
     }
     await requireBabyAccess(ctx, record.babyId);
     return record;
@@ -107,10 +104,10 @@ export const updateSleep = mutation({
     if (!existingSleep) {
       throw new Error("Sleep record not found");
     }
-    if (existingSleep.createdById !== userId) {
-      throw new Error("Not authorized");
-    }
     await requireBabyAccess(ctx, existingSleep.babyId);
+    if (existingSleep.createdById !== userId) {
+      throw new Error("Only creator can edit this sleep record");
+    }
 
     const { id, ...updates } = args;
     return await ctx.db.patch(id, updates);
@@ -127,10 +124,10 @@ export const deleteSleep = mutation({
     if (!existingSleep) {
       throw new Error("Sleep record not found");
     }
-    if (existingSleep.createdById !== userId) {
-      throw new Error("Not authorized");
-    }
     await requireBabyAccess(ctx, existingSleep.babyId);
+    if (existingSleep.createdById !== userId) {
+      throw new Error("Only creator can delete this sleep record");
+    }
     return await ctx.db.delete(args.id);
   },
 });

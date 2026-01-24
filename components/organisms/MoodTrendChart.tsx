@@ -107,7 +107,7 @@ export function MoodTrendChart({
     <MotiView
       from={{ opacity: 0, translateY: 20 }}
       animate={{ opacity: 1, translateY: 0 }}
-      transition={{ type: "spring", delay: 100 }}
+      transition={{ delay: 100, dampingRatio: 0.8 }}
       style={styles.container}
     >
       <View style={styles.header}>

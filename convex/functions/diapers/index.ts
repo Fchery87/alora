@@ -64,7 +64,7 @@ export const listDiapers = query({
       );
     }
 
-    return diapers.filter((diaper) => diaper.createdById === userId);
+    return diapers;
   },
 });
 
@@ -73,14 +73,11 @@ export const getDiaper = query({
     id: v.id("diapers"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const diaper = await ctx.db.get(args.id);
     if (!diaper) {
       return null;
-    }
-    if (diaper.createdById !== userId) {
-      throw new Error("Not authorized");
     }
     await requireBabyAccess(ctx, diaper.babyId);
     return diaper;
@@ -118,10 +115,10 @@ export const updateDiaper = mutation({
     if (!existingDiaper) {
       throw new Error("Diaper not found");
     }
-    if (existingDiaper.createdById !== userId) {
-      throw new Error("Not authorized");
-    }
     await requireBabyAccess(ctx, existingDiaper.babyId);
+    if (existingDiaper.createdById !== userId) {
+      throw new Error("Only creator can edit this diaper");
+    }
 
     const { id, ...updates } = args;
     return await ctx.db.patch(id, updates);
@@ -139,10 +136,10 @@ export const deleteDiaper = mutation({
     if (!existingDiaper) {
       throw new Error("Diaper not found");
     }
-    if (existingDiaper.createdById !== userId) {
-      throw new Error("Not authorized");
-    }
     await requireBabyAccess(ctx, existingDiaper.babyId);
+    if (existingDiaper.createdById !== userId) {
+      throw new Error("Only creator can delete this diaper");
+    }
     return await ctx.db.delete(args.id);
   },
 });

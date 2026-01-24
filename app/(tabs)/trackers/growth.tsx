@@ -11,10 +11,14 @@ import { useRouter } from "expo-router";
 import { GrowthTracker } from "@/components/organisms/growth/GrowthTracker";
 import { GrowthChart } from "@/components/organisms/GrowthChart";
 import { FadeContainer } from "@/components/atoms/MotiContainers";
+import { useSelectedBabyId } from "@/stores/babyStore";
+import { BabySelectorModal } from "@/components/organisms";
 
 export default function GrowthScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"log" | "history">("log");
+  const [showBabySelector, setShowBabySelector] = useState(false);
+  const selectedBabyId = useSelectedBabyId();
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -67,7 +71,20 @@ export default function GrowthScreen() {
 
       {activeTab === "log" ? (
         <FadeContainer>
-          <GrowthTracker babyId="demo-baby-id" />
+          {selectedBabyId ? (
+            <GrowthTracker babyId={selectedBabyId} />
+          ) : (
+            <View style={styles.emptyState}>
+              <Ionicons name="person-outline" size={64} color="#d1d5db" />
+              <Text style={styles.emptyTitle}>No baby selected</Text>
+              <TouchableOpacity
+                style={styles.emptyButton}
+                onPress={() => setShowBabySelector(true)}
+              >
+                <Text style={styles.emptyButtonText}>Select Baby</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </FadeContainer>
       ) : (
         <FadeContainer>
@@ -80,6 +97,11 @@ export default function GrowthScreen() {
           </View>
         </FadeContainer>
       )}
+
+      <BabySelectorModal
+        visible={showBabySelector}
+        onClose={() => setShowBabySelector(false)}
+      />
     </ScrollView>
   );
 }
@@ -154,5 +176,27 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 32,
     fontSize: 14,
+  },
+  emptyState: {
+    alignItems: "center",
+    paddingVertical: 48,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#0f172a",
+    marginTop: 16,
+  },
+  emptyButton: {
+    backgroundColor: "#6366f1",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 16,
+  },
+  emptyButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -14,6 +15,13 @@ import {
   useCelebrateMilestone,
 } from "@/hooks/queries/useMilestones";
 import { PREDEFINED_MILESTONES, MILESTONE_CATEGORIES } from "@/lib/milestones";
+import {
+  validateMilestone,
+  type MilestoneFormData,
+  hasFieldError,
+} from "@/lib/validation";
+import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
+import { useToast } from "@/components/atoms/Toast";
 
 interface MilestoneTrackerProps {
   babyId: string;
@@ -34,7 +42,13 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
   const [customDate, setCustomDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const toast = useToast();
   const createMilestoneMutation = useCreateMilestone();
   const createMilestone = createMilestoneMutation as unknown as (
     args: any
@@ -44,9 +58,45 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
     id: string;
   }) => void;
 
+  const validate = () => {
+    const formData: Partial<MilestoneFormData> = {
+      title: customTitle,
+      description: customDescription || undefined,
+      category: customCategory,
+      date: customDate,
+      isCustom: true,
+    };
+
+    const result = validateMilestone(formData);
+    const errors: Record<string, string> = {};
+
+    result.errors.forEach((error) => {
+      errors[error.field] = error.message;
+    });
+
+    setValidationErrors(errors);
+    return result.isValid;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validate();
+  };
+
   const handleCreateCustom = async () => {
+    Keyboard.dismiss();
+
+    setTouched({ title: true, category: true });
+
+    if (!validate()) {
+      toast.error("Validation Error", "Please fix errors before submitting");
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      createMilestone({
+      await createMilestone({
         babyId: babyId as any,
         title: customTitle,
         description: customDescription || undefined,
@@ -56,10 +106,24 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
       });
       setCustomTitle("");
       setCustomDescription("");
+      setTouched({});
+      setValidationErrors({});
       setShowCustomForm(false);
+      toast.success(
+        "Milestone Created",
+        "The milestone has been created successfully"
+      );
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to create milestone:", error);
+      const appError = parseError(error);
+      logError(error, { context: "MilestoneTracker", title: customTitle });
+
+      toast.error(
+        "Failed to Create Milestone",
+        getUserFriendlyMessage(appError)
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -67,7 +131,7 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
     milestone: (typeof PREDEFINED_MILESTONES)[0]
   ) => {
     try {
-      createMilestone({
+      await createMilestone({
         babyId: babyId as any,
         title: milestone.title,
         description: milestone.description,
@@ -75,18 +139,42 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
         isCustom: false,
         ageMonths: milestone.ageMonths,
       });
+      toast.success(
+        "Milestone Added",
+        "The milestone has been added successfully"
+      );
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to add milestone:", error);
+      const appError = parseError(error);
+      logError(error, {
+        context: "MilestoneTracker",
+        predefinedMilestone: milestone.title,
+      });
+
+      toast.error("Failed to Add Milestone", getUserFriendlyMessage(appError));
     }
   };
 
   const handleCelebrate = async (id: string) => {
     try {
-      celebrateMilestone({ id });
+      await celebrateMilestone({ id });
+      toast.success("Celebration Saved", "Your celebration has been recorded!");
     } catch (error) {
-      console.error("Failed to celebrate milestone:", error);
+      const appError = parseError(error);
+      logError(error, { context: "MilestoneTracker", action: "celebrate", id });
+
+      toast.error("Failed to Celebrate", getUserFriendlyMessage(appError));
     }
+  };
+
+  const isValid = () => {
+    const formData: Partial<MilestoneFormData> = {
+      title: customTitle,
+      category: customCategory,
+      isCustom: true,
+    };
+    const result = validateMilestone(formData);
+    return result.isValid;
   };
 
   const categories: { value: CategoryType; label: string; icon: string }[] = [
@@ -224,11 +312,23 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
               <View style={styles.section}>
                 <Text style={styles.label}>Title</Text>
                 <TextInput
-                  style={styles.input}
+                  style={StyleSheet.flatten(
+                    [
+                      styles.input,
+                      touched.title && validationErrors.title ? styles.inputError : undefined,
+                    ].filter(Boolean)
+                  )}
                   placeholder="Enter milestone title"
                   value={customTitle}
-                  onChangeText={setCustomTitle}
+                  onChangeText={(text) => {
+                    setCustomTitle(text);
+                    if (touched.title) validate();
+                  }}
+                  onBlur={() => handleBlur("title")}
                 />
+                {touched.title && validationErrors.title && (
+                  <Text style={styles.errorText}>{validationErrors.title}</Text>
+                )}
               </View>
 
               <View style={styles.section}>
@@ -240,6 +340,7 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                   onChangeText={setCustomDescription}
                   multiline
                   numberOfLines={3}
+                  textAlignVertical="top"
                 />
               </View>
 
@@ -249,14 +350,16 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                   {Object.entries(MILESTONE_CATEGORIES).map(([key, cat]) => (
                     <TouchableOpacity
                       key={key}
-                      style={[
+                      style={StyleSheet.flatten([
                         styles.categoryCard,
                         customCategory === key && styles.categoryCardActive,
                         { borderColor: cat.color },
-                      ]}
-                      onPress={() =>
-                        setCustomCategory(key as typeof customCategory)
-                      }
+                        touched.category && validationErrors.category ? styles.categoryCardError : undefined,
+                      ])}
+                      onPress={() => {
+                        setCustomCategory(key as typeof customCategory);
+                        handleBlur("category");
+                      }}
                     >
                       <Ionicons
                         name={cat.icon as keyof typeof Ionicons.glyphMap}
@@ -275,27 +378,44 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                     </TouchableOpacity>
                   ))}
                 </View>
+                {touched.category && validationErrors.category && (
+                  <Text style={styles.errorText}>
+                    {validationErrors.category}
+                  </Text>
+                )}
               </View>
 
               <View style={styles.section}>
                 <Text style={styles.label}>Date</Text>
                 <TextInput
-                  style={styles.input}
+                  style={StyleSheet.flatten([
+                    styles.input,
+                    touched.date && validationErrors.date ? styles.inputError : undefined,
+                  ])}
                   value={customDate}
-                  onChangeText={setCustomDate}
+                  onChangeText={(text) => {
+                    setCustomDate(text);
+                    if (touched.date) validate();
+                  }}
+                  onBlur={() => handleBlur("date")}
                   placeholder="YYYY-MM-DD"
                 />
+                {touched.date && validationErrors.date && (
+                  <Text style={styles.errorText}>{validationErrors.date}</Text>
+                )}
               </View>
 
               <TouchableOpacity
                 style={[
                   styles.submitButton,
-                  !customTitle && styles.submitButtonDisabled,
+                  (!isValid() || isSubmitting) && styles.submitButtonDisabled,
                 ]}
                 onPress={handleCreateCustom}
-                disabled={!customTitle}
+                disabled={!isValid() || isSubmitting}
               >
-                <Text style={styles.submitButtonText}>Create Milestone</Text>
+                <Text style={styles.submitButtonText}>
+                  {isSubmitting ? "Creating..." : "Create Milestone"}
+                </Text>
               </TouchableOpacity>
             </ScrollView>
           </View>
@@ -478,6 +598,9 @@ const styles = StyleSheet.create({
   categoryCardActive: {
     backgroundColor: "#6366f1",
   },
+  categoryCardError: {
+    borderColor: "#ef4444",
+  },
   categoryCardText: {
     fontSize: 12,
     fontWeight: "500",
@@ -485,6 +608,15 @@ const styles = StyleSheet.create({
   },
   categoryCardTextActive: {
     color: "#fff",
+  },
+  inputError: {
+    borderColor: "#ef4444",
+  },
+  errorText: {
+    fontSize: 12,
+    color: "#ef4444",
+    marginTop: 6,
+    marginLeft: 4,
   },
   submitButton: {
     backgroundColor: "#6366f1",

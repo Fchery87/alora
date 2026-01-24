@@ -95,8 +95,7 @@ export default defineSchema({
       v.literal("awake"),
       v.literal("drowsy"),
       v.literal("sleeping"),
-      v.literal("deep"),
-      v.literal("awake")
+      v.literal("deep")
     ),
     notes: v.optional(v.string()),
     createdById: v.id("users"),

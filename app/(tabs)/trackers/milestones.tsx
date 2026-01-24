@@ -17,6 +17,8 @@ import {
   useDeleteMilestone,
   useCelebrateMilestone,
 } from "@/hooks/queries/useMilestones";
+import { useSelectedBabyId } from "@/stores/babyStore";
+import { BabySelectorModal } from "@/components/organisms";
 
 export default function MilestonesScreen() {
   const router = useRouter();
@@ -24,8 +26,12 @@ export default function MilestonesScreen() {
   const [celebratingMilestone, setCelebratingMilestone] = useState<
     string | null
   >(null);
+  const [showBabySelector, setShowBabySelector] = useState(false);
+  const selectedBabyId = useSelectedBabyId();
 
-  const { data: milestones, isLoading } = useListMilestones("demo-baby-id");
+  const { data: milestones, isLoading } = useListMilestones(
+    selectedBabyId || "skip"
+  );
   const deleteMilestone = useDeleteMilestone() as (args: {
     id: string;
   }) => void;
@@ -127,7 +133,20 @@ export default function MilestonesScreen() {
         </FadeContainer>
       ) : (
         <FadeContainer>
-          <MilestoneTracker babyId="demo-baby-id" />
+          {selectedBabyId ? (
+            <MilestoneTracker babyId={selectedBabyId} />
+          ) : (
+            <View style={styles.emptyState}>
+              <Ionicons name="trophy-outline" size={64} color="#d1d5db" />
+              <Text style={styles.emptyTitle}>No baby selected</Text>
+              <TouchableOpacity
+                style={styles.emptyButton}
+                onPress={() => setShowBabySelector(true)}
+              >
+                <Text style={styles.emptyButtonText}>Select Baby</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </FadeContainer>
       )}
 
@@ -135,6 +154,11 @@ export default function MilestonesScreen() {
         visible={!!celebratingMilestone}
         milestoneTitle={celebratingMilestone || ""}
         onClose={() => setCelebratingMilestone(null)}
+      />
+
+      <BabySelectorModal
+        visible={showBabySelector}
+        onClose={() => setShowBabySelector(false)}
       />
     </ScrollView>
   );
@@ -229,5 +253,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  babyNotSelected: {
+    alignItems: "center",
+    paddingVertical: 48,
   },
 });

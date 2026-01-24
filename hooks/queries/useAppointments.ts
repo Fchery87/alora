@@ -8,7 +8,7 @@ export function useAppointments(
   startDate?: string,
   endDate?: string
 ) {
-  return useQuery(api.appointments.listAppointments, {
+  return useQuery(api.functions.appointments.index.listAppointments, {
     clerkOrganizationId,
     babyId,
     startDate,
@@ -17,21 +17,21 @@ export function useAppointments(
 }
 
 export function useAppointment(appointmentId: Id<"appointments">) {
-  return useQuery(api.appointments.getAppointment, { appointmentId });
+  return useQuery(api.functions.appointments.index.getAppointment, { appointmentId });
 }
 
 export function useCreateAppointment() {
-  return useMutation(api.appointments.createAppointment);
+  return useMutation(api.functions.appointments.index.createAppointment);
 }
 
 export function useUpdateAppointment() {
-  return useMutation(api.appointments.updateAppointment);
+  return useMutation(api.functions.appointments.index.updateAppointment);
 }
 
 export function useDeleteAppointment() {
-  return useMutation(api.appointments.deleteAppointment);
+  return useMutation(api.functions.appointments.index.deleteAppointment);
 }
 
 export function useCompleteAppointment() {
-  return useMutation(api.appointments.completeAppointment);
+  return useMutation(api.functions.appointments.index.completeAppointment);
 }

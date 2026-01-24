@@ -22,8 +22,8 @@ export function PressableAnimated({
         scale: disabled ? 0.95 : 1,
       }}
       transition={{
-        type: "spring",
         delay,
+        dampingRatio: 0.8,
       }}
     >
       <Pressable onPress={onPress} disabled={disabled}>

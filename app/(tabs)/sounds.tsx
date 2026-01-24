@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { SOUNDS, SOUND_CATEGORIES, getSoundsByCategory } from "@/lib/sounds";
 import { Ionicons } from "@expo/vector-icons";
-import { MotiView, MotiPressable } from "moti";
+import { MotiView } from "moti";
 
 type CategoryId = (typeof SOUND_CATEGORIES)[number]["id"];
 
@@ -73,20 +73,13 @@ export default function SoundsScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.soundGrid}>
           {displayedSounds.map((sound, index) => (
-            <MotiPressable
+            <Pressable
               key={sound.id}
               style={[
                 styles.soundCard,
                 playing === sound.id && styles.soundCardActive,
               ]}
               onPress={() => togglePlay(sound.id)}
-              animate={(didPress) => ({
-                scale: didPress ? 0.95 : 1,
-              })}
-              transition={{
-                type: "spring",
-                damping: 20,
-              }}
             >
               <View
                 style={[
@@ -107,7 +100,7 @@ export default function SoundsScreen() {
                 <MotiView
                   from={{ opacity: 0, scaleY: 0 }}
                   animate={{ opacity: 1, scaleY: 1 }}
-                  transition={{ type: "spring", damping: 20 }}
+                  transition={{ stiffness: 200, damping: 20 }}
                   style={styles.playingIndicator}
                 >
                   <View style={styles.waveBar} />
@@ -115,7 +108,7 @@ export default function SoundsScreen() {
                   <View style={[styles.waveBar, styles.waveBarDelay2]} />
                 </MotiView>
               )}
-            </MotiPressable>
+            </Pressable>
           ))}
         </View>
 
@@ -288,11 +281,9 @@ const styles = StyleSheet.create({
   },
   waveBarDelay1: {
     height: 18,
-    animationDelay: "0.2s",
   },
   waveBarDelay2: {
     height: 24,
-    animationDelay: "0.4s",
   },
   playerBar: {
     flexDirection: "row",

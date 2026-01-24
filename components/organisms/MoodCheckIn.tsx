@@ -4,10 +4,20 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useCreateMood } from "@/hooks/queries/useMoodCheckIns";
+import {
+  validateMood,
+  type MoodFormData,
+  hasFieldError,
+} from "@/lib/validation";
+import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
+import { useToast } from "@/components/atoms/Toast";
+
+import { TextInput } from "react-native";
 
 type MoodType = "great" | "good" | "okay" | "low" | "struggling";
 type EnergyType = "high" | "medium" | "low";
@@ -23,7 +33,13 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
   const [anxiety, setAnxiety] = useState<boolean | null>(null);
   const [notes, setNotes] = useState("");
   const [showDetails, setShowDetails] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const toast = useToast();
   const createMood = useCreateMood();
 
   const moods: {
@@ -45,13 +61,46 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
     { value: "low", label: "Low", icon: "remove" },
   ];
 
+  const validate = () => {
+    const formData: Partial<MoodFormData> = {
+      mood: mood || undefined,
+      energy: energy || undefined,
+      anxiety: anxiety || undefined,
+      notes: notes || undefined,
+    };
+
+    const result = validateMood(formData);
+    const errors: Record<string, string> = {};
+
+    result.errors.forEach((error) => {
+      errors[error.field] = error.message;
+    });
+
+    setValidationErrors(errors);
+    return result.isValid;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validate();
+  };
+
   const handleSubmit = async () => {
-    if (!mood) return;
+    Keyboard.dismiss();
+
+    setTouched({ mood: true });
+
+    if (!validate()) {
+      toast.error("Validation Error", "Please select a mood before submitting");
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       await createMood.mutateAsync({
         babyId: babyId as any,
-        mood,
+        mood: mood!,
         energy: energy || undefined,
         anxiety: anxiety || undefined,
         notes: notes || undefined,
@@ -62,10 +111,29 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
       setAnxiety(null);
       setNotes("");
       setShowDetails(false);
+      setTouched({});
+      setValidationErrors({});
+      toast.success(
+        "Mood Logged",
+        "Your mood check-in has been saved successfully"
+      );
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to log mood:", error);
+      const appError = parseError(error);
+      logError(error, { context: "MoodCheckIn", mood });
+
+      toast.error("Failed to Log Mood", getUserFriendlyMessage(appError));
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const isValid = () => {
+    const formData: Partial<MoodFormData> = {
+      mood: mood || undefined,
+    };
+    const result = validateMood(formData);
+    return result.isValid;
   };
 
   const affirmations = [
@@ -97,8 +165,14 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
               style={[
                 styles.moodButton,
                 mood === m.value && { backgroundColor: m.color },
+                touched.mood &&
+                  hasFieldError(validateMood({ mood: m.value }), "mood") &&
+                  styles.moodButtonError,
               ]}
-              onPress={() => setMood(m.value)}
+              onPress={() => {
+                setMood(m.value);
+                handleBlur("mood");
+              }}
             >
               <Text style={styles.emoji}>{m.emoji}</Text>
               <Text
@@ -112,6 +186,9 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
             </TouchableOpacity>
           ))}
         </View>
+        {touched.mood && validationErrors.mood && (
+          <Text style={styles.errorText}>{validationErrors.mood}</Text>
+        )}
       </View>
 
       <TouchableOpacity
@@ -199,13 +276,27 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
           <View style={styles.section}>
             <Text style={styles.label}>Notes (optional)</Text>
             <TextInput
-              style={[styles.input, styles.notesInput]}
+              style={StyleSheet.flatten(
+                [
+                  styles.input,
+                  styles.notesInput,
+                  touched.notes && validationErrors.notes ? styles.inputError : undefined,
+                ].filter(Boolean)
+              )}
               placeholder="What's on your mind?"
               value={notes}
-              onChangeText={setNotes}
+              onChangeText={(text) => {
+                setNotes(text);
+                if (touched.notes) validate();
+              }}
+              onBlur={() => handleBlur("notes")}
               multiline
               numberOfLines={3}
+              textAlignVertical="top"
             />
+            {touched.notes && validationErrors.notes && (
+              <Text style={styles.errorText}>{validationErrors.notes}</Text>
+            )}
           </View>
         </View>
       )}
@@ -225,8 +316,6 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
     </ScrollView>
   );
 }
-
-import { TextInput } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -291,6 +380,16 @@ const styles = StyleSheet.create({
   },
   moodLabelActive: {
     color: "#fff",
+  },
+  moodButtonError: {
+    borderColor: "#ef4444",
+    borderWidth: 3,
+  },
+  errorText: {
+    fontSize: 12,
+    color: "#ef4444",
+    marginTop: 6,
+    marginLeft: 4,
   },
   detailsToggle: {
     flexDirection: "row",
@@ -371,6 +470,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#e5e7eb",
+  },
+  inputError: {
+    borderColor: "#ef4444",
   },
   notesInput: {
     minHeight: 80,

@@ -2,7 +2,6 @@ import { useAuth } from "@clerk/clerk-expo";
 import { useRouter, usePathname } from "expo-router";
 import { useEffect, ReactNode } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import { isAuthBypassEnabled } from "@/lib/auth-bypass";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -13,19 +12,19 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const authBypass = isAuthBypassEnabled();
+  // auth bypass removed
 
   useEffect(() => {
-    if (isLoaded && !isSignedIn && !authBypass) {
+    if (isLoaded && !isSignedIn) {
       const currentPath = pathname;
       router.replace({
         pathname: "/(auth)/login",
         params: { redirect: currentPath },
       });
     }
-  }, [isSignedIn, isLoaded, pathname, router, authBypass]);
+  }, [isSignedIn, isLoaded, pathname, router]);
 
-  if (!isLoaded && !authBypass) {
+  if (!isLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6366f1" />
@@ -33,7 +32,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  if (!isSignedIn && !authBypass) {
+  if (!isSignedIn) {
     return null;
   }
 

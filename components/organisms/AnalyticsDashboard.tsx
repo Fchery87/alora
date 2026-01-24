@@ -118,7 +118,7 @@ export function AnalyticsDashboard({
       <MotiView
         from={{ opacity: 0, translateY: -10 }}
         animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "spring", delay: 0 }}
+        transition={{ delay: 0, dampingRatio: 0.8 }}
       >
         <Text style={styles.title}>Analytics</Text>
         <Text style={styles.subtitle}>
@@ -132,7 +132,7 @@ export function AnalyticsDashboard({
             key={range.value}
             from={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", delay: 100 + index * 50 }}
+            transition={{ delay: 100 + index * 50, dampingRatio: 0.8 }}
           >
             <Pressable
               style={[
@@ -162,7 +162,7 @@ export function AnalyticsDashboard({
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
         animate={{ opacity: 1, translateY: 0 }}
-        transition={{ type: "spring", delay: 200 }}
+        transition={{ delay: 200, dampingRatio: 0.8 }}
         style={styles.summarySection}
       >
         <Text style={styles.sectionTitle}>This Period</Text>
@@ -273,7 +273,7 @@ export function AnalyticsDashboard({
           <MotiView
             from={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", delay: 400 }}
+            transition={{ delay: 400, dampingRatio: 0.8 }}
             style={styles.emptyState}
           >
             <Ionicons name="analytics-outline" size={64} color="#d1d5db" />

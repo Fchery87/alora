@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -13,6 +14,13 @@ import {
   useListGrowth,
   GrowthMeasurement,
 } from "@/hooks/queries/useGrowth";
+import {
+  validateGrowth,
+  type GrowthFormData,
+  hasFieldError,
+} from "@/lib/validation";
+import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
+import { useToast } from "@/components/atoms/Toast";
 
 interface GrowthTrackerProps {
   babyId: string;
@@ -28,7 +36,13 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
   const [unit, setUnit] = useState("kg");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [notes, setNotes] = useState("");
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const toast = useToast();
   const createGrowthMutation = useCreateGrowth();
   const createGrowth = createGrowthMutation as unknown as (args: any) => void;
 
@@ -52,14 +66,51 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
     (m) => m.value === measurementType
   );
 
+  // Validate form in real-time
+  const validate = () => {
+    const formData: Partial<GrowthFormData> = {
+      type: measurementType,
+      value,
+      unit,
+      date,
+      notes: notes || undefined,
+    };
+
+    const result = validateGrowth(formData);
+    const errors: Record<string, string> = {};
+
+    result.errors.forEach((error) => {
+      errors[error.field] = error.message;
+    });
+
+    setValidationErrors(errors);
+    return result.isValid;
+  };
+
+  // Handle field blur
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validate();
+  };
+
   const handleSubmit = async () => {
+    Keyboard.dismiss();
+
+    // Mark all fields as touched
+    setTouched({ type: true, value: true, unit: true, date: true });
+
+    // Validate
+    if (!validate()) {
+      toast.error("Validation Error", "Please fix errors before submitting");
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
       const numericValue = parseFloat(value);
-      if (isNaN(numericValue) || numericValue <= 0) {
-        return;
-      }
 
-      createGrowth({
+      await createGrowth({
         babyId,
         type: measurementType,
         value: numericValue,
@@ -70,10 +121,42 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
 
       setValue("");
       setNotes("");
+      setTouched({});
+      setValidationErrors({});
+      toast.success(
+        "Measurement Logged",
+        "The growth record has been saved successfully"
+      );
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to log growth measurement:", error);
+      const appError = parseError(error);
+      logError(error, {
+        context: "GrowthTracker",
+        measurementType,
+        value,
+        unit,
+        date,
+      });
+
+      toast.error(
+        "Failed to Log Measurement",
+        getUserFriendlyMessage(appError)
+      );
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  // Check if form is valid
+  const isValid = () => {
+    const formData: Partial<GrowthFormData> = {
+      type: measurementType,
+      value,
+      unit,
+      date,
+    };
+    const result = validateGrowth(formData);
+    return result.isValid;
   };
 
   return (
@@ -117,19 +200,35 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
         <Text style={styles.label}>Value</Text>
         <View style={styles.valueRow}>
           <TextInput
-            style={[styles.input, styles.valueInput]}
+            style={StyleSheet.flatten(
+              [
+                styles.input,
+                styles.valueInput,
+                touched.value && validationErrors.value ? styles.inputError : undefined,
+              ].filter(Boolean)
+            )}
             placeholder={`Enter ${currentMeasurement?.label.toLowerCase()}`}
             value={value}
-            onChangeText={setValue}
+            onChangeText={(text) => {
+              setValue(text);
+              if (touched.value) validate();
+            }}
+            onBlur={() => handleBlur("value")}
             keyboardType="numeric"
+            returnKeyType="done"
+            onSubmitEditing={handleSubmit}
           />
           <View style={styles.unitContainer}>
             <TouchableOpacity
               style={[
                 styles.unitButton,
-                unit === currentMeasurement?.unit && styles.unitButtonActive,
-              ]}
-              onPress={() => setUnit(currentMeasurement?.unit || "kg")}
+                unit === currentMeasurement?.unit ? styles.unitButtonActive : undefined,
+                touched.unit && validationErrors.unit ? styles.unitButtonError : undefined,
+              ].filter(Boolean) as any}
+              onPress={() => {
+                setUnit(currentMeasurement?.unit || "kg");
+                handleBlur("unit");
+              }}
             >
               <Text
                 style={[
@@ -142,16 +241,34 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
             </TouchableOpacity>
           </View>
         </View>
+        {touched.value && validationErrors.value && (
+          <Text style={styles.errorText}>{validationErrors.value}</Text>
+        )}
+        {touched.unit && validationErrors.unit && (
+          <Text style={styles.errorText}>{validationErrors.unit}</Text>
+        )}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Date</Text>
         <TextInput
-          style={styles.input}
+          style={StyleSheet.flatten(
+            [
+              styles.input,
+              touched.date && validationErrors.date ? styles.inputError : undefined,
+            ].filter(Boolean)
+          )}
           value={date}
-          onChangeText={setDate}
+          onChangeText={(text) => {
+            setDate(text);
+            if (touched.date) validate();
+          }}
+          onBlur={() => handleBlur("date")}
           placeholder="YYYY-MM-DD"
         />
+        {touched.date && validationErrors.date && (
+          <Text style={styles.errorText}>{validationErrors.date}</Text>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -163,11 +280,21 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
           onChangeText={setNotes}
           multiline
           numberOfLines={3}
+          textAlignVertical="top"
         />
       </View>
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Log Measurement</Text>
+      <TouchableOpacity
+        style={[
+          styles.submitButton,
+          (!isValid() || isSubmitting) && styles.submitButtonDisabled,
+        ]}
+        onPress={handleSubmit}
+        disabled={!isValid() || isSubmitting}
+      >
+        <Text style={styles.submitButtonText}>
+          {isSubmitting ? "Logging..." : "Log Measurement"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -253,6 +380,9 @@ const styles = StyleSheet.create({
   unitTextActive: {
     color: "#ffffff",
   },
+  unitButtonError: {
+    borderColor: "#ef4444",
+  },
   input: {
     backgroundColor: "#ffffff",
     padding: 16,
@@ -260,6 +390,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#e5e7eb",
+  },
+  inputError: {
+    borderColor: "#ef4444",
+  },
+  errorText: {
+    fontSize: 12,
+    color: "#ef4444",
+    marginTop: 6,
+    marginLeft: 4,
   },
   notesInput: {
     minHeight: 80,
@@ -273,7 +412,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   submitButtonDisabled: {
-    opacity: 0.7,
+    opacity: 0.5,
   },
   submitButtonText: {
     color: "#ffffff",

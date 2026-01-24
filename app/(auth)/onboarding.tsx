@@ -7,7 +7,7 @@ export default function OnboardingScreen() {
     <MotiView
       from={{ opacity: 0, translateY: 20 }}
       animate={{ opacity: 1, translateY: 0 }}
-      transition={{ type: "timing", duration: 600 }}
+      transition={{ duration: 600 }}
       style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}
     >
       <Text style={{ fontSize: 32, fontWeight: "bold", marginBottom: 16, textAlign: "center" }}>

@@ -6,9 +6,18 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCreateFeed } from "@/hooks/queries/useFeeds";
+import {
+  validateFeed,
+  type FeedFormData,
+  getErrorMessage,
+  hasFieldError,
+} from "@/lib/validation";
+import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
+import { useToast } from "@/components/atoms/Toast";
 
 type FeedType = "breast" | "formula" | "solid";
 
@@ -22,7 +31,13 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
   const [duration, setDuration] = useState("");
   const [notes, setNotes] = useState("");
   const [side, setSide] = useState<"left" | "right" | "both">("left");
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const toast = useToast();
   const createFeedMutation = useCreateFeed();
   const createFeed = createFeedMutation as unknown as (args: any) => void;
 
@@ -32,11 +47,52 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
     { value: "solid", label: "Solid", icon: "restaurant-outline" },
   ];
 
+  // Validate form in real-time
+  const validate = () => {
+    const formData: Partial<FeedFormData> = {
+      type,
+      duration,
+      side: type === "breast" ? side : undefined,
+      notes: notes || undefined,
+    };
+
+    const result = validateFeed(formData);
+    const errors: Record<string, string> = {};
+
+    result.errors.forEach((error) => {
+      errors[error.field] = error.message;
+    });
+
+    setValidationErrors(errors);
+    return result.isValid;
+  };
+
+  // Handle field blur
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validate();
+  };
+
+  // Handle submit
   const handleSubmit = async () => {
-    if (!duration) return;
+    Keyboard.dismiss();
+
+    // Mark all fields as touched
+    setTouched({ type: true, duration: true, side: true });
+
+    // Validate
+    if (!validate()) {
+      toast.error(
+        "Validation Error",
+        "Please fix the errors before submitting"
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
-      createFeed({
+      await createFeed({
         babyId: babyId as any,
         type,
         startTime: Date.now(),
@@ -47,16 +103,43 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
 
       setDuration("");
       setNotes("");
+      setTouched({});
+      setValidationErrors({});
+      toast.success(
+        "Feeding Logged",
+        "The feeding record has been saved successfully"
+      );
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to log feed:", error);
+      const appError = parseError(error);
+      logError(error, { context: "FeedForm", type, duration });
+
+      toast.error("Failed to Log Feeding", getUserFriendlyMessage(appError));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  // Check if form is valid
+  const isValid = () => {
+    const formData: Partial<FeedFormData> = {
+      type,
+      duration,
+      side: type === "breast" ? side : undefined,
+    };
+    const result = validateFeed(formData);
+    return result.isValid;
+  };
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+    >
       <Text style={styles.title}>Log Feeding</Text>
 
+      {/* Type Selection */}
       <View style={styles.section}>
         <Text style={styles.label}>Type</Text>
         <View style={styles.typeContainer}>
@@ -66,8 +149,17 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
               style={[
                 styles.typeButton,
                 type === feedType.value && styles.typeButtonActive,
+                touched.type &&
+                  hasFieldError(
+                    validateFeed({ type: feedType.value, duration, side }),
+                    "type"
+                  ) &&
+                  styles.typeButtonError,
               ]}
-              onPress={() => setType(feedType.value)}
+              onPress={() => {
+                setType(feedType.value);
+                handleBlur("type");
+              }}
             >
               <Ionicons
                 name={feedType.icon as keyof typeof Ionicons.glyphMap}
@@ -85,8 +177,12 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
             </TouchableOpacity>
           ))}
         </View>
+        {touched.type && validationErrors.type && (
+          <Text style={styles.errorText}>{validationErrors.type}</Text>
+        )}
       </View>
 
+      {/* Side Selection (for breastfeeding) */}
       {type === "breast" && (
         <View style={styles.section}>
           <Text style={styles.label}>Side</Text>
@@ -97,8 +193,17 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
                 style={[
                   styles.sideButton,
                   side === s && styles.sideButtonActive,
+                  touched.side &&
+                    hasFieldError(
+                      validateFeed({ type, duration, side }),
+                      "side"
+                    ) &&
+                    styles.sideButtonError,
                 ]}
-                onPress={() => setSide(s)}
+                onPress={() => {
+                  setSide(s);
+                  handleBlur("side");
+                }}
               >
                 <Text
                   style={[styles.sideText, side === s && styles.sideTextActive]}
@@ -108,20 +213,39 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
               </TouchableOpacity>
             ))}
           </View>
+          {touched.side && validationErrors.side && (
+            <Text style={styles.errorText}>{validationErrors.side}</Text>
+          )}
         </View>
       )}
 
+      {/* Duration Input */}
       <View style={styles.section}>
         <Text style={styles.label}>Duration (minutes)</Text>
         <TextInput
-          style={styles.input}
+          style={StyleSheet.flatten([
+            styles.input,
+            touched.duration && validationErrors.duration
+              ? styles.inputError
+              : undefined,
+          ])}
           placeholder="Enter duration"
           value={duration}
-          onChangeText={setDuration}
+          onChangeText={(value) => {
+            setDuration(value);
+            if (touched.duration) validate();
+          }}
+          onBlur={() => handleBlur("duration")}
           keyboardType="number-pad"
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
         />
+        {touched.duration && validationErrors.duration && (
+          <Text style={styles.errorText}>{validationErrors.duration}</Text>
+        )}
       </View>
 
+      {/* Notes Input */}
       <View style={styles.section}>
         <Text style={styles.label}>Notes (optional)</Text>
         <TextInput
@@ -131,15 +255,22 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
           onChangeText={setNotes}
           multiline
           numberOfLines={3}
+          textAlignVertical="top"
         />
       </View>
 
+      {/* Submit Button */}
       <TouchableOpacity
-        style={styles.submitButton}
+        style={[
+          styles.submitButton,
+          (!isValid() || isSubmitting) && styles.submitButtonDisabled,
+        ]}
         onPress={handleSubmit}
-        disabled={!duration}
+        disabled={!isValid() || isSubmitting}
       >
-        <Text style={styles.submitButtonText}>Log Feeding</Text>
+        <Text style={styles.submitButtonText}>
+          {isSubmitting ? "Logging..." : "Log Feeding"}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -185,6 +316,9 @@ const styles = StyleSheet.create({
     borderColor: "#6366f1",
     backgroundColor: "#6366f1",
   },
+  typeButtonError: {
+    borderColor: "#ef4444",
+  },
   typeText: {
     marginTop: 8,
     fontSize: 12,
@@ -211,6 +345,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#6366f1",
     borderColor: "#6366f1",
   },
+  sideButtonError: {
+    borderColor: "#ef4444",
+  },
   sideText: {
     fontSize: 14,
     fontWeight: "500",
@@ -227,6 +364,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e5e7eb",
   },
+  inputError: {
+    borderColor: "#ef4444",
+  },
+  errorText: {
+    fontSize: 12,
+    color: "#ef4444",
+    marginTop: 6,
+    marginLeft: 4,
+  },
   notesInput: {
     minHeight: 80,
     textAlignVertical: "top",
@@ -239,7 +385,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   submitButtonDisabled: {
-    opacity: 0.7,
+    opacity: 0.5,
   },
   submitButtonText: {
     color: "#ffffff",

@@ -3,13 +3,12 @@ import { Header } from "@/components/layout/Header";
 import { CalendarView } from "@/components/organisms/CalendarView";
 import { useAuth } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
-import { isAuthBypassEnabled } from "@/lib/auth-bypass";
 
 export default function CalendarScreen() {
   const { isSignedIn } = useAuth();
-  const authBypass = isAuthBypassEnabled();
+  // auth bypass removed
 
-  if (!isSignedIn && !authBypass) {
+  if (!isSignedIn) {
     return <Redirect href="/(auth)/login" />;
   }
 

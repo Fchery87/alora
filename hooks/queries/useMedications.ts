@@ -6,7 +6,7 @@ export function useMedications(
   clerkOrganizationId: string,
   babyId?: Id<"babies">
 ) {
-  return useQuery(api.medications.listMedications, {
+  return useQuery(api.functions.medications.index.listMedications, {
     clerkOrganizationId,
     babyId,
   });
@@ -16,7 +16,7 @@ export function useActiveMedications(
   clerkOrganizationId: string,
   babyId?: Id<"babies">
 ) {
-  return useQuery(api.medications.listMedications, {
+  return useQuery(api.functions.medications.index.listMedications, {
     clerkOrganizationId,
     babyId,
     isActive: true,
@@ -24,21 +24,21 @@ export function useActiveMedications(
 }
 
 export function useMedication(medicationId: Id<"medications">) {
-  return useQuery(api.medications.getMedication, { medicationId });
+  return useQuery(api.functions.medications.index.getMedication, { medicationId });
 }
 
 export function useCreateMedication() {
-  return useMutation(api.medications.createMedication);
+  return useMutation(api.functions.medications.index.createMedication);
 }
 
 export function useUpdateMedication() {
-  return useMutation(api.medications.updateMedication);
+  return useMutation(api.functions.medications.index.updateMedication);
 }
 
 export function useDeleteMedication() {
-  return useMutation(api.medications.deleteMedication);
+  return useMutation(api.functions.medications.index.deleteMedication);
 }
 
 export function useToggleMedicationActive() {
-  return useMutation(api.medications.toggleMedicationActive);
+  return useMutation(api.functions.medications.index.toggleMedicationActive);
 }

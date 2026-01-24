@@ -58,7 +58,7 @@ export const listFeeds = query({
       );
     }
 
-    return feeds.filter((feed) => feed.createdById === userId);
+    return feeds;
   },
 });
 
@@ -67,13 +67,10 @@ export const getFeed = query({
     id: v.id("feeds"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
     const feed = await ctx.db.get(args.id);
     if (!feed) {
       return null;
-    }
-    if (feed.createdById !== userId) {
-      throw new Error("Not authorized");
     }
     await requireBabyAccess(ctx, feed.babyId);
     return feed;
@@ -102,10 +99,10 @@ export const updateFeed = mutation({
     if (!existingFeed) {
       throw new Error("Feed not found");
     }
-    if (existingFeed.createdById !== userId) {
-      throw new Error("Not authorized");
-    }
     await requireBabyAccess(ctx, existingFeed.babyId);
+    if (existingFeed.createdById !== userId) {
+      throw new Error("Only the creator can edit this feed");
+    }
 
     const { id, ...updates } = args;
     return await ctx.db.patch(id, updates);
@@ -122,10 +119,10 @@ export const deleteFeed = mutation({
     if (!existingFeed) {
       throw new Error("Feed not found");
     }
-    if (existingFeed.createdById !== userId) {
-      throw new Error("Not authorized");
-    }
     await requireBabyAccess(ctx, existingFeed.babyId);
+    if (existingFeed.createdById !== userId) {
+      throw new Error("Only creator can delete this feed");
+    }
     return await ctx.db.delete(args.id);
   },
 });

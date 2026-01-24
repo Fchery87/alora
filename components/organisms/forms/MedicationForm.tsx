@@ -10,6 +10,11 @@ import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { validateMedication as validateMedicationData } from "@/lib/validation";
 
+// Helper function to safely combine styles
+function inputStyle(hasError: boolean): any[] {
+  return hasError ? [styles.input, styles.inputError] : [styles.input];
+}
+
 export interface MedicationFormData {
   name: string;
   dosage: string;
@@ -99,7 +104,7 @@ export function MedicationForm({
 
       <Text style={styles.label}>Medication Name</Text>
       <TextInput
-        style={[styles.input, errors.name && styles.inputError]}
+        style={inputStyle(Boolean(errors.name))}
         placeholder="e.g., Amoxicillin"
         value={formData.name}
         onChangeText={(text) => updateField("name", text)}
@@ -138,7 +143,7 @@ export function MedicationForm({
         <View style={styles.halfWidth}>
           <Text style={styles.label}>Dosage</Text>
           <TextInput
-            style={[styles.input, errors.dosage && styles.inputError]}
+            style={inputStyle(Boolean(errors.dosage))}
             placeholder="e.g., 5ml"
             value={formData.dosage}
             onChangeText={(text) => updateField("dosage", text)}
@@ -166,7 +171,7 @@ export function MedicationForm({
         <View style={styles.halfWidth}>
           <Text style={styles.label}>Start Date</Text>
           <TextInput
-            style={[styles.input, errors.startDate && styles.inputError]}
+            style={inputStyle(Boolean(errors.startDate))}
             placeholder="YYYY-MM-DD"
             value={formData.startDate}
             onChangeText={(text) => updateField("startDate", text)}

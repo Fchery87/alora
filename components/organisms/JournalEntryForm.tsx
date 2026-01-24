@@ -4,10 +4,21 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Keyboard,
+  TextInput as RNTextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useCreateJournal } from "@/hooks/queries/useJournal";
+import {
+  validateJournal,
+  type JournalFormData,
+  hasFieldError,
+} from "@/lib/validation";
+import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
+import { useToast } from "@/components/atoms/Toast";
+
+import { TextInput } from "react-native";
 
 interface JournalEntryFormProps {
   onSuccess?: () => void;
@@ -23,7 +34,13 @@ export function JournalEntryForm({
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isGratitude, setIsGratitude] = useState(false);
   const [isWin, setIsWin] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const toast = useToast();
   const createJournal = useCreateJournal();
 
   const suggestedTags = [
@@ -45,8 +62,42 @@ export function JournalEntryForm({
     }
   };
 
+  const validate = () => {
+    const formData: Partial<JournalFormData> = {
+      title,
+      content,
+      tags: selectedTags.length > 0 ? selectedTags : undefined,
+      isGratitude,
+      isWin,
+    };
+
+    const result = validateJournal(formData);
+    const errors: Record<string, string> = {};
+
+    result.errors.forEach((error) => {
+      errors[error.field] = error.message;
+    });
+
+    setValidationErrors(errors);
+    return result.isValid;
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validate();
+  };
+
   const handleSubmit = async () => {
-    if (!content.trim()) return;
+    Keyboard.dismiss();
+
+    setTouched({ content: true });
+
+    if (!validate()) {
+      toast.error("Validation Error", "Please fix errors before submitting");
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       await createJournal.mutateAsync({
@@ -62,10 +113,30 @@ export function JournalEntryForm({
       setSelectedTags([]);
       setIsGratitude(false);
       setIsWin(false);
+      setTouched({});
+      setValidationErrors({});
+      toast.success(
+        "Journal Entry Saved",
+        "Your journal entry has been saved successfully"
+      );
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to save journal entry:", error);
+      const appError = parseError(error);
+      logError(error, {
+        context: "JournalEntryForm",
+        contentLength: content.length,
+      });
+
+      toast.error("Failed to Save Entry", getUserFriendlyMessage(appError));
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const isValid = () => {
+    const formData: Partial<JournalFormData> = { content };
+    const result = validateJournal(formData);
+    return result.isValid;
   };
 
   const charCount = content.length;
@@ -77,13 +148,25 @@ export function JournalEntryForm({
 
       <View style={styles.section}>
         <Text style={styles.label}>Title (optional)</Text>
-        <TextInput
-          style={styles.input}
+        <RNTextInput
+          style={StyleSheet.flatten(
+            [
+              styles.input,
+              touched.title && validationErrors.title ? styles.inputError : undefined,
+            ].filter(Boolean)
+          )}
           placeholder="Give this entry a title..."
           value={title}
-          onChangeText={setTitle}
+          onChangeText={(text) => {
+            setTitle(text);
+            if (touched.title) validate();
+          }}
+          onBlur={() => handleBlur("title")}
           placeholderTextColor="#9ca3af"
         />
+        {touched.title && validationErrors.title && (
+          <Text style={styles.errorText}>{validationErrors.title}</Text>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -93,16 +176,29 @@ export function JournalEntryForm({
             {wordCount} words, {charCount} characters
           </Text>
         </View>
-        <TextInput
-          style={[styles.input, styles.textArea]}
+        <RNTextInput
+          style={StyleSheet.flatten(
+            [
+              styles.input,
+              styles.textArea,
+              touched.content && validationErrors.content ? styles.inputError : undefined,
+            ].filter(Boolean)
+          )}
           placeholder="Write your thoughts here..."
           value={content}
-          onChangeText={setContent}
+          onChangeText={(text) => {
+            setContent(text);
+            if (touched.content) validate();
+          }}
+          onBlur={() => handleBlur("content")}
           multiline
           numberOfLines={6}
           textAlignVertical="top"
           placeholderTextColor="#9ca3af"
         />
+        {touched.content && validationErrors.content && (
+          <Text style={styles.errorText}>{validationErrors.content}</Text>
+        )}
       </View>
 
       <View style={styles.section}>
@@ -191,8 +287,6 @@ export function JournalEntryForm({
   );
 }
 
-import { TextInput } from "react-native";
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -233,6 +327,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderWidth: 1,
     borderColor: "#e5e7eb",
+  },
+  inputError: {
+    borderColor: "#ef4444",
+  },
+  errorText: {
+    fontSize: 12,
+    color: "#ef4444",
+    marginTop: 6,
+    marginLeft: 4,
   },
   textArea: {
     minHeight: 120,
