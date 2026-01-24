@@ -57,6 +57,10 @@ const ToastContext = React.createContext<ToastState | null>(null);
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<(ToastOptions & { id: string })[]>([]);
 
+  const hideToast = React.useCallback((id: string) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
+
   const showToast = React.useCallback(
     (options: ToastOptions) => {
       const id =
@@ -72,10 +76,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     },
     [hideToast]
   );
-
-  const hideToast = React.useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
 
   const clearAll = React.useCallback(() => {
     setToasts([]);

@@ -69,13 +69,20 @@ export function useBaby() {
     ? { ...selectedBaby, age: calculateAge(selectedBaby.birthDate) }
     : null;
 
+  // Access actions from store for return (stable functions won't cause infinite loop)
+  const selectBaby = (id: string) =>
+    useBabyStore.getState().actions.selectBaby(id);
+  const setBabies = (babies: Baby[]) =>
+    useBabyStore.getState().actions.setBabies(babies);
+  const addBaby = (baby: Baby) => useBabyStore.getState().actions.addBaby(baby);
+
   return {
     babies,
     selectedBabyId,
     selectedBaby: selectedBabyWithAge,
-    selectBaby: actions.selectBaby,
-    setBabies: actions.setBabies,
-    addBaby: actions.addBaby,
+    selectBaby,
+    setBabies,
+    addBaby,
     calculateAge,
     isLoading: fetchedBabies === undefined,
   };
