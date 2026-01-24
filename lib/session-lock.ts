@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 
 const SESSION_LOCK_KEY = "alora-session-locked";
 
@@ -7,17 +7,17 @@ export class SessionLockManager {
 
   static async lock(): Promise<void> {
     this.isLocked = true;
-    await AsyncStorage.setItem(SESSION_LOCK_KEY, "true");
+    await SecureStore.setItemAsync(SESSION_LOCK_KEY, "true");
   }
 
   static async unlock(): Promise<void> {
     this.isLocked = false;
-    await AsyncStorage.removeItem(SESSION_LOCK_KEY);
+    await SecureStore.deleteItemAsync(SESSION_LOCK_KEY);
   }
 
   static async isSessionLocked(): Promise<boolean> {
     try {
-      const locked = await AsyncStorage.getItem(SESSION_LOCK_KEY);
+      const locked = await SecureStore.getItemAsync(SESSION_LOCK_KEY);
       return locked === "true";
     } catch {
       return false;
