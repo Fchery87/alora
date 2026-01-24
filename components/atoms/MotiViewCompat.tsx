@@ -1,6 +1,6 @@
 /**
  * Cross-platform MotiView wrapper
- * Uses MotiView on native platforms, CSS animations on web
+ * Uses MotiView on native platforms, simple View on web
  */
 import React from "react";
 import { Platform, View, ViewProps } from "react-native";
@@ -14,7 +14,7 @@ interface MotiViewCompatProps extends ViewProps {
 }
 
 /**
- * On web, use a simple animated View that fades/scales in
+ * On web, use a simple animated View with opacity
  * On native, use full MotiView animations
  */
 export function MotiViewCompat({
@@ -26,14 +26,13 @@ export function MotiViewCompat({
   ...rest
 }: MotiViewCompatProps) {
   if (Platform.OS === "web") {
-    // On web, return a simple View with basic fade-in via CSS
+    // On web, return a simple View with opacity
     return (
       <View
         style={[
           style,
           {
             opacity: 1,
-            animation: "fadeIn 0.3s ease-in",
           },
         ]}
         {...rest}
