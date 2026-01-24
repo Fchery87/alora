@@ -1,5 +1,6 @@
 import { query, mutation } from "../../_generated/server";
 import { v } from "convex/values";
+import { requireOrganizationId } from "../../lib/users";
 
 interface Appointment {
   _id: any;
@@ -27,6 +28,15 @@ export const listAppointments = query({
     endDate: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
+    // Verify user's org matches requested org (HIPAA compliance)
+    if (userOrgId !== args.clerkOrganizationId) {
+      throw new Error(
+        "Not authorized to view appointments for this organization"
+      );
+    }
+
     let appointments = (await ctx.db
       .query("appointments" as any)
       .withIndex("by_family" as any, (q: any) =>
@@ -50,7 +60,19 @@ export const listAppointments = query({
 export const getAppointment = query({
   args: { appointmentId: v.id("appointments") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.appointmentId);
+    const userOrgId = await requireOrganizationId(ctx);
+
+    const appointment = (await ctx.db.get(
+      args.appointmentId
+    )) as Appointment | null;
+    if (!appointment) throw new Error("Appointment not found");
+
+    // Verify user's org matches appointment's org (HIPAA compliance)
+    if (userOrgId !== appointment.clerkOrganizationId) {
+      throw new Error("Not authorized to view this appointment");
+    }
+
+    return appointment;
   },
 });
 
@@ -78,6 +100,15 @@ export const createAppointment = mutation({
     reminderMinutesBefore: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
+    // Verify user's org matches requested org (HIPAA compliance)
+    if (userOrgId !== args.clerkOrganizationId) {
+      throw new Error(
+        "Not authorized to create appointment for this organization"
+      );
+    }
+
     return await ctx.db.insert("appointments", {
       ...args,
       isCompleted: false,
@@ -97,7 +128,17 @@ export const updateAppointment = mutation({
     isCompleted: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
     const { appointmentId, ...updates } = args;
+    const existing = (await ctx.db.get(appointmentId)) as Appointment | null;
+    if (!existing) throw new Error("Appointment not found");
+
+    // Verify user's org matches appointment's org (HIPAA compliance)
+    if (userOrgId !== existing.clerkOrganizationId) {
+      throw new Error("Not authorized to update this appointment");
+    }
+
     await ctx.db.patch(appointmentId, updates);
   },
 });
@@ -105,6 +146,18 @@ export const updateAppointment = mutation({
 export const deleteAppointment = mutation({
   args: { appointmentId: v.id("appointments") },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
+    const existing = (await ctx.db.get(
+      args.appointmentId
+    )) as Appointment | null;
+    if (!existing) throw new Error("Appointment not found");
+
+    // Verify user's org matches appointment's org (HIPAA compliance)
+    if (userOrgId !== existing.clerkOrganizationId) {
+      throw new Error("Not authorized to delete this appointment");
+    }
+
     await ctx.db.delete(args.appointmentId);
   },
 });
@@ -112,6 +165,18 @@ export const deleteAppointment = mutation({
 export const completeAppointment = mutation({
   args: { appointmentId: v.id("appointments") },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
+    const existing = (await ctx.db.get(
+      args.appointmentId
+    )) as Appointment | null;
+    if (!existing) throw new Error("Appointment not found");
+
+    // Verify user's org matches appointment's org (HIPAA compliance)
+    if (userOrgId !== existing.clerkOrganizationId) {
+      throw new Error("Not authorized to complete this appointment");
+    }
+
     await ctx.db.patch(args.appointmentId, { isCompleted: true });
   },
 });

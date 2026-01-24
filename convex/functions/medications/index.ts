@@ -1,5 +1,6 @@
 import { query, mutation } from "../../_generated/server";
 import { v } from "convex/values";
+import { requireOrganizationId } from "../../lib/users";
 
 interface Medication {
   _id: any;
@@ -26,6 +27,15 @@ export const listMedications = query({
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
+    // Verify user's org matches requested org (HIPAA compliance)
+    if (userOrgId !== args.clerkOrganizationId) {
+      throw new Error(
+        "Not authorized to view medications for this organization"
+      );
+    }
+
     let medications = (await ctx.db
       .query("medications" as any)
       .withIndex("by_family" as any, (q: any) =>
@@ -46,7 +56,19 @@ export const listMedications = query({
 export const getMedication = query({
   args: { medicationId: v.id("medications") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.medicationId);
+    const userOrgId = await requireOrganizationId(ctx);
+
+    const medication = (await ctx.db.get(
+      args.medicationId
+    )) as Medication | null;
+    if (!medication) throw new Error("Medication not found");
+
+    // Verify user's org matches medication's org (HIPAA compliance)
+    if (userOrgId !== medication.clerkOrganizationId) {
+      throw new Error("Not authorized to view this medication");
+    }
+
+    return medication;
   },
 });
 
@@ -70,6 +92,15 @@ export const createMedication = mutation({
     reminderTimes: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
+    // Verify user's org matches requested org (HIPAA compliance)
+    if (userOrgId !== args.clerkOrganizationId) {
+      throw new Error(
+        "Not authorized to create medication for this organization"
+      );
+    }
+
     return await ctx.db.insert("medications", {
       ...args,
       isActive: true,
@@ -91,7 +122,17 @@ export const updateMedication = mutation({
     isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
     const { medicationId, ...updates } = args;
+    const existing = (await ctx.db.get(medicationId)) as Medication | null;
+    if (!existing) throw new Error("Medication not found");
+
+    // Verify user's org matches medication's org (HIPAA compliance)
+    if (userOrgId !== existing.clerkOrganizationId) {
+      throw new Error("Not authorized to update this medication");
+    }
+
     await ctx.db.patch(medicationId, updates);
   },
 });
@@ -99,6 +140,16 @@ export const updateMedication = mutation({
 export const deleteMedication = mutation({
   args: { medicationId: v.id("medications") },
   handler: async (ctx, args) => {
+    const userOrgId = await requireOrganizationId(ctx);
+
+    const existing = (await ctx.db.get(args.medicationId)) as Medication | null;
+    if (!existing) throw new Error("Medication not found");
+
+    // Verify user's org matches medication's org (HIPAA compliance)
+    if (userOrgId !== existing.clerkOrganizationId) {
+      throw new Error("Not authorized to delete this medication");
+    }
+
     await ctx.db.delete(args.medicationId);
   },
 });
@@ -106,11 +157,22 @@ export const deleteMedication = mutation({
 export const toggleMedicationActive = mutation({
   args: { medicationId: v.id("medications") },
   handler: async (ctx, args) => {
-    const medication = await ctx.db.get(args.medicationId);
-    if (medication) {
-      await ctx.db.patch(args.medicationId, {
-        isActive: !(medication as any).isActive,
-      });
+    const userOrgId = await requireOrganizationId(ctx);
+
+    const medication = (await ctx.db.get(
+      args.medicationId
+    )) as Medication | null;
+    if (!medication) {
+      throw new Error("Medication not found");
     }
+
+    // Verify user's org matches medication's org (HIPAA compliance)
+    if (userOrgId !== medication.clerkOrganizationId) {
+      throw new Error("Not authorized to modify this medication");
+    }
+
+    await ctx.db.patch(args.medicationId, {
+      isActive: !medication.isActive,
+    });
   },
 });
