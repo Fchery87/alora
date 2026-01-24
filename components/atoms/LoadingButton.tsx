@@ -1,4 +1,10 @@
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator as RNActivityIndicator,
+} from "react-native";
 import { MotiView } from "moti";
 
 interface LoadingButtonProps {
@@ -21,7 +27,7 @@ export function LoadingButton({
         opacity: loading ? 0.5 : disabled ? 0.5 : 1,
         scale: loading ? 0.95 : disabled ? 0.95 : 1,
       }}
-      transition={{ type: "spring" }}
+      transition={{ dampingRatio: 0.8 }}
     >
       <Pressable onPress={onPress} disabled={loading || disabled}>
         <View style={[styles.container, disabled && styles.disabled]}>
@@ -47,7 +53,7 @@ export function ActivityIndicator({
 }: ActivityIndicatorProps) {
   return (
     <View style={styles.activityIndicator}>
-      <ActivityIndicator size={size} color={color} />
+      <RNActivityIndicator size={size} color={color} />
     </View>
   );
 }

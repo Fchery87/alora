@@ -10,10 +10,6 @@ export function useNotificationReminders(babyId: string) {
   const [reminders, setReminders] = useState<NotificationReminder[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadReminders();
-  }, [babyId]);
-
   const loadReminders = useCallback(async () => {
     setLoading(true);
     try {
@@ -34,6 +30,10 @@ export function useNotificationReminders(babyId: string) {
       setLoading(false);
     }
   }, [babyId]);
+
+  useEffect(() => {
+    loadReminders();
+  }, [loadReminders]);
 
   const saveReminders = useCallback(
     async (newReminders: NotificationReminder[]) => {
@@ -148,6 +148,57 @@ function getDefaultReminders(babyId: string): NotificationReminder[] {
       message: "Time to check if a diaper change is needed",
       intervalMinutes: 120,
       isEnabled: false,
+    },
+    // Self-care reminders - gentle nudges for parent well-being
+    {
+      id: "default_hydration",
+      babyId,
+      type: "self-care",
+      title: "Hydration Reminder",
+      message:
+        "Don't forget to hydrate. A glass of water can make a big difference.",
+      intervalMinutes: 120,
+      isEnabled: true,
+    },
+    {
+      id: "default_rest",
+      babyId,
+      type: "self-care",
+      title: "Rest Reminder",
+      message:
+        "It's been a while since you logged any rest. Have you had a moment to yourself today?",
+      intervalMinutes: 240,
+      isEnabled: true,
+    },
+    {
+      id: "default_nutrition",
+      babyId,
+      type: "self-care",
+      title: "Nutrition Check",
+      message: "Don't forget to hydrate and eat something nourishing.",
+      intervalMinutes: 180,
+      isEnabled: false,
+    },
+    {
+      id: "default_mindfulness",
+      babyId,
+      type: "self-care",
+      title: "Mindfulness Moment",
+      message: "Take a deep breath. You're doing amazing.",
+      specificTime: "12:00",
+      isEnabled: false,
+      daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+    },
+    // Daily affirmation - supportive message each day
+    {
+      id: "daily_affirmation",
+      babyId,
+      type: "affirmation",
+      title: "Daily Affirmation",
+      message: "You are enough, exactly as you are.",
+      specificTime: "09:00",
+      isEnabled: true,
+      daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
     },
   ];
 }
