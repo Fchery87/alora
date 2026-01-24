@@ -31,20 +31,47 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="wellness"
-          options={{
-            title: "Wellness",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="heart" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
           name="calendar"
           options={{
             title: "Calendar",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="calendar" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="resources"
+          options={{
+            title: "Learn",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="book" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="sounds"
+          options={{
+            title: "Sounds",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="musical-note" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="partner-support"
+          options={{
+            title: "Partner",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="people" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="wellness"
+          options={{
+            title: "Wellness",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="heart" size={size} color={color} />
             ),
           }}
         />

@@ -4,25 +4,55 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useMemo } from "react";
 
+interface Appointment {
+  _id: string;
+  title: string;
+  type: "pediatrician" | "checkup" | "vaccine" | "wellness" | "custom";
+  date: string;
+  time: string;
+  location?: string;
+  isCompleted?: boolean;
+}
+
+interface Medication {
+  _id: string;
+  name: string;
+  type: "prescription" | "otc" | "supplement";
+  dosage?: string;
+  frequency?: string;
+  isActive?: boolean;
+}
+
 interface CalendarViewProps {
-  activities?: Array<{
+  activities?: {
     id: string;
     type: "feed" | "diaper" | "sleep" | "mood";
     timestamp: number;
     title: string;
-  }>;
+  }[];
+  appointments?: Appointment[];
+  medications?: Medication[];
   onDateSelect?: (date: Date) => void;
   onActivityPress?: (activityId: string) => void;
+  onAppointmentPress?: (appointmentId: string) => void;
+  onAddAppointment?: () => void;
+  onAddMedication?: () => void;
 }
 
 export function CalendarView({
   activities = [],
+  appointments = [],
+  medications = [],
   onDateSelect,
   onActivityPress,
+  onAppointmentPress,
+  onAddAppointment,
+  onAddMedication,
 }: CalendarViewProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -59,6 +89,19 @@ export function CalendarView({
     return getActivitiesForDate(date).length > 0;
   };
 
+  const getAppointmentsForDate = (date: Date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    return appointments.filter((apt) => apt.date === dateStr);
+  };
+
+  const getMedicationsForDate = () => {
+    return medications.filter((med) => med.isActive);
+  };
+
+  const hasAppointment = (date: Date) => {
+    return getAppointmentsForDate(date).length > 0;
+  };
+
   const navigateMonth = (direction: "prev" | "next") => {
     setCurrentMonth((prev) => {
       const newMonth = new Date(prev);
@@ -78,6 +121,29 @@ export function CalendarView({
     diaper: "#3b82f6",
     sleep: "#8b5cf6",
     mood: "#ec4899",
+  };
+
+  const appointmentColors: Record<string, string> = {
+    pediatrician: "#ef4444",
+    checkup: "#3b82f6",
+    vaccine: "#22c55e",
+    wellness: "#8b5cf6",
+    custom: "#64748b",
+  };
+
+  const getAppointmentIcon = (type: string) => {
+    switch (type) {
+      case "pediatrician":
+        return "medical";
+      case "checkup":
+        return "checkmark-circle";
+      case "vaccine":
+        return "shield";
+      case "wellness":
+        return "heart";
+      default:
+        return "calendar";
+    }
   };
 
   return (
@@ -115,6 +181,8 @@ export function CalendarView({
               ? selectedDate?.toDateString() === date.toDateString()
               : false;
             const hasAct = date ? hasActivity(date) : false;
+            const hasApt = date ? hasAppointment(date) : false;
+            const dateAppointments = date ? getAppointmentsForDate(date) : [];
 
             return (
               <TouchableOpacity
@@ -143,8 +211,23 @@ export function CalendarView({
                     >
                       {date.getDate()}
                     </Text>
-                    {hasAct && !isSelected && (
+                    {isSelected && dateAppointments.length > 0 && (
+                      <View style={styles.appointmentBadge}>
+                        <Text style={styles.appointmentBadgeText}>
+                          {dateAppointments.length}
+                        </Text>
+                      </View>
+                    )}
+                    {!isSelected && hasAct && (
                       <View style={styles.activityDot} />
+                    )}
+                    {!isSelected && hasApt && !hasAct && (
+                      <View
+                        style={[
+                          styles.appointmentDot,
+                          { backgroundColor: "#6366f1" },
+                        ]}
+                      />
                     )}
                     {isSelected && <View style={styles.selectedDot} />}
                   </>
@@ -153,6 +236,20 @@ export function CalendarView({
             );
           })}
         </View>
+      </View>
+
+      <View style={styles.quickActions}>
+        <Pressable style={styles.quickActionButton} onPress={onAddAppointment}>
+          <Ionicons name="add-circle" size={20} color="#fff" />
+          <Text style={styles.quickActionText}>Appointment</Text>
+        </Pressable>
+        <Pressable
+          style={[styles.quickActionButton, styles.medicationButton]}
+          onPress={onAddMedication}
+        >
+          <Ionicons name="medical" size={20} color="#fff" />
+          <Text style={styles.quickActionText}>Medication</Text>
+        </Pressable>
       </View>
 
       <ScrollView style={styles.activitiesSection}>
@@ -166,53 +263,132 @@ export function CalendarView({
             : "Select a date"}
         </Text>
 
-        {selectedActivities.length > 0 ? (
-          selectedActivities.map((activity) => (
-            <TouchableOpacity
-              key={activity.id}
-              style={styles.activityItem}
-              onPress={() => onActivityPress?.(activity.id)}
-            >
-              <View
-                style={[
-                  styles.activityIcon,
-                  { backgroundColor: `${activityColors[activity.type]}20` },
-                ]}
-              >
-                <Ionicons
-                  name={
-                    activity.type === "feed"
-                      ? "restaurant"
-                      : activity.type === "diaper"
-                        ? "water"
-                        : activity.type === "sleep"
-                          ? "moon"
-                          : "heart"
-                  }
-                  size={20}
-                  color={activityColors[activity.type]}
-                />
-              </View>
-              <View style={styles.activityContent}>
-                <Text style={styles.activityTitle}>{activity.title}</Text>
-                <Text style={styles.activityTime}>
-                  {new Date(activity.timestamp).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
-            </TouchableOpacity>
-          ))
-        ) : selectedDate ? (
-          <View style={styles.emptyActivities}>
-            <Ionicons name="calendar-outline" size={48} color="#d1d5db" />
-            <Text style={styles.emptyActivitiesText}>
-              No activities on this day
-            </Text>
+        {selectedDate && (
+          <View style={styles.appointmentsSection}>
+            <Text style={styles.sectionTitle}>Appointments</Text>
+            {getAppointmentsForDate(selectedDate).length > 0 ? (
+              getAppointmentsForDate(selectedDate).map((apt) => (
+                <TouchableOpacity
+                  key={apt._id}
+                  style={styles.appointmentItem}
+                  onPress={() => onAppointmentPress?.(apt._id)}
+                >
+                  <View
+                    style={[
+                      styles.appointmentIcon,
+                      { backgroundColor: `${appointmentColors[apt.type]}20` },
+                    ]}
+                  >
+                    <Ionicons
+                      name={getAppointmentIcon(apt.type) as any}
+                      size={20}
+                      color={appointmentColors[apt.type]}
+                    />
+                  </View>
+                  <View style={styles.appointmentContent}>
+                    <Text style={styles.appointmentTitle}>{apt.title}</Text>
+                    <Text style={styles.appointmentTime}>
+                      {apt.time} {apt.location ? `• ${apt.location}` : ""}
+                    </Text>
+                  </View>
+                  {apt.isCompleted && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={20}
+                      color="#22c55e"
+                    />
+                  )}
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text style={styles.noItemsText}>No appointments</Text>
+            )}
           </View>
-        ) : null}
+        )}
+
+        {selectedDate && (
+          <View style={styles.medicationsSection}>
+            <Text style={styles.sectionTitle}>Active Medications</Text>
+            {getMedicationsForDate().length > 0 ? (
+              getMedicationsForDate().map((med) => (
+                <View key={med._id} style={styles.medicationItem}>
+                  <View
+                    style={[
+                      styles.medicationIcon,
+                      { backgroundColor: "#22c55e20" },
+                    ]}
+                  >
+                    <Ionicons name="medical" size={20} color="#22c55e" />
+                  </View>
+                  <View style={styles.medicationContent}>
+                    <Text style={styles.medicationTitle}>{med.name}</Text>
+                    <Text style={styles.medicationDetails}>
+                      {med.dosage} {med.frequency ? `• ${med.frequency}` : ""}
+                    </Text>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noItemsText}>No active medications</Text>
+            )}
+          </View>
+        )}
+
+        {selectedActivities.length > 0 && (
+          <View style={styles.activitiesListSection}>
+            <Text style={styles.sectionTitle}>Activities</Text>
+            {selectedActivities.map((activity) => (
+              <TouchableOpacity
+                key={activity.id}
+                style={styles.activityItem}
+                onPress={() => onActivityPress?.(activity.id)}
+              >
+                <View
+                  style={[
+                    styles.activityIcon,
+                    { backgroundColor: `${activityColors[activity.type]}20` },
+                  ]}
+                >
+                  <Ionicons
+                    name={
+                      activity.type === "feed"
+                        ? "restaurant"
+                        : activity.type === "diaper"
+                          ? "water"
+                          : activity.type === "sleep"
+                            ? "moon"
+                            : "heart"
+                    }
+                    size={20}
+                    color={activityColors[activity.type]}
+                  />
+                </View>
+                <View style={styles.activityContent}>
+                  <Text style={styles.activityTitle}>{activity.title}</Text>
+                  <Text style={styles.activityTime}>
+                    {new Date(activity.timestamp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {selectedDate &&
+          getAppointmentsForDate(selectedDate).length === 0 &&
+          getMedicationsForDate().length === 0 &&
+          selectedActivities.length === 0 && (
+            <View style={styles.emptyActivities}>
+              <Ionicons name="calendar-outline" size={48} color="#d1d5db" />
+              <Text style={styles.emptyActivitiesText}>
+                No items on this day
+              </Text>
+            </View>
+          )}
       </ScrollView>
     </View>
   );
@@ -226,7 +402,7 @@ const styles = StyleSheet.create({
   calendarSection: {
     backgroundColor: "#ffffff",
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 8,
   },
   calendarHeader: {
     flexDirection: "row",
@@ -285,6 +461,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#6366f1",
     marginTop: 2,
   },
+  appointmentDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    marginTop: 2,
+  },
   selectedDot: {
     width: 4,
     height: 4,
@@ -292,20 +474,144 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     marginTop: 2,
   },
+  appointmentBadge: {
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    position: "absolute",
+    top: 4,
+    right: 4,
+  },
+  appointmentBadgeText: {
+    fontSize: 9,
+    fontWeight: "600",
+    color: "#6366f1",
+  },
+  quickActions: {
+    flexDirection: "row",
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  quickActionButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#6366f1",
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+  },
+  medicationButton: {
+    backgroundColor: "#22c55e",
+  },
+  quickActionText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
   activitiesSection: {
     flex: 1,
     padding: 16,
+    backgroundColor: "#ffffff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    marginTop: 8,
   },
   activitiesTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
     color: "#0f172a",
     marginBottom: 16,
   },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#64748b",
+    marginBottom: 12,
+    marginTop: 8,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  appointmentsSection: {
+    marginBottom: 16,
+  },
+  appointmentItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f8fafc",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+  },
+  appointmentIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  appointmentContent: {
+    flex: 1,
+  },
+  appointmentTitle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#0f172a",
+  },
+  appointmentTime: {
+    fontSize: 12,
+    color: "#64748b",
+    marginTop: 2,
+  },
+  medicationsSection: {
+    marginBottom: 16,
+  },
+  medicationItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0fdf4",
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+  },
+  medicationIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  medicationContent: {
+    flex: 1,
+  },
+  medicationTitle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#0f172a",
+  },
+  medicationDetails: {
+    fontSize: 12,
+    color: "#64748b",
+    marginTop: 2,
+  },
+  activitiesListSection: {
+    marginBottom: 16,
+  },
+  noItemsText: {
+    fontSize: 14,
+    color: "#9ca3af",
+    fontStyle: "italic",
+    paddingVertical: 8,
+  },
   activityItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f8fafc",
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,

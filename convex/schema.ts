@@ -200,4 +200,57 @@ export default defineSchema({
     .index("by_baby", ["babyId"])
     .index("by_user", ["userId"])
     .index("by_baby_and_enabled", ["babyId", "isEnabled"]),
+
+  appointments: defineTable({
+    clerkOrganizationId: v.string(),
+    babyId: v.optional(v.id("babies")),
+    userId: v.id("users"),
+    title: v.string(),
+    type: v.union(
+      v.literal("pediatrician"),
+      v.literal("checkup"),
+      v.literal("vaccine"),
+      v.literal("wellness"),
+      v.literal("custom")
+    ),
+    date: v.string(),
+    time: v.string(),
+    location: v.optional(v.string()),
+    notes: v.optional(v.string()),
+    isRecurring: v.optional(v.boolean()),
+    recurringInterval: v.optional(
+      v.union(v.literal("daily"), v.literal("weekly"), v.literal("monthly"))
+    ),
+    reminderMinutesBefore: v.optional(v.number()),
+    isCompleted: v.optional(v.boolean()),
+    createdAt: v.number(),
+  })
+    .index("by_family", ["clerkOrganizationId"])
+    .index("by_baby", ["babyId"])
+    .index("by_date", ["date"])
+    .index("by_family_and_date", ["clerkOrganizationId", "date"]),
+
+  medications: defineTable({
+    clerkOrganizationId: v.string(),
+    babyId: v.optional(v.id("babies")),
+    userId: v.id("users"),
+    name: v.string(),
+    type: v.union(
+      v.literal("prescription"),
+      v.literal("otc"),
+      v.literal("supplement")
+    ),
+    dosage: v.optional(v.string()),
+    frequency: v.optional(v.string()),
+    startDate: v.string(),
+    endDate: v.optional(v.string()),
+    notes: v.optional(v.string()),
+    reminderEnabled: v.optional(v.boolean()),
+    reminderTimes: v.optional(v.array(v.string())),
+    isActive: v.optional(v.boolean()),
+    createdAt: v.number(),
+  })
+    .index("by_family", ["clerkOrganizationId"])
+    .index("by_baby", ["babyId"])
+    .index("by_active", ["isActive"]),
 });
