@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { SOUNDS, SOUND_CATEGORIES, getSoundsByCategory } from "@/lib/sounds";
 import { Ionicons } from "@expo/vector-icons";
@@ -10,7 +10,7 @@ type CategoryId = (typeof SOUND_CATEGORIES)[number]["id"];
 export default function SoundsScreen() {
   const [category, setCategory] = useState<CategoryId>("all");
   const [playing, setPlaying] = useState<string | null>(null);
-  const [volume, setVolume] = useState(0.5);
+  const [volume] = useState(0.5);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
 
   const displayedSounds = getSoundsByCategory(category);
@@ -21,10 +21,6 @@ export default function SoundsScreen() {
     } else {
       setPlaying(soundId);
     }
-  };
-
-  const handleVolumeChange = (value: number) => {
-    setVolume(value);
   };
 
   return (

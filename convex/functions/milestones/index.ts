@@ -8,7 +8,7 @@ export const list = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
     await requireBabyAccess(ctx, args.babyId);
 
     const milestones = await ctx.db
@@ -26,7 +26,7 @@ export const get = query({
     id: v.id("milestones"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const milestone = await ctx.db.get(args.id);
     if (!milestone) throw new Error("Milestone not found");
@@ -56,7 +56,7 @@ export const create = mutation({
     photoUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
     await requireBabyAccess(ctx, args.babyId);
 
     return await ctx.db.insert("milestones", {
@@ -86,7 +86,7 @@ export const update = mutation({
     isCelebrated: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const { id, ...updates } = args;
     const existing = await ctx.db.get(id);
@@ -103,7 +103,7 @@ export const remove = mutation({
     id: v.id("milestones"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const milestone = await ctx.db.get(args.id);
     if (!milestone) throw new Error("Milestone not found");
@@ -119,7 +119,7 @@ export const celebrate = mutation({
     id: v.id("milestones"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const milestone = await ctx.db.get(args.id);
     if (!milestone) throw new Error("Milestone not found");

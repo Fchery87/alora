@@ -8,18 +8,49 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { Header } from "@/components/layout/Header";
-import {
-  PARTNER_PROMPTS,
-  REFLECTION_QUESTIONS,
-  getRandomPrompt,
-} from "@/lib/partner-support";
+import { REFLECTION_QUESTIONS, getRandomPrompt } from "@/lib/partner-support";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
+import { useSelectedBabyId } from "@/stores/babyStore";
+import { useFeeds } from "@/hooks/queries/useFeeds";
+import {
+  computePartnerNudges,
+  shouldShowPartnerNudge,
+} from "@/lib/partner-nudges";
+import {
+  usePartnerNudgeActions,
+  usePartnerNudgeState,
+} from "@/stores/partnerNudgeStore";
 
 export default function PartnerSupportScreen() {
   const [reflection, setReflection] = useState("");
   const [currentPrompt, setCurrentPrompt] = useState(getRandomPrompt());
   const [showReflection, setShowReflection] = useState(false);
+
+  const selectedBabyId = useSelectedBabyId();
+  const feedsQuery = useFeeds(selectedBabyId ?? "");
+  const { mutedUntilMs, lastShownAtMs } = usePartnerNudgeState();
+  const { dismiss, muteForMs } = usePartnerNudgeActions();
+
+  const now = new Date();
+  const nudges = computePartnerNudges({
+    now,
+    feeds: (feedsQuery.data as any[])?.map((f) => ({
+      startTime: f.startTime,
+      createdById: f.createdById,
+    })),
+  });
+  const activeNudge = nudges[0] ?? null;
+  const showNudge =
+    Boolean(selectedBabyId) &&
+    Boolean(activeNudge) &&
+    shouldShowPartnerNudge({
+      nudgeId: activeNudge!.id,
+      nowMs: Date.now(),
+      mutedUntilMs,
+      lastShownAtMs,
+      cooldownMs: 12 * 60 * 60 * 1000,
+    });
 
   const handleNewPrompt = () => {
     setCurrentPrompt(getRandomPrompt());
@@ -62,6 +93,43 @@ export default function PartnerSupportScreen() {
       <Header title="Partner Support" showBackButton />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {showNudge && activeNudge ? (
+          <View style={styles.promptSection}>
+            <Text style={styles.sectionTitle}>Nudge</Text>
+            <View style={styles.promptCard}>
+              <View style={styles.promptHeader}>
+                <View style={[styles.categoryBadge, styles.nudgeBadge]}>
+                  <Ionicons name="people" size={16} color="#22c55e" />
+                  <Text
+                    style={[styles.categoryBadgeText, styles.nudgeBadgeText]}
+                  >
+                    Teamwork
+                  </Text>
+                </View>
+              </View>
+
+              <Text style={styles.promptMessage}>{activeNudge.message}</Text>
+
+              <View style={styles.nudgeActionsRow}>
+                <Pressable
+                  style={[styles.newPromptButton, styles.nudgeActionButton]}
+                  onPress={() => dismiss()}
+                >
+                  <Ionicons name="checkmark" size={18} color="#6366f1" />
+                  <Text style={styles.newPromptText}>Got it</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.newPromptButton, styles.nudgeActionButton]}
+                  onPress={() => muteForMs(24 * 60 * 60 * 1000)}
+                >
+                  <Ionicons name="volume-mute" size={18} color="#6366f1" />
+                  <Text style={styles.newPromptText}>Mute 24h</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        ) : null}
+
         <View style={styles.promptSection}>
           <Text style={styles.sectionTitle}>Today's Prompt</Text>
 
@@ -245,6 +313,21 @@ const styles = StyleSheet.create({
   categoryBadgeText: {
     fontSize: 12,
     fontWeight: "600",
+  },
+  nudgeBadge: {
+    backgroundColor: "#22c55e20",
+  },
+  nudgeBadgeText: {
+    color: "#22c55e",
+  },
+  nudgeActionsRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 16,
+  },
+  nudgeActionButton: {
+    flex: 1,
+    justifyContent: "center",
   },
   newPromptButton: {
     flexDirection: "row",

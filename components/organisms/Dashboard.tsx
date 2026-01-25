@@ -6,7 +6,6 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useMemo } from "react";
 import { VictoryPie } from "victory-native";
 import { ReactNode } from "react";
 
@@ -26,10 +25,34 @@ export function Dashboard({
   activityFeed,
 }: DashboardStatsProps) {
   const quickActions = [
-    { id: "feed", label: "Log Feed", icon: "restaurant", color: "#f97316" },
-    { id: "diaper", label: "Log Diaper", icon: "water", color: "#3b82f6" },
-    { id: "sleep", label: "Log Sleep", icon: "moon", color: "#8b5cf6" },
-    { id: "mood", label: "Check In", icon: "heart", color: "#ec4899" },
+    {
+      id: "feed",
+      label: "Log Feed",
+      icon: "restaurant",
+      color: "#f97316",
+      bgStyle: styles.quickActionIconFeed,
+    },
+    {
+      id: "diaper",
+      label: "Log Diaper",
+      icon: "water",
+      color: "#3b82f6",
+      bgStyle: styles.quickActionIconDiaper,
+    },
+    {
+      id: "sleep",
+      label: "Log Sleep",
+      icon: "moon",
+      color: "#8b5cf6",
+      bgStyle: styles.quickActionIconSleep,
+    },
+    {
+      id: "mood",
+      label: "Check In",
+      icon: "heart",
+      color: "#ec4899",
+      bgStyle: styles.quickActionIconMood,
+    },
   ];
 
   return (
@@ -41,12 +64,7 @@ export function Dashboard({
         <View style={styles.quickActionsGrid}>
           {quickActions.map((action) => (
             <TouchableOpacity key={action.id} style={styles.quickActionButton}>
-              <View
-                style={[
-                  styles.quickActionIcon,
-                  { backgroundColor: `${action.color}20` },
-                ]}
-              >
+              <View style={[styles.quickActionIcon, action.bgStyle]}>
                 <Ionicons
                   name={action.icon as keyof typeof Ionicons.glyphMap}
                   size={24}
@@ -63,21 +81,21 @@ export function Dashboard({
         <Text style={styles.sectionTitle}>Today</Text>
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: "#ffedd5" }]}>
+            <View style={[styles.statIcon, styles.statIconFeeds]}>
               <Ionicons name="restaurant" size={20} color="#ea580c" />
             </View>
             <Text style={styles.statValue}>{todayFeeds}</Text>
             <Text style={styles.statLabel}>Feeds</Text>
           </View>
           <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: "#dbeafe" }]}>
+            <View style={[styles.statIcon, styles.statIconDiapers]}>
               <Ionicons name="water" size={20} color="#2563eb" />
             </View>
             <Text style={styles.statValue}>{todayDiapers}</Text>
             <Text style={styles.statLabel}>Diapers</Text>
           </View>
           <View style={styles.statCard}>
-            <View style={[styles.statIcon, { backgroundColor: "#ede9fe" }]}>
+            <View style={[styles.statIcon, styles.statIconSleep]}>
               <Ionicons name="moon" size={20} color="#7c3aed" />
             </View>
             <Text style={styles.statValue}>{todaySleep}</Text>
@@ -185,6 +203,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
+  quickActionIconFeed: {
+    backgroundColor: "#f9731620",
+  },
+  quickActionIconDiaper: {
+    backgroundColor: "#3b82f620",
+  },
+  quickActionIconSleep: {
+    backgroundColor: "#8b5cf620",
+  },
+  quickActionIconMood: {
+    backgroundColor: "#ec489920",
+  },
   quickActionLabel: {
     fontSize: 14,
     fontWeight: "500",
@@ -216,6 +246,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
+  },
+  statIconFeeds: {
+    backgroundColor: "#ffedd5",
+  },
+  statIconDiapers: {
+    backgroundColor: "#dbeafe",
+  },
+  statIconSleep: {
+    backgroundColor: "#ede9fe",
   },
   statValue: {
     fontSize: 24,

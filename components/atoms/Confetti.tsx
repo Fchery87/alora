@@ -1,5 +1,5 @@
 import { MotiView } from "moti";
-import { View, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
 export function Confetti() {
   const particles = Array.from({ length: 50 }, (_, i) => ({

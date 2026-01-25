@@ -13,7 +13,6 @@ import { useCreateFeed } from "@/hooks/queries/useFeeds";
 import {
   validateFeed,
   type FeedFormData,
-  getErrorMessage,
   hasFieldError,
 } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";

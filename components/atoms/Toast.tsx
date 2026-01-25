@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Dimensions,
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -119,12 +118,16 @@ export function useToast() {
  */
 function ToastContainer() {
   const context = React.useContext(ToastContext);
-  const { height } = Dimensions.get("window");
 
   if (!context) return null;
 
   return (
-    <View style={[styles.container, { top: Platform.OS === "ios" ? 60 : 20 }]}>
+    <View
+      style={[
+        styles.container,
+        Platform.OS === "ios" ? styles.containerIOS : styles.containerAndroid,
+      ]}
+    >
       {context.toasts.map((toast) => (
         <Toast
           key={toast.id}
@@ -153,7 +156,13 @@ export function Toast({
   showClose = true,
 }: ToastProps) {
   const [visible, setVisible] = useState(true);
-  const [height, setHeight] = useState(0);
+
+  const handleHide = useCallback(() => {
+    setVisible(false);
+    setTimeout(() => {
+      onClose?.();
+    }, 300); // Wait for exit animation
+  }, [onClose]);
 
   useEffect(() => {
     // Auto-hide after duration
@@ -163,14 +172,7 @@ export function Toast({
       }, duration);
       return () => clearTimeout(timer);
     }
-  }, [duration]);
-
-  const handleHide = () => {
-    setVisible(false);
-    setTimeout(() => {
-      onClose?.();
-    }, 300); // Wait for exit animation
-  };
+  }, [duration, handleHide]);
 
   const getIcon = () => {
     switch (type) {
@@ -224,10 +226,10 @@ export function Toast({
     <Animated.View
       style={[
         styles.toast,
+        visible ? styles.toastVisible : styles.toastHidden,
         {
           backgroundColor: colors.bg,
           borderColor: colors.border,
-          opacity: visible ? 1 : 0,
           transform: [
             {
               translateY: visible
@@ -270,6 +272,12 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     gap: 8,
   },
+  containerIOS: {
+    top: 60,
+  },
+  containerAndroid: {
+    top: 20,
+  },
   toast: {
     borderRadius: 12,
     borderWidth: 1,
@@ -280,6 +288,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     minHeight: 64,
+  },
+  toastVisible: {
+    opacity: 1,
+  },
+  toastHidden: {
+    opacity: 0,
   },
   content: {
     flexDirection: "row",

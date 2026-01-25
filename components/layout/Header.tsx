@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 interface HeaderProps {
@@ -16,7 +16,6 @@ export function Header({
   showBackButton = false,
   rightAction,
 }: HeaderProps) {
-  const router = useRouter();
   const navigation = useNavigation();
 
   return (

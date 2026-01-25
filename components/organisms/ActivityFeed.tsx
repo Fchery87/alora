@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useActivityFeed, ActivityItem } from "@/hooks/useActivityFeed";
-import { useAuth } from "@clerk/clerk-expo";
 
 interface ActivityFeedProps {
   babyId?: string;
@@ -26,7 +25,6 @@ export function ActivityFeed({
   refreshing = false,
   limit = 20,
 }: ActivityFeedProps) {
-  const { userId } = useAuth();
   const { groupedActivities, isLoading } = useActivityFeed(
     babyId as any,
     limit
@@ -74,7 +72,7 @@ export function ActivityFeed({
     }
 
     return (
-      <View style={[styles.avatarPlaceholder, { backgroundColor: "#e5e7eb" }]}>
+      <View style={styles.avatarPlaceholder}>
         <Text style={styles.avatarInitials}>{initials}</Text>
       </View>
     );
@@ -84,12 +82,7 @@ export function ActivityFeed({
     return (
       <Animated.View
         key={activity.id}
-        style={[
-          styles.activityItem,
-          {
-            opacity: fadeAnim,
-          },
-        ]}
+        style={[styles.activityItem, { opacity: fadeAnim }]}
       >
         <View style={styles.activityLeft}>
           <View
@@ -158,15 +151,11 @@ export function ActivityFeed({
       <View style={styles.loadingContainer}>
         {[1, 2, 3].map((i) => (
           <View key={i} style={styles.skeletonItem}>
-            <View
-              style={[styles.skeletonIcon, { backgroundColor: "#f3f4f6" }]}
-            />
+            <View style={styles.skeletonIcon} />
             <View style={styles.skeletonContent}>
+              <View style={[styles.skeletonLine, styles.skeletonLinePrimary]} />
               <View
-                style={[styles.skeletonLine, { width: "70%", height: 14 }]}
-              />
-              <View
-                style={[styles.skeletonLine, { width: "40%", height: 12 }]}
+                style={[styles.skeletonLine, styles.skeletonLineSecondary]}
               />
             </View>
           </View>
@@ -415,6 +404,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 12,
+    backgroundColor: "#f3f4f6",
   },
   skeletonContent: {
     flex: 1,
@@ -423,5 +413,13 @@ const styles = StyleSheet.create({
   skeletonLine: {
     backgroundColor: "#f3f4f6",
     borderRadius: 4,
+  },
+  skeletonLinePrimary: {
+    width: "70%",
+    height: 14,
+  },
+  skeletonLineSecondary: {
+    width: "40%",
+    height: 12,
   },
 });

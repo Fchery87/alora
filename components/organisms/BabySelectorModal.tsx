@@ -9,7 +9,7 @@ import {
   Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useBaby, type Baby } from "@/hooks/useBaby";
+import { useBaby } from "@/hooks/useBaby";
 import { CreateBaby } from "./CreateBaby";
 
 interface BabySelectorModalProps {

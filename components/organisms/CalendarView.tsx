@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useMemo } from "react";
+import { toLocalISODateString } from "@/lib/dates";
 
 interface Appointment {
   _id: string;
@@ -90,7 +91,7 @@ export function CalendarView({
   };
 
   const getAppointmentsForDate = (date: Date) => {
-    const dateStr = date.toISOString().split("T")[0];
+    const dateStr = toLocalISODateString(date);
     return appointments.filter((apt) => apt.date === dateStr);
   };
 
@@ -225,7 +226,7 @@ export function CalendarView({
                       <View
                         style={[
                           styles.appointmentDot,
-                          { backgroundColor: "#6366f1" },
+                          styles.appointmentDotActive,
                         ]}
                       />
                     )}
@@ -313,10 +314,7 @@ export function CalendarView({
               getMedicationsForDate().map((med) => (
                 <View key={med._id} style={styles.medicationItem}>
                   <View
-                    style={[
-                      styles.medicationIcon,
-                      { backgroundColor: "#22c55e20" },
-                    ]}
+                    style={[styles.medicationIcon, styles.medicationIconBg]}
                   >
                     <Ionicons name="medical" size={20} color="#22c55e" />
                   </View>
@@ -467,6 +465,9 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginTop: 2,
   },
+  appointmentDotActive: {
+    backgroundColor: "#6366f1",
+  },
   selectedDot: {
     width: 4,
     height: 4,
@@ -585,6 +586,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
+  },
+  medicationIconBg: {
+    backgroundColor: "#22c55e20",
   },
   medicationContent: {
     flex: 1,

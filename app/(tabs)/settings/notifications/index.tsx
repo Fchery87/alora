@@ -17,8 +17,8 @@ export default function NotificationsScreen() {
   const [medicationReminders, setMedicationReminders] = useState(true);
   const [selfCareReminders, setSelfCareReminders] = useState(true);
   const [quietHoursEnabled, setQuietHoursEnabled] = useState(false);
-  const [quietHoursStart, setQuietHoursStart] = useState("22:00");
-  const [quietHoursEnd, setQuietHoursEnd] = useState("07:00");
+  const [quietHoursStart] = useState("22:00");
+  const [quietHoursEnd] = useState("07:00");
 
   const LEAD_TIME_OPTIONS = [
     { value: 15, label: "15 minutes" },

@@ -1,7 +1,7 @@
 import { useAuth } from "@clerk/clerk-expo";
 import { useRouter, usePathname } from "expo-router";
 import { useEffect, ReactNode } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 
 interface ProtectedRouteProps {
   children: ReactNode;

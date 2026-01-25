@@ -47,7 +47,7 @@ export const listDiapers = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
     await requireBabyAccess(ctx, args.babyId);
 
     let diapers = await ctx.db

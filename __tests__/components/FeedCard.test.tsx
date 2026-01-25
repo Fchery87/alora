@@ -1,7 +1,7 @@
-import React from "react";
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react-native";
+import { screen } from "@testing-library/react-native";
 import { FeedCard } from "@/components/molecules";
+import { renderWithProviders } from "../setup";
 
 describe("FeedCard Component", () => {
   const mockFeed = {
@@ -16,7 +16,7 @@ describe("FeedCard Component", () => {
   };
 
   it("should render feed card with correct details", () => {
-    render(
+    renderWithProviders(
       <FeedCard feed={mockFeed as any} onPress={() => {}} onDelete={() => {}} />
     );
 
@@ -27,7 +27,7 @@ describe("FeedCard Component", () => {
   });
 
   it("should render notes when provided", () => {
-    render(
+    renderWithProviders(
       <FeedCard feed={mockFeed as any} onPress={() => {}} onDelete={() => {}} />
     );
 
@@ -38,7 +38,7 @@ describe("FeedCard Component", () => {
     const onPress = vi.fn();
     const onDelete = vi.fn();
 
-    render(
+    renderWithProviders(
       <FeedCard feed={mockFeed as any} onPress={onPress} onDelete={onDelete} />
     );
 

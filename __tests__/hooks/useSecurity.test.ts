@@ -1,7 +1,5 @@
 /* eslint-disable import/no-unresolved */
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react-native";
-import { useSecurityManager } from "@/hooks";
 
 describe("Security Hooks", () => {
   describe("useSecurityManager", () => {

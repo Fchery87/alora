@@ -42,7 +42,7 @@ export const listFeeds = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
     await requireBabyAccess(ctx, args.babyId);
 
     let feeds = await ctx.db

@@ -9,16 +9,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import {
-  useCreateGrowth,
-  useListGrowth,
-  GrowthMeasurement,
-} from "@/hooks/queries/useGrowth";
-import {
-  validateGrowth,
-  type GrowthFormData,
-  hasFieldError,
-} from "@/lib/validation";
+import { useCreateGrowth } from "@/hooks/queries/useGrowth";
+import { validateGrowth, type GrowthFormData } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
@@ -204,7 +196,9 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
               [
                 styles.input,
                 styles.valueInput,
-                touched.value && validationErrors.value ? styles.inputError : undefined,
+                touched.value && validationErrors.value
+                  ? styles.inputError
+                  : undefined,
               ].filter(Boolean)
             )}
             placeholder={`Enter ${currentMeasurement?.label.toLowerCase()}`}
@@ -220,11 +214,17 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
           />
           <View style={styles.unitContainer}>
             <TouchableOpacity
-              style={[
-                styles.unitButton,
-                unit === currentMeasurement?.unit ? styles.unitButtonActive : undefined,
-                touched.unit && validationErrors.unit ? styles.unitButtonError : undefined,
-              ].filter(Boolean) as any}
+              style={
+                [
+                  styles.unitButton,
+                  unit === currentMeasurement?.unit
+                    ? styles.unitButtonActive
+                    : undefined,
+                  touched.unit && validationErrors.unit
+                    ? styles.unitButtonError
+                    : undefined,
+                ].filter(Boolean) as any
+              }
               onPress={() => {
                 setUnit(currentMeasurement?.unit || "kg");
                 handleBlur("unit");
@@ -255,7 +255,9 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
           style={StyleSheet.flatten(
             [
               styles.input,
-              touched.date && validationErrors.date ? styles.inputError : undefined,
+              touched.date && validationErrors.date
+                ? styles.inputError
+                : undefined,
             ].filter(Boolean)
           )}
           value={date}

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import {
   VictoryChart,
@@ -51,9 +51,7 @@ export function SleepTrendChart({
     const cutoffDate =
       dateRange === "all"
         ? null
-        : new Date(
-            now.getTime() - daysMap[dateRange] * 24 * 60 * 60 * 1000
-          );
+        : new Date(now.getTime() - daysMap[dateRange] * 24 * 60 * 60 * 1000);
 
     return data
       .filter((point) =>
@@ -121,14 +119,14 @@ export function SleepTrendChart({
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: "#8b5cf6" }]}>
+          <Text style={[styles.statValue, styles.nightStatValue]}>
             {stats.nightAvg.toFixed(1)}h
           </Text>
           <Text style={styles.statLabel}>Night sleep</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: "#06b6d4" }]}>
+          <Text style={[styles.statValue, styles.dayStatValue]}>
             {stats.napAvg.toFixed(1)}h
           </Text>
           <Text style={styles.statLabel}>Day sleep</Text>
@@ -218,11 +216,11 @@ export function SleepTrendChart({
 
       <View style={styles.legend}>
         <View style={styles.legendItem}>
-          <View style={[styles.legendColor, { backgroundColor: "#8b5cf6" }]} />
+          <View style={[styles.legendColor, styles.nightLegendColor]} />
           <Text style={styles.legendText}>Night</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendColor, { backgroundColor: "#06b6d4" }]} />
+          <View style={[styles.legendColor, styles.dayLegendColor]} />
           <Text style={styles.legendText}>Daytime</Text>
         </View>
       </View>
@@ -319,6 +317,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#1e293b",
   },
+  nightStatValue: {
+    color: "#8b5cf6",
+  },
+  dayStatValue: {
+    color: "#06b6d4",
+  },
   statLabel: {
     fontSize: 11,
     color: "#64748b",
@@ -342,6 +346,12 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 3,
+  },
+  nightLegendColor: {
+    backgroundColor: "#8b5cf6",
+  },
+  dayLegendColor: {
+    backgroundColor: "#06b6d4",
   },
   legendText: {
     fontSize: 12,

@@ -21,6 +21,9 @@ import { SessionLockManager } from "@/lib/session-lock";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
+import { clearQueryClient } from "@/components/providers/QueryClientProviderWrapper";
+import { resetUserScopedStores } from "@/stores";
+import { convex } from "@/lib/convex";
 
 interface SecurityState {
   isLocked: boolean;
@@ -65,6 +68,21 @@ export function SecurityProvider({
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const lastActivityTime = useRef(Date.now());
   const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const lock = useCallback(async () => {
+    setIsLocked(true);
+    setIsAuthenticated(false);
+    setShowLockScreen(true);
+    await SessionLockManager.lock();
+  }, []);
+
+  const unlock = useCallback(async () => {
+    setIsLocked(false);
+    setIsAuthenticated(true);
+    setShowLockScreen(false);
+    await SessionLockManager.unlock();
+    lastActivityTime.current = Date.now();
+  }, []);
 
   useEffect(() => {
     const checkBiometricSupport = async () => {
@@ -128,22 +146,7 @@ export function SecurityProvider({
       }
       subscription.remove();
     };
-  }, [isLocked, lockTimeoutMinutes]);
-
-  const lock = useCallback(async () => {
-    setIsLocked(true);
-    setIsAuthenticated(false);
-    setShowLockScreen(true);
-    await SessionLockManager.lock();
-  }, []);
-
-  const unlock = useCallback(async () => {
-    setIsLocked(false);
-    setIsAuthenticated(true);
-    setShowLockScreen(false);
-    await SessionLockManager.unlock();
-    lastActivityTime.current = Date.now();
-  }, []);
+  }, [isLocked, lockTimeoutMinutes, lock]);
 
   const authenticate = useCallback(async (): Promise<boolean> => {
     if (isAuthenticating) return false;
@@ -173,9 +176,18 @@ export function SecurityProvider({
     setIsLocked(true);
     setIsAuthenticated(false);
     setShowLockScreen(true);
+
+    // Clear local state first to avoid any cross-user/org "data flash".
     await SessionLockManager.lock();
-    await signOut();
-    router.replace("/(auth)/login");
+    await resetUserScopedStores();
+    clearQueryClient();
+    (convex as any)?.clearAuth?.();
+
+    try {
+      await signOut();
+    } finally {
+      router.replace("/(auth)/login");
+    }
   }, [signOut]);
 
   const getBiometricIcon = () => {

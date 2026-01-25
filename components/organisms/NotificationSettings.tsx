@@ -20,8 +20,7 @@ interface NotificationSettingsProps {
 }
 
 export function NotificationSettings({ babyId }: NotificationSettingsProps) {
-  const { expoPushToken, notificationStatus, isEnabled, requestPermissions } =
-    useNotifications();
+  const { expoPushToken, isEnabled, requestPermissions } = useNotifications();
   const {
     reminders,
     loading,

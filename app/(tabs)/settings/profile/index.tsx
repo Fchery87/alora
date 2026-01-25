@@ -68,9 +68,7 @@ export default function ProfileScreen() {
 
           <Pressable style={styles.accountRow}>
             <View style={styles.accountInfo}>
-              <View
-                style={[styles.accountIcon, { backgroundColor: "#3b82f120" }]}
-              >
+              <View style={[styles.accountIcon, styles.accountIconClerk]}>
                 <Ionicons name="people" size={20} color="#3b82f1" />
               </View>
               <View>
@@ -193,6 +191,9 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: "center",
     alignItems: "center",
+  },
+  accountIconClerk: {
+    backgroundColor: "#3b82f120",
   },
   accountName: {
     fontSize: 16,

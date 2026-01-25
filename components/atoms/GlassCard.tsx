@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, ViewStyle, ColorValue } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { GRADIENTS, GLASS, SHADOWS, RADIUS } from "@/lib/theme";
+import { GRADIENTS, SHADOWS, RADIUS } from "@/lib/theme";
 
 interface GlassCardProps {
   children: React.ReactNode;
@@ -23,20 +23,21 @@ export function GlassCard({
   animated = true,
   delay = 0,
 }: GlassCardProps) {
-  const gradientColors: readonly [ColorValue, ColorValue] = React.useMemo(() => {
-    switch (variant) {
-      case "primary":
-        return [GRADIENTS.primary.start, GRADIENTS.primary.end];
-      case "secondary":
-        return [GRADIENTS.secondary.start, GRADIENTS.secondary.end];
-      case "accent":
-        return [GRADIENTS.accent.start, GRADIENTS.accent.end];
-      case "calm":
-        return [GRADIENTS.calm.start, GRADIENTS.calm.end];
-      default:
-        return ["#ffffff", "#f8fafc"] as const;
-    }
-  }, [variant]);
+  const gradientColors: readonly [ColorValue, ColorValue] =
+    React.useMemo(() => {
+      switch (variant) {
+        case "primary":
+          return [GRADIENTS.primary.start, GRADIENTS.primary.end];
+        case "secondary":
+          return [GRADIENTS.secondary.start, GRADIENTS.secondary.end];
+        case "accent":
+          return [GRADIENTS.accent.start, GRADIENTS.accent.end];
+        case "calm":
+          return [GRADIENTS.calm.start, GRADIENTS.calm.end];
+        default:
+          return ["#ffffff", "#f8fafc"] as const;
+      }
+    }, [variant]);
 
   const animationStyle = animated
     ? {

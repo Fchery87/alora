@@ -10,16 +10,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import {
-  useCreateMilestone,
-  useCelebrateMilestone,
-} from "@/hooks/queries/useMilestones";
+import { useCreateMilestone } from "@/hooks/queries/useMilestones";
 import { PREDEFINED_MILESTONES, MILESTONE_CATEGORIES } from "@/lib/milestones";
-import {
-  validateMilestone,
-  type MilestoneFormData,
-  hasFieldError,
-} from "@/lib/validation";
+import { validateMilestone, type MilestoneFormData } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
@@ -53,10 +46,6 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
   const createMilestone = createMilestoneMutation as unknown as (
     args: any
   ) => void;
-  const celebrateMilestoneMutation = useCelebrateMilestone();
-  const celebrateMilestone = celebrateMilestoneMutation as unknown as (args: {
-    id: string;
-  }) => void;
 
   const validate = () => {
     const formData: Partial<MilestoneFormData> = {
@@ -152,18 +141,6 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
       });
 
       toast.error("Failed to Add Milestone", getUserFriendlyMessage(appError));
-    }
-  };
-
-  const handleCelebrate = async (id: string) => {
-    try {
-      await celebrateMilestone({ id });
-      toast.success("Celebration Saved", "Your celebration has been recorded!");
-    } catch (error) {
-      const appError = parseError(error);
-      logError(error, { context: "MilestoneTracker", action: "celebrate", id });
-
-      toast.error("Failed to Celebrate", getUserFriendlyMessage(appError));
     }
   };
 
@@ -315,7 +292,9 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                   style={StyleSheet.flatten(
                     [
                       styles.input,
-                      touched.title && validationErrors.title ? styles.inputError : undefined,
+                      touched.title && validationErrors.title
+                        ? styles.inputError
+                        : undefined,
                     ].filter(Boolean)
                   )}
                   placeholder="Enter milestone title"
@@ -354,7 +333,9 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                         styles.categoryCard,
                         customCategory === key && styles.categoryCardActive,
                         { borderColor: cat.color },
-                        touched.category && validationErrors.category ? styles.categoryCardError : undefined,
+                        touched.category && validationErrors.category
+                          ? styles.categoryCardError
+                          : undefined,
                       ])}
                       onPress={() => {
                         setCustomCategory(key as typeof customCategory);
@@ -390,7 +371,9 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                 <TextInput
                   style={StyleSheet.flatten([
                     styles.input,
-                    touched.date && validationErrors.date ? styles.inputError : undefined,
+                    touched.date && validationErrors.date
+                      ? styles.inputError
+                      : undefined,
                   ])}
                   value={customDate}
                   onChangeText={(text) => {

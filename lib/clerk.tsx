@@ -1,7 +1,7 @@
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "./token-cache";
 import Constants from "expo-constants";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 const publishableKey =
   (Constants.expoConfig?.extra?.clerkPublishableKey as string | undefined) ||
@@ -20,38 +20,15 @@ export function ClerkProviderWrapper({
 }) {
   if (!isValidKey) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 20,
-        }}
-      >
-        <Text style={{ fontSize: 18, textAlign: "center", marginBottom: 20 }}>
-          Setup Required
-        </Text>
-        <Text style={{ fontSize: 14, textAlign: "center", color: "#666" }}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Setup Required</Text>
+        <Text style={styles.subtitle}>
           Please add your Clerk Publishable Key to .env file:
         </Text>
-        <Text
-          style={{
-            fontSize: 12,
-            marginTop: 10,
-            color: "#999",
-            fontFamily: "monospace",
-          }}
-        >
+        <Text style={styles.envVar}>
           EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
         </Text>
-        <Text
-          style={{
-            fontSize: 14,
-            marginTop: 20,
-            textAlign: "center",
-            color: "#666",
-          }}
-        >
+        <Text style={styles.helpText}>
           Get your key from:
           https://dashboard.clerk.com/last-active?path=api-keys
         </Text>
@@ -65,3 +42,34 @@ export function ClerkProviderWrapper({
     </ClerkProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  title: {
+    fontSize: 18,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 14,
+    textAlign: "center",
+    color: "#666",
+  },
+  envVar: {
+    fontSize: 12,
+    marginTop: 10,
+    color: "#999",
+    fontFamily: "monospace",
+  },
+  helpText: {
+    fontSize: 14,
+    marginTop: 20,
+    textAlign: "center",
+    color: "#666",
+  },
+});

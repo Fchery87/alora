@@ -13,11 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import {
-  validateBaby,
-  type BabyFormData,
-  hasFieldError,
-} from "@/lib/validation";
+import { validateBaby, type BabyFormData } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 

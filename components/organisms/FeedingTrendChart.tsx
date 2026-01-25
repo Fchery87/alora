@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import {
   VictoryChart,
@@ -52,9 +52,7 @@ export function FeedingTrendChart({
     const cutoffDate =
       dateRange === "all"
         ? null
-        : new Date(
-            now.getTime() - daysMap[dateRange] * 24 * 60 * 60 * 1000
-          );
+        : new Date(now.getTime() - daysMap[dateRange] * 24 * 60 * 60 * 1000);
 
     return data
       .filter((point) =>
@@ -134,14 +132,14 @@ export function FeedingTrendChart({
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: "#ec4899" }]}>
+          <Text style={[styles.statValue, styles.breastStatValue]}>
             {stats.breastfeedingPct.toFixed(0)}%
           </Text>
           <Text style={styles.statLabel}>Breast</Text>
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: "#3b82f6" }]}>
+          <Text style={[styles.statValue, styles.bottleStatValue]}>
             {stats.bottlePct.toFixed(0)}%
           </Text>
           <Text style={styles.statLabel}>Bottle</Text>
@@ -231,11 +229,11 @@ export function FeedingTrendChart({
 
       <View style={styles.legend}>
         <View style={styles.legendItem}>
-          <View style={[styles.legendColor, { backgroundColor: "#ec4899" }]} />
+          <View style={[styles.legendColor, styles.breastLegendColor]} />
           <Text style={styles.legendText}>Breast</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendColor, { backgroundColor: "#3b82f6" }]} />
+          <View style={[styles.legendColor, styles.bottleLegendColor]} />
           <Text style={styles.legendText}>Bottle</Text>
         </View>
       </View>
@@ -332,6 +330,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#1e293b",
   },
+  breastStatValue: {
+    color: "#ec4899",
+  },
+  bottleStatValue: {
+    color: "#3b82f6",
+  },
   statLabel: {
     fontSize: 11,
     color: "#64748b",
@@ -355,6 +359,12 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 3,
+  },
+  breastLegendColor: {
+    backgroundColor: "#ec4899",
+  },
+  bottleLegendColor: {
+    backgroundColor: "#3b82f6",
   },
   legendText: {
     fontSize: 12,

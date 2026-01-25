@@ -6,6 +6,32 @@
 
 ---
 
+## Addendum (January 25, 2026): Org Scoping + AI Insights + Push Reminders
+
+This worktree extends the Phase 2 baseline with organization-scoped data access, optional AI insights (Gemini Flash via Google Generative Language API), and push notifications including appointment reminders.
+
+### Configuration
+
+- **Convex env (required for AI):**
+
+  - `GEMINI_API_KEY` (required)
+  - `GEMINI_MODEL` (optional, defaults to a Gemini “Flash” model in code)
+
+- **Expo push (required for “Send test push” + reminders):**
+  - Ensure `EXPO_PROJECT_ID` is set correctly (used by `registerForPushNotificationsAsync` in `lib/notifications.ts`).
+
+### In-app toggles (Wellness tab)
+
+- **AI insights:** Opt-in via the Wellness toggle (`userPreferences.aiInsightsEnabled`).
+- **Push notifications:** Opt-in via the Wellness toggle (`userPreferences.pushNotificationsEnabled`) and then tap **Send test push**.
+
+### Appointment reminder pushes
+
+- Appointment reminder jobs are scheduled server-side via the Convex scheduler.
+- The scheduled job reference is stored on the appointment record (`appointments.pushReminderJobId`).
+
+---
+
 ## What Was Completed
 
 ### 1. ✅ Convex Data Access & Family Sharing

@@ -30,32 +30,32 @@ export const listMedications = query({
     babyId: v.optional(v.id("babies")),
     isActive: v.optional(v.boolean()),
   },
-  handler: async (ctx, args) => {
-    const userOrgId = await requireOrganizationId(ctx);
-
-    // Verify user's org matches requested org (HIPAA compliance)
-    if (userOrgId !== args.clerkOrganizationId) {
-      throw new Error(
-        "Not authorized to view medications for this organization"
-      );
-    }
-
-    let medications = (await ctx.db
-      .query("medications" as any)
-      .withIndex("by_family" as any, (q: any) =>
-        q.eq("clerkOrganizationId", args.clerkOrganizationId)
-      )
-      .collect()) as Medication[];
-
-    if (args.babyId) {
-      medications = medications.filter((m) => m.babyId === args.babyId);
-    }
-    if (args.isActive !== undefined) {
-      medications = medications.filter((m) => m.isActive === args.isActive);
-    }
-    return medications;
-  },
+  handler: listMedicationsHandler,
 });
+
+export async function listMedicationsHandler(ctx: any, args: any) {
+  const userOrgId = await requireOrganizationId(ctx);
+
+  // Verify user's org matches requested org (HIPAA compliance)
+  if (userOrgId !== args.clerkOrganizationId) {
+    throw new Error("Not authorized to view medications for this organization");
+  }
+
+  let medications = (await ctx.db
+    .query("medications" as any)
+    .withIndex("by_family" as any, (q: any) =>
+      q.eq("clerkOrganizationId", userOrgId)
+    )
+    .collect()) as Medication[];
+
+  if (args.babyId) {
+    medications = medications.filter((m: any) => m.babyId === args.babyId);
+  }
+  if (args.isActive !== undefined) {
+    medications = medications.filter((m: any) => m.isActive === args.isActive);
+  }
+  return medications;
+}
 
 export const getMedication = query({
   args: { medicationId: v.id("medications") },
@@ -94,29 +94,32 @@ export const createMedication = mutation({
     reminderEnabled: v.optional(v.boolean()),
     reminderTimes: v.optional(v.array(v.string())),
   },
-  handler: async (ctx, args) => {
-    const userOrgId = await requireOrganizationId(ctx);
-    const userId = await requireMutationUserId(ctx);
-
-    // Verify user's org matches requested org (HIPAA compliance)
-    if (userOrgId !== args.clerkOrganizationId) {
-      throw new Error(
-        "Not authorized to create medication for this organization"
-      );
-    }
-
-    if (args.babyId) {
-      await requireBabyAccess(ctx, args.babyId);
-    }
-
-    return await ctx.db.insert("medications", {
-      ...args,
-      userId,
-      isActive: true,
-      createdAt: Date.now(),
-    });
-  },
+  handler: createMedicationHandler,
 });
+
+export async function createMedicationHandler(ctx: any, args: any) {
+  const userOrgId = await requireOrganizationId(ctx);
+  const userId = await requireMutationUserId(ctx);
+
+  // Verify user's org matches requested org (HIPAA compliance)
+  if (userOrgId !== args.clerkOrganizationId) {
+    throw new Error(
+      "Not authorized to create medication for this organization"
+    );
+  }
+
+  if (args.babyId) {
+    await requireBabyAccess(ctx, args.babyId);
+  }
+
+  return await ctx.db.insert("medications", {
+    ...args,
+    clerkOrganizationId: userOrgId,
+    userId,
+    isActive: true,
+    createdAt: Date.now(),
+  });
+}
 
 export const updateMedication = mutation({
   args: {

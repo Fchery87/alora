@@ -5,20 +5,14 @@ import {
   TouchableOpacity,
   ScrollView,
   Keyboard,
-  TextInput as RNTextInput,
+  TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useCreateJournal } from "@/hooks/queries/useJournal";
-import {
-  validateJournal,
-  type JournalFormData,
-  hasFieldError,
-} from "@/lib/validation";
+import { validateJournal, type JournalFormData } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
-
-import { TextInput } from "react-native";
 
 interface JournalEntryFormProps {
   onSuccess?: () => void;
@@ -38,7 +32,6 @@ export function JournalEntryForm({
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toast = useToast();
   const createJournal = useCreateJournal();
@@ -97,8 +90,6 @@ export function JournalEntryForm({
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
       await createJournal.mutateAsync({
         title: title || undefined,
@@ -128,15 +119,7 @@ export function JournalEntryForm({
       });
 
       toast.error("Failed to Save Entry", getUserFriendlyMessage(appError));
-    } finally {
-      setIsSubmitting(false);
     }
-  };
-
-  const isValid = () => {
-    const formData: Partial<JournalFormData> = { content };
-    const result = validateJournal(formData);
-    return result.isValid;
   };
 
   const charCount = content.length;
@@ -148,11 +131,13 @@ export function JournalEntryForm({
 
       <View style={styles.section}>
         <Text style={styles.label}>Title (optional)</Text>
-        <RNTextInput
+        <TextInput
           style={StyleSheet.flatten(
             [
               styles.input,
-              touched.title && validationErrors.title ? styles.inputError : undefined,
+              touched.title && validationErrors.title
+                ? styles.inputError
+                : undefined,
             ].filter(Boolean)
           )}
           placeholder="Give this entry a title..."
@@ -176,12 +161,14 @@ export function JournalEntryForm({
             {wordCount} words, {charCount} characters
           </Text>
         </View>
-        <RNTextInput
+        <TextInput
           style={StyleSheet.flatten(
             [
               styles.input,
               styles.textArea,
-              touched.content && validationErrors.content ? styles.inputError : undefined,
+              touched.content && validationErrors.content
+                ? styles.inputError
+                : undefined,
             ].filter(Boolean)
           )}
           placeholder="Write your thoughts here..."

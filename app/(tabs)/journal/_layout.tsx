@@ -1,15 +1,13 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Header } from "@/components/layout/Header";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 
 export default function JournalScreen() {
-  const { signOut } = useAuth();
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.screen}>
       <Header title="Journal" showBackButton={false} />
       <View style={styles.container}>
         <View style={styles.quickEntry}>
@@ -62,6 +60,9 @@ export default function JournalScreen() {
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",

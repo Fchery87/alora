@@ -30,7 +30,7 @@ export default function FamilyScreen() {
   ];
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.screen}>
       <Header title="Family" showBackButton={false} />
       <View style={styles.container}>
         <View style={styles.section}>
@@ -85,6 +85,9 @@ export default function FamilyScreen() {
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Header } from "@/components/layout/Header";
 import { DiaperTracker } from "@/components/organisms/DiaperTracker";
 import { useSelectedBabyId } from "@/stores/babyStore";
@@ -10,14 +10,12 @@ export default function DiaperTrackerScreen() {
   const selectedBabyId = useSelectedBabyId();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.screen}>
       <Header title="Log Diaper" showBackButton />
       {selectedBabyId ? (
         <DiaperTracker babyId={selectedBabyId} />
       ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+        <View style={styles.emptyState}>
           <Text>No baby selected</Text>
         </View>
       )}
@@ -28,3 +26,14 @@ export default function DiaperTrackerScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

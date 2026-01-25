@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import {
   VictoryChart,
@@ -59,9 +59,7 @@ export function MoodTrendChart({
     const cutoffDate =
       dateRange === "all"
         ? null
-        : new Date(
-            now.getTime() - daysMap[dateRange] * 24 * 60 * 60 * 1000
-          );
+        : new Date(now.getTime() - daysMap[dateRange] * 24 * 60 * 60 * 1000);
 
     return data
       .filter((point) =>

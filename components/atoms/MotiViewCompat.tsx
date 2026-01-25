@@ -28,15 +28,7 @@ export function MotiViewCompat({
   if (Platform.OS === "web") {
     // On web, return a simple View with opacity
     return (
-      <View
-        style={[
-          style,
-          {
-            opacity: 1,
-          },
-        ]}
-        {...rest}
-      >
+      <View style={style} {...rest}>
         {children}
       </View>
     );

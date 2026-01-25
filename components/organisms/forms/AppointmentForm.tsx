@@ -8,12 +8,9 @@ import {
   StyleProp,
   ViewStyle,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  validateAppointment,
-  validateAppointment as validateAppointmentData,
-} from "@/lib/validation";
+import { validateAppointment as validateAppointmentData } from "@/lib/validation";
 
 export interface AppointmentFormData {
   title: string;
@@ -102,7 +99,12 @@ export function AppointmentForm({
 
       <Text style={styles.label}>Title</Text>
       <TextInput
-        style={[styles.input, errors.title ? styles.inputError : null] as StyleProp<ViewStyle>}
+        style={
+          [
+            styles.input,
+            errors.title ? styles.inputError : null,
+          ] as StyleProp<ViewStyle>
+        }
         placeholder="Appointment title"
         value={formData.title}
         onChangeText={(text) => updateField("title", text)}
@@ -142,7 +144,12 @@ export function AppointmentForm({
         <View style={styles.halfWidth}>
           <Text style={styles.label}>Date</Text>
           <TextInput
-            style={[styles.input, errors.date ? styles.inputError : null] as StyleProp<ViewStyle>}
+            style={
+              [
+                styles.input,
+                errors.date ? styles.inputError : null,
+              ] as StyleProp<ViewStyle>
+            }
             placeholder="YYYY-MM-DD"
             value={formData.date}
             onChangeText={(text) => updateField("date", text)}
@@ -153,7 +160,12 @@ export function AppointmentForm({
         <View style={styles.halfWidth}>
           <Text style={styles.label}>Time</Text>
           <TextInput
-            style={[styles.input, errors.time ? styles.inputError : null] as StyleProp<ViewStyle>}
+            style={
+              [
+                styles.input,
+                errors.time ? styles.inputError : null,
+              ] as StyleProp<ViewStyle>
+            }
             placeholder="HH:MM"
             value={formData.time}
             onChangeText={(text) => updateField("time", text)}
