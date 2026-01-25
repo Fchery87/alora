@@ -1,6 +1,10 @@
 import { query, mutation } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireOrganizationId } from "../../lib/users";
+import {
+  requireBabyAccess,
+  requireMutationUserId,
+  requireOrganizationId,
+} from "../../lib/users";
 
 interface Medication {
   _id: any;
@@ -76,7 +80,6 @@ export const createMedication = mutation({
   args: {
     clerkOrganizationId: v.string(),
     babyId: v.optional(v.id("babies")),
-    userId: v.id("users"),
     name: v.string(),
     type: v.union(
       v.literal("prescription"),
@@ -93,6 +96,7 @@ export const createMedication = mutation({
   },
   handler: async (ctx, args) => {
     const userOrgId = await requireOrganizationId(ctx);
+    const userId = await requireMutationUserId(ctx);
 
     // Verify user's org matches requested org (HIPAA compliance)
     if (userOrgId !== args.clerkOrganizationId) {
@@ -101,8 +105,13 @@ export const createMedication = mutation({
       );
     }
 
+    if (args.babyId) {
+      await requireBabyAccess(ctx, args.babyId);
+    }
+
     return await ctx.db.insert("medications", {
       ...args,
+      userId,
       isActive: true,
       createdAt: Date.now(),
     });

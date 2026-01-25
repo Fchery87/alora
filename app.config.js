@@ -42,6 +42,7 @@ export default {
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "READ_MEDIA_IMAGES",
+        "DETECT_SCREEN_CAPTURE",
         "VIBRATE",
         "RECEIVE_BOOT_COMPLETED",
       ],

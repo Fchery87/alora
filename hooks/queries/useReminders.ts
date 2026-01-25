@@ -8,7 +8,6 @@ type RemindersApi = {
   get: (args: { id: Id<"reminders"> }) => Promise<any>;
   create: (args: {
     babyId: Id<"babies">;
-    userId: Id<"users">;
     type: "feeding" | "sleep" | "diaper" | "custom";
     title: string;
     message?: string;
@@ -62,7 +61,6 @@ export function useCreateReminder() {
   return useMutation({
     mutationFn: (data: {
       babyId: Id<"babies">;
-      userId: Id<"users">;
       type: "feeding" | "sleep" | "diaper" | "custom";
       title: string;
       message?: string;
@@ -71,7 +69,9 @@ export function useCreateReminder() {
       daysOfWeek?: number[];
     }) => remindersApi.create(data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["reminders", variables.babyId] });
+      queryClient.invalidateQueries({
+        queryKey: ["reminders", variables.babyId],
+      });
     },
   });
 }

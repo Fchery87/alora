@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useUser } from "@clerk/clerk-expo";
-import { useAuth } from "@clerk/clerk-expo";
-import { Redirect } from "expo-router";
+import { useUser, useAuth } from "@clerk/clerk-expo";
+import { Redirect, useRouter } from "expo-router";
 
 export default function ProfileScreen() {
   const { user } = useUser();
   const { signOut } = useAuth();
+  const router = useRouter();
   // auth bypass removed
 
   if (!user) {
@@ -14,18 +14,18 @@ export default function ProfileScreen() {
 
   const handleSignOut = async () => {
     await signOut();
-    return <Redirect href="/(auth)/login" />;
+    router.replace("/(auth)/login");
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatar}>
-        <Text style={styles.avatarText}>
-          {user?.firstName?.[0] ||
-            user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() ||
-            "?"}
-        </Text>
+          <Text style={styles.avatarText}>
+            {user?.firstName?.[0] ||
+              user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() ||
+              "?"}
+          </Text>
         </View>
         <Text style={styles.name}>
           {user?.fullName || user?.emailAddresses[0]?.emailAddress}

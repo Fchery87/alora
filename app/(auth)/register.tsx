@@ -71,7 +71,7 @@ export default function RegisterScreen() {
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
-        router.replace("/(auth)/onboarding");
+        router.replace("/");
       } else {
         console.error(JSON.stringify(result, null, 2));
         setError("Registration requires additional verification.");
@@ -91,12 +91,15 @@ export default function RegisterScreen() {
 
     try {
       const { createdSessionId, setActive } = await startOAuthFlow({
-        redirectUrl: Linking.createURL("/(auth)/onboarding", { scheme: "alora" }),
+        redirectUrl:
+          Platform.OS === "web"
+            ? Linking.createURL("/")
+            : Linking.createURL("/", { scheme: "alora" }),
       });
 
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
-        router.replace("/(auth)/onboarding");
+        router.replace("/");
       }
     } catch (err: any) {
       console.error("OAuth error:", err);
@@ -143,9 +146,7 @@ export default function RegisterScreen() {
           <MotiView
             from={{ opacity: 0, translateY: -20 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={
-              { type: "timing", duration: 500 } as MotiTransition
-            }
+            transition={{ type: "timing", duration: 500 } as MotiTransition}
             style={styles.logoContainer}
           >
             <AloraLogo size={80} showText />
@@ -184,7 +185,11 @@ export default function RegisterScreen() {
                   <ActivityIndicator color={TEXT.primary} />
                 ) : (
                   <>
-                    <Ionicons name="logo-google" size={20} color={TEXT.primary} />
+                    <Ionicons
+                      name="logo-google"
+                      size={20}
+                      color={TEXT.primary}
+                    />
                     <Text style={styles.oauthButtonText}>
                       Continue with Google
                     </Text>
@@ -252,7 +257,11 @@ export default function RegisterScreen() {
                     <ActivityIndicator color="#fff" />
                   ) : (
                     <>
-                      <Ionicons name="person-add-outline" size={20} color="#fff" />
+                      <Ionicons
+                        name="person-add-outline"
+                        size={20}
+                        color="#fff"
+                      />
                       <Text style={styles.buttonText}>Sign Up</Text>
                     </>
                   )}

@@ -1,18 +1,13 @@
 import { httpAction } from "../../_generated/server";
-import { v } from "convex/values";
 import { Webhook } from "svix";
-import {
-  handleUserCreated,
-  handleOrganizationCreated,
-  handleOrganizationMembershipCreated,
-  handleUserDeleted,
-  handleOrganizationDeleted,
-} from "./handlers";
+import { internal } from "../../_generated/api";
 
 // Clerk webhook events we support
 const SUPPORTED_EVENTS = [
   "user.created",
+  "user.updated",
   "organization.created",
+  "organization.updated",
   "organizationMembership.created",
   "user.deleted",
   "organization.deleted",
@@ -75,28 +70,90 @@ export const clerk = httpAction(async (ctx: any, request: any) => {
     // Route to appropriate handler
     let result: any;
 
-    // Reconstruct event object from verified payload for handlers
-    const event = { type, data };
-
     switch (eventType) {
       case "user.created":
-        result = await handleUserCreated(ctx, event);
+        result = await ctx.runMutation(
+          internal.functions.webhooks.handlers.handleUserCreated,
+          {
+            clerkUserId: data.id,
+            email: data.email_addresses?.[0]?.email_address,
+            name:
+              data.first_name || data.last_name
+                ? `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim()
+                : undefined,
+            avatarUrl: data.profile_image_url,
+          }
+        );
+        break;
+
+      case "user.updated":
+        result = await ctx.runMutation(
+          internal.functions.webhooks.handlers.handleUserUpdated,
+          {
+            clerkUserId: data.id,
+            email: data.email_addresses?.[0]?.email_address,
+            name:
+              data.first_name || data.last_name
+                ? `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim()
+                : undefined,
+            avatarUrl: data.profile_image_url,
+          }
+        );
         break;
 
       case "organization.created":
-        result = await handleOrganizationCreated(ctx, event);
+        result = await ctx.runMutation(
+          internal.functions.webhooks.handlers.handleOrganizationCreated,
+          {
+            clerkOrganizationId: data.id,
+            organizationName: data.name,
+          }
+        );
+        break;
+
+      case "organization.updated":
+        result = await ctx.runMutation(
+          internal.functions.webhooks.handlers.handleOrganizationUpdated,
+          {
+            clerkOrganizationId: data.id,
+            organizationName: data.name,
+          }
+        );
         break;
 
       case "organizationMembership.created":
-        result = await handleOrganizationMembershipCreated(ctx, event);
+        if (!data.organization?.id || !data.public_user_data?.user_id) {
+          console.error("Invalid organizationMembership payload:", {
+            organizationId: data.organization?.id,
+            userId: data.public_user_data?.user_id,
+          });
+          return new Response("Invalid membership payload", { status: 400 });
+        }
+
+        result = await ctx.runMutation(
+          internal.functions.webhooks.handlers
+            .handleOrganizationMembershipCreated,
+          {
+            clerkOrganizationId: data.organization.id,
+            clerkUserId: data.public_user_data.user_id,
+          }
+        );
         break;
 
       case "user.deleted":
-        result = await handleUserDeleted(ctx, event);
+        result = await ctx.runMutation(
+          internal.functions.webhooks.handlers.handleUserDeleted,
+          {
+            clerkUserId: data.id,
+          }
+        );
         break;
 
       case "organization.deleted":
-        result = await handleOrganizationDeleted(ctx, event);
+        result = await ctx.runMutation(
+          internal.functions.webhooks.handlers.handleOrganizationDeleted,
+          { clerkOrganizationId: data.id }
+        );
         break;
 
       default:

@@ -18,9 +18,9 @@ import {
 } from "react-native";
 import * as LocalAuthentication from "expo-local-authentication";
 import { SessionLockManager } from "@/lib/session-lock";
-import { SecurityManager } from "@/lib/security";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
 
 interface SecurityState {
   isLocked: boolean;
@@ -56,6 +56,7 @@ export function SecurityProvider({
   requireBiometrics = false,
   lockTimeoutMinutes = 5,
 }: SecurityProviderProps) {
+  const { signOut } = useAuth();
   const [isLocked, setIsLocked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [biometricType, setBiometricType] =
@@ -173,9 +174,9 @@ export function SecurityProvider({
     setIsAuthenticated(false);
     setShowLockScreen(true);
     await SessionLockManager.lock();
-    await require("@/lib/clerk").signOut();
+    await signOut();
     router.replace("/(auth)/login");
-  }, []);
+  }, [signOut]);
 
   const getBiometricIcon = () => {
     switch (biometricType) {

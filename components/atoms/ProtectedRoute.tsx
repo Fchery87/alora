@@ -5,24 +5,35 @@ import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 
 interface ProtectedRouteProps {
   children: ReactNode;
+  requireOrganization?: boolean;
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isSignedIn, isLoaded } = useAuth();
+export function ProtectedRoute({
+  children,
+  requireOrganization = false,
+}: ProtectedRouteProps) {
+  const { isSignedIn, isLoaded, orgId } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   // auth bypass removed
 
   useEffect(() => {
+    if (!isLoaded) return;
+
     if (isLoaded && !isSignedIn) {
       const currentPath = pathname;
       router.replace({
         pathname: "/(auth)/login",
         params: { redirect: currentPath },
       });
+      return;
     }
-  }, [isSignedIn, isLoaded, pathname, router]);
+
+    if (isSignedIn && requireOrganization && !orgId) {
+      router.replace("/(auth)/onboarding");
+    }
+  }, [isSignedIn, isLoaded, orgId, pathname, requireOrganization, router]);
 
   if (!isLoaded) {
     return (
@@ -33,6 +44,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!isSignedIn) {
+    return null;
+  }
+
+  if (requireOrganization && !orgId) {
     return null;
   }
 

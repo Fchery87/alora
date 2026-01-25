@@ -3,21 +3,28 @@ import { api } from "convex/_generated/api";
 import { Id } from "convex/_generated/dataModel";
 
 export function useAppointments(
-  clerkOrganizationId: string,
+  clerkOrganizationId: string | undefined,
   babyId?: Id<"babies">,
   startDate?: string,
   endDate?: string
 ) {
-  return useQuery(api.functions.appointments.index.listAppointments, {
-    clerkOrganizationId,
-    babyId,
-    startDate,
-    endDate,
-  });
+  return useQuery(
+    api.functions.appointments.index.listAppointments,
+    clerkOrganizationId
+      ? {
+          clerkOrganizationId,
+          babyId,
+          startDate,
+          endDate,
+        }
+      : "skip"
+  );
 }
 
 export function useAppointment(appointmentId: Id<"appointments">) {
-  return useQuery(api.functions.appointments.index.getAppointment, { appointmentId });
+  return useQuery(api.functions.appointments.index.getAppointment, {
+    appointmentId,
+  });
 }
 
 export function useCreateAppointment() {

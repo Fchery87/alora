@@ -1,6 +1,10 @@
 import { mutation, query } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireUserId, requireBabyAccess } from "../../lib/users";
+import {
+  requireBabyAccess,
+  requireMutationUserId,
+  requireUserId,
+} from "../../lib/users";
 
 export const list = query({
   args: {
@@ -64,7 +68,6 @@ export const get = query({
 export const create = mutation({
   args: {
     babyId: v.id("babies"),
-    userId: v.id("users"),
     type: v.union(
       v.literal("feeding"),
       v.literal("sleep"),
@@ -79,11 +82,12 @@ export const create = mutation({
     isEnabled: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    const userId = await requireMutationUserId(ctx);
     await requireBabyAccess(ctx, args.babyId);
 
     return await ctx.db.insert("reminders", {
       ...args,
+      userId,
       isEnabled: args.isEnabled ?? true,
     });
   },

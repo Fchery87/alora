@@ -21,13 +21,6 @@ import {
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
-// Type assertion for Convex functions
-type BabiesApi = {
-  create: any;
-};
-
-const babiesApi = (api as any).babies as BabiesApi;
-
 interface CreateBabyProps {
   visible: boolean;
   onClose: () => void;
@@ -41,7 +34,7 @@ type Gender = "male" | "female" | "other";
  * Allows users to add a new baby with name, birth date, gender, and optional photo
  */
 export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
-  const createBaby = useMutation(babiesApi.create);
+  const createBaby = useMutation(api.functions.babies.index.create);
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState(
     new Date().toISOString().split("T")[0]
@@ -195,7 +188,9 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
                 style={StyleSheet.flatten(
                   [
                     styles.input,
-                    touched.name && validationErrors.name ? styles.inputError : undefined,
+                    touched.name && validationErrors.name
+                      ? styles.inputError
+                      : undefined,
                   ].filter(Boolean)
                 )}
                 placeholder="Enter name"
@@ -219,7 +214,9 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
                 style={StyleSheet.flatten(
                   [
                     styles.input,
-                    touched.birthDate && validationErrors.birthDate ? styles.inputError : undefined,
+                    touched.birthDate && validationErrors.birthDate
+                      ? styles.inputError
+                      : undefined,
                   ].filter(Boolean)
                 )}
                 placeholder="YYYY-MM-DD"
@@ -251,7 +248,9 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
                       touched.gender &&
                         validationErrors.gender &&
                         styles.genderCardError,
-                      gender === option.value ? { borderColor: option.color } : {},
+                      gender === option.value
+                        ? { borderColor: option.color }
+                        : {},
                     ])}
                     onPress={() => {
                       setGender(option.value);

@@ -21,15 +21,24 @@ export async function getOrCreateUserId(
   ctx: any,
   identity: UserIdentity
 ): Promise<Id<"users">> {
+  const organizationId =
+    (identity.org_id as string | undefined) ??
+    (identity.orgId as string | undefined) ??
+    undefined;
+
   const existingId = await getUserId(ctx, identity);
 
   if (existingId) {
-    await ctx.db.patch(existingId, { lastActiveAt: Date.now() });
+    await ctx.db.patch(existingId, {
+      lastActiveAt: Date.now(),
+      clerkOrganizationId: organizationId,
+    });
     return existingId;
   }
 
   return await ctx.db.insert("users", {
     clerkUserId: identity.subject,
+    clerkOrganizationId: organizationId,
     email: identity.email ?? DEFAULT_EMAIL,
     name: identity.name,
     avatarUrl: identity.pictureUrl,
@@ -43,15 +52,31 @@ export async function requireIdentity(ctx: any) {
   if (!identity) {
     throw new Error("Not authenticated");
   }
+  const organizationId =
+    (identity.org_id as string | undefined) ??
+    (identity.orgId as string | undefined) ??
+    undefined;
+  if (!organizationId) {
+    console.log("Missing orgId in identity:", {
+      subject: identity.subject,
+      issuer: identity.issuer,
+      orgId: organizationId,
+      tokenIdentifier: identity.tokenIdentifier,
+    });
+  }
   return identity;
 }
 
 export async function requireOrganizationId(ctx: any) {
   const identity = await requireIdentity(ctx);
-  if (!identity.orgId) {
+  const organizationId =
+    (identity.org_id as string | undefined) ??
+    (identity.orgId as string | undefined) ??
+    undefined;
+  if (!organizationId) {
     throw new Error("Organization not found");
   }
-  return identity.orgId;
+  return organizationId;
 }
 
 export async function requireUserId(ctx: any): Promise<Id<"users">> {
@@ -68,10 +93,7 @@ export async function requireMutationUserId(ctx: any): Promise<Id<"users">> {
   return await getOrCreateUserId(ctx, identity);
 }
 
-export async function requireBabyAccess(
-  ctx: any,
-  babyId: Id<"babies">
-) {
+export async function requireBabyAccess(ctx: any, babyId: Id<"babies">) {
   const orgId = await requireOrganizationId(ctx);
   const baby = await ctx.db.get(babyId);
   if (!baby) {

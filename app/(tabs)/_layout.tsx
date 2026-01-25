@@ -4,7 +4,7 @@ import { ProtectedRoute } from "@/components/atoms/ProtectedRoute";
 
 export default function TabsLayout() {
   return (
-    <ProtectedRoute>
+    <ProtectedRoute requireOrganization>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: "#6366f1",
@@ -67,6 +67,15 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
+          name="family"
+          options={{
+            title: "Family",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="people-circle" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="wellness"
           options={{
             title: "Wellness",
@@ -81,6 +90,15 @@ export default function TabsLayout() {
             title: "Profile",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="person" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: "Settings",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="settings" size={size} color={color} />
             ),
           }}
         />

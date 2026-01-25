@@ -14,7 +14,7 @@ export const SOUNDS: Sound[] = [
     category: "white",
     duration: 0,
     description: "Classic white noise for blocking distractions",
-    icon: "waveform",
+    icon: "pulse",
   },
   {
     id: "white-2",
@@ -108,7 +108,7 @@ export const SOUNDS: Sound[] = [
 
 export const SOUND_CATEGORIES = [
   { id: "all", label: "All", icon: "library" },
-  { id: "white", label: "White", icon: "waveform" },
+  { id: "white", label: "White", icon: "pulse" },
   { id: "pink", label: "Deep", icon: "water" },
   { id: "womb", label: "Womb", icon: "heart" },
   { id: "nature", label: "Nature", icon: "leaf" },

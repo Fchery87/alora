@@ -3,28 +3,40 @@ import { api } from "convex/_generated/api";
 import { Id } from "convex/_generated/dataModel";
 
 export function useMedications(
-  clerkOrganizationId: string,
+  clerkOrganizationId: string | undefined,
   babyId?: Id<"babies">
 ) {
-  return useQuery(api.functions.medications.index.listMedications, {
-    clerkOrganizationId,
-    babyId,
-  });
+  return useQuery(
+    api.functions.medications.index.listMedications,
+    clerkOrganizationId
+      ? {
+          clerkOrganizationId,
+          babyId,
+        }
+      : "skip"
+  );
 }
 
 export function useActiveMedications(
-  clerkOrganizationId: string,
+  clerkOrganizationId: string | undefined,
   babyId?: Id<"babies">
 ) {
-  return useQuery(api.functions.medications.index.listMedications, {
-    clerkOrganizationId,
-    babyId,
-    isActive: true,
-  });
+  return useQuery(
+    api.functions.medications.index.listMedications,
+    clerkOrganizationId
+      ? {
+          clerkOrganizationId,
+          babyId,
+          isActive: true,
+        }
+      : "skip"
+  );
 }
 
 export function useMedication(medicationId: Id<"medications">) {
-  return useQuery(api.functions.medications.index.getMedication, { medicationId });
+  return useQuery(api.functions.medications.index.getMedication, {
+    medicationId,
+  });
 }
 
 export function useCreateMedication() {

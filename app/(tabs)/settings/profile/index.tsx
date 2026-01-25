@@ -2,20 +2,19 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   Pressable,
   ScrollView,
   Image,
 } from "react-native";
-import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth, useUser } from "@clerk/clerk-expo";
+import { useRouter } from "expo-router";
 
 export default function ProfileScreen() {
-  const [name, setName] = useState("Parent User");
-  const [email, setEmail] = useState("parent@example.com");
-  const [phone, setPhone] = useState("+1 (555) 123-4567");
-  const [isEditing, setIsEditing] = useState(false);
+  const { user } = useUser();
+  const { signOut } = useAuth();
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -24,10 +23,7 @@ export default function ProfileScreen() {
       <ScrollView style={styles.content}>
         <View style={styles.avatarSection}>
           <View style={styles.avatarContainer}>
-            <Image
-              source={{ uri: "https://via.placeholder.com/100" }}
-              style={styles.avatar}
-            />
+            <Image source={{ uri: user?.imageUrl }} style={styles.avatar} />
             <Pressable style={styles.cameraButton}>
               <Ionicons name="camera" size={18} color="#fff" />
             </Pressable>
@@ -42,16 +38,7 @@ export default function ProfileScreen() {
             <Text style={styles.inputLabel}>Full Name</Text>
             <View style={styles.inputContainer}>
               <Ionicons name="person" size={20} color="#64748b" />
-              <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                editable={isEditing}
-                placeholder="Your name"
-              />
-              {isEditing && (
-                <Ionicons name="create" size={18} color="#6366f1" />
-              )}
+              <Text style={styles.readonlyValue}>{user?.fullName || "—"}</Text>
             </View>
           </View>
 
@@ -59,17 +46,9 @@ export default function ProfileScreen() {
             <Text style={styles.inputLabel}>Email</Text>
             <View style={styles.inputContainer}>
               <Ionicons name="mail" size={20} color="#64748b" />
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                editable={isEditing}
-                keyboardType="email-address"
-                placeholder="your@email.com"
-              />
-              {isEditing && (
-                <Ionicons name="create" size={18} color="#6366f1" />
-              )}
+              <Text style={styles.readonlyValue}>
+                {user?.primaryEmailAddress?.emailAddress || "—"}
+              </Text>
             </View>
           </View>
 
@@ -77,40 +56,12 @@ export default function ProfileScreen() {
             <Text style={styles.inputLabel}>Phone Number</Text>
             <View style={styles.inputContainer}>
               <Ionicons name="call" size={20} color="#64748b" />
-              <TextInput
-                style={styles.input}
-                value={phone}
-                onChangeText={setPhone}
-                editable={isEditing}
-                keyboardType="phone-pad"
-                placeholder="+1 (555) 123-4567"
-              />
-              {isEditing && (
-                <Ionicons name="create" size={18} color="#6366f1" />
-              )}
+              <Text style={styles.readonlyValue}>
+                {user?.primaryPhoneNumber?.phoneNumber || "—"}
+              </Text>
             </View>
           </View>
         </View>
-
-        <Pressable
-          style={styles.editButton}
-          onPress={() => setIsEditing(!isEditing)}
-        >
-          <Ionicons
-            name={isEditing ? "close" : "create"}
-            size={20}
-            color="#fff"
-          />
-          <Text style={styles.editButtonText}>
-            {isEditing ? "Cancel Editing" : "Edit Profile"}
-          </Text>
-        </Pressable>
-
-        {isEditing && (
-          <Pressable style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>Save Changes</Text>
-          </Pressable>
-        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Connected Accounts</Text>
@@ -134,7 +85,13 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Danger Zone</Text>
 
-          <Pressable style={styles.dangerButton}>
+          <Pressable
+            style={styles.dangerButton}
+            onPress={async () => {
+              await signOut();
+              router.replace("/(auth)/login");
+            }}
+          >
             <Ionicons name="log-out" size={20} color="#ef4444" />
             <Text style={styles.dangerButtonText}>Sign Out</Text>
           </Pressable>
@@ -214,37 +171,10 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 12,
   },
-  input: {
+  readonlyValue: {
     flex: 1,
     fontSize: 16,
     color: "#0f172a",
-  },
-  editButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#6366f1",
-    padding: 16,
-    borderRadius: 12,
-    gap: 8,
-    marginBottom: 16,
-  },
-  editButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  saveButton: {
-    backgroundColor: "#22c55e",
-    padding: 16,
-    borderRadius: 12,
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
   accountRow: {
     flexDirection: "row",

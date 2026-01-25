@@ -15,12 +15,7 @@ import { MotiView } from "moti";
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
-import {
-  useSignIn,
-  useOrganization,
-  useOrganizationList,
-  useOAuth,
-} from "@clerk/clerk-expo";
+import { useAuth, useSignIn, useOAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 
 import { AloraLogo } from "@/components/atoms/AloraLogo";
@@ -53,8 +48,7 @@ export default function LoginScreen() {
   useWarmUpBrowser();
 
   const { signIn, setActive, isLoaded } = useSignIn();
-  const { setActive: setActiveOrg } = useOrganizationList();
-  const { organization } = useOrganization();
+  const { isSignedIn, isLoaded: isAuthLoaded } = useAuth();
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const router = useRouter();
 
@@ -63,13 +57,11 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [needsOrgSelection, setNeedsOrgSelection] = useState(false);
-
   useEffect(() => {
-    if (organization) {
-      router.replace("/(tabs)/dashboard");
+    if (isAuthLoaded && isSignedIn) {
+      router.replace("/");
     }
-  }, [organization]);
+  }, [isAuthLoaded, isSignedIn, router]);
 
   const handleLogin = async () => {
     if (!isLoaded || loading) return;
@@ -85,7 +77,7 @@ export default function LoginScreen() {
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
-        setNeedsOrgSelection(true);
+        router.replace("/");
       } else {
         setError("Login failed. Please try again.");
       }
@@ -103,75 +95,52 @@ export default function LoginScreen() {
     setError("");
 
     try {
+      if (!isAuthLoaded) {
+        return;
+      }
+      if (isAuthLoaded && isSignedIn) {
+        if (Platform.OS === "web") {
+          (globalThis as any).location?.assign?.(Linking.createURL("/"));
+          return;
+        }
+        router.replace("/");
+        return;
+      }
+
       const { createdSessionId, setActive } = await startOAuthFlow({
-        redirectUrl: Linking.createURL("/(tabs)/dashboard", { scheme: "alora" }),
+        redirectUrl:
+          Platform.OS === "web"
+            ? Linking.createURL("/")
+            : Linking.createURL("/", { scheme: "alora" }),
       });
 
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
-        setNeedsOrgSelection(true);
+        router.replace("/");
       }
     } catch (err: any) {
       console.error("OAuth error:", err);
-      setError("Google sign-in failed. Please try again.");
+      const message =
+        err?.errors?.[0]?.message ||
+        err?.message ||
+        "Google sign-in failed. Please try again.";
+      if (
+        typeof message === "string" &&
+        (message.includes("already signed in") ||
+          message.toLowerCase().includes("session already exists"))
+      ) {
+        if (Platform.OS === "web") {
+          (globalThis as any).location?.assign?.(Linking.createURL("/"));
+          return;
+        }
+        router.replace("/");
+        return;
+      }
+      setError(message);
     } finally {
       setGoogleLoading(false);
     }
-  }, [startOAuthFlow, googleLoading]);
-
-  const handleCreateOrganization = async () => {
-    router.push("/(auth)/onboarding");
-  };
-
-  if (needsOrgSelection) {
-    return (
-      <LinearGradient
-        colors={[GRADIENTS.primary.start, GRADIENTS.primary.end]}
-        style={styles.gradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <View style={styles.container}>
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={
-              { type: "timing", duration: 400 } as MotiTransition
-            }
-          >
-            <GlassCard style={styles.card}>
-              <Text style={styles.title}>Select Organization</Text>
-              <Text style={styles.subtitle}>
-                Choose or create an organization to continue
-              </Text>
-
-              <TouchableOpacity
-                style={styles.primaryButton}
-                onPress={handleCreateOrganization}
-              >
-                <LinearGradient
-                  colors={[GRADIENTS.secondary.start, GRADIENTS.secondary.end]}
-                  style={styles.buttonGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                >
-                  <Ionicons name="add-circle-outline" size={20} color="#fff" />
-                  <Text style={styles.buttonText}>Create New Organization</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.linkButton}
-                onPress={() => setNeedsOrgSelection(false)}
-              >
-                <Text style={styles.linkText}>Back to Login</Text>
-              </TouchableOpacity>
-            </GlassCard>
-          </MotiView>
-        </View>
-      </LinearGradient>
-    );
-  }
+  }, [googleLoading, isAuthLoaded, isSignedIn, router, startOAuthFlow]);
 
   return (
     <LinearGradient
@@ -210,9 +179,7 @@ export default function LoginScreen() {
           <MotiView
             from={{ opacity: 0, translateY: -20 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={
-              { type: "timing", duration: 500 } as MotiTransition
-            }
+            transition={{ type: "timing", duration: 500 } as MotiTransition}
             style={styles.logoContainer}
           >
             <AloraLogo size={80} showText />
@@ -245,13 +212,17 @@ export default function LoginScreen() {
               <TouchableOpacity
                 style={styles.oauthButton}
                 onPress={handleGoogleSignIn}
-                disabled={googleLoading}
+                disabled={googleLoading || !isAuthLoaded}
               >
                 {googleLoading ? (
                   <ActivityIndicator color={TEXT.primary} />
                 ) : (
                   <>
-                    <Ionicons name="logo-google" size={20} color={TEXT.primary} />
+                    <Ionicons
+                      name="logo-google"
+                      size={20}
+                      color={TEXT.primary}
+                    />
                     <Text style={styles.oauthButtonText}>
                       Continue with Google
                     </Text>

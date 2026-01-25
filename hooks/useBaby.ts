@@ -20,15 +20,14 @@ export interface Baby {
  * Hook to fetch babies from Convex and manage baby selection
  */
 export function useBaby() {
-  const { userId } = useAuth();
+  const { userId, orgId, isLoaded } = useAuth();
   const selectedBabyId = useBabyStore((state) => state.selectedBabyId);
   const babies = useBabyStore((state) => state.babies);
 
   // Fetch babies from Convex
-  const babiesApi = (api as any).babies;
   const fetchedBabies = useQuery(
-    babiesApi.listByOrganization,
-    userId ? {} : "skip"
+    api.functions.babies.index.listByOrganization,
+    isLoaded && userId && orgId ? {} : "skip"
   );
 
   useEffect(() => {

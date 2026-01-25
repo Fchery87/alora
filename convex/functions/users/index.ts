@@ -1,6 +1,6 @@
 import { query } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireUserId } from "../../lib/users";
+import { requireOrganizationId, requireUserId } from "../../lib/users";
 
 export const get = query({
   args: {},
@@ -22,15 +22,12 @@ export const getUsersByIds = query({
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
+    const orgId = await requireOrganizationId(ctx);
 
-    // Get the current user
-    const user = await ctx.db.get(userId);
-    if (!user) throw new Error("User not found");
-
-    // Return all users (family concept is managed via Clerk organizations)
     const users = await ctx.db
       .query("users")
+      .filter((q: any) => q.eq(q.field("clerkOrganizationId"), orgId))
       .collect();
 
     return users;

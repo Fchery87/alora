@@ -6,9 +6,25 @@ interface ConvexProviderWrapperProps {
   children: React.ReactNode;
 }
 
-export function ConvexProviderWrapper({ children }: ConvexProviderWrapperProps) {
+function useConvexAuth() {
+  const auth = useAuth();
+  return {
+    ...auth,
+    getToken: async (options?: Parameters<typeof auth.getToken>[0]) => {
+      return auth.getToken({
+        template: "convex",
+        skipCache: true,
+        ...options,
+      });
+    },
+  };
+}
+
+export function ConvexProviderWrapper({
+  children,
+}: ConvexProviderWrapperProps) {
   return (
-    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+    <ConvexProviderWithClerk client={convex} useAuth={useConvexAuth}>
       {children}
     </ConvexProviderWithClerk>
   );
