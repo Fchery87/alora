@@ -73,8 +73,9 @@
     "jsdom": "24.0.0",
     "lint-staged": "15.2.10",
     "prettier": "3.3.3",
+    "react-test-renderer": "18.2.0",
     "typescript": "5.4.5",
-    "vitest": "1.6.0"
+    "vitest": "0.34.6"
   },
   "engines": {
     "node": ">=20.0.0",
