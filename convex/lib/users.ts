@@ -52,10 +52,12 @@ export async function requireIdentity(ctx: any) {
   if (!identity) {
     throw new Error("Not authenticated");
   }
+
   const organizationId =
     (identity.org_id as string | undefined) ??
     (identity.orgId as string | undefined) ??
     undefined;
+
   if (!organizationId) {
     console.log("Missing orgId in identity:", {
       subject: identity.subject,
@@ -64,6 +66,7 @@ export async function requireIdentity(ctx: any) {
       tokenIdentifier: identity.tokenIdentifier,
     });
   }
+
   return identity;
 }
 
@@ -73,9 +76,11 @@ export async function requireOrganizationId(ctx: any) {
     (identity.org_id as string | undefined) ??
     (identity.orgId as string | undefined) ??
     undefined;
+
   if (!organizationId) {
     throw new Error("Organization not found");
   }
+
   return organizationId;
 }
 
