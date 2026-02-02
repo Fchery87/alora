@@ -1,5 +1,3 @@
-import type { AuthConfig } from "convex/server";
-
 const clerkJwtIssuerDomain = process.env.CLERK_JWT_ISSUER_DOMAIN;
 
 if (!clerkJwtIssuerDomain) {
@@ -15,4 +13,4 @@ export default {
       applicationID: "convex",
     },
   ],
-} satisfies AuthConfig;
+};

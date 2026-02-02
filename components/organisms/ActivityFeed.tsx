@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import {
   View,
-  Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Animated,
@@ -12,6 +10,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useActivityFeed, ActivityItem } from "@/hooks/useActivityFeed";
 import { useAuth } from "@clerk/clerk-expo";
+import { Text } from "@/components/ui/Text";
+import { Card } from "@/components/ui/Card";
 
 interface ActivityFeedProps {
   babyId?: string;
@@ -70,12 +70,12 @@ export function ActivityFeed({
       : "U";
 
     if (avatarUrl) {
-      return <Image source={{ uri: avatarUrl }} style={styles.avatarImage} />;
+      return <Image source={{ uri: avatarUrl }} className="w-8 h-8 rounded-full" />;
     }
 
     return (
-      <View style={[styles.avatarPlaceholder, { backgroundColor: "#e5e7eb" }]}>
-        <Text style={styles.avatarInitials}>{initials}</Text>
+      <View className="w-8 h-8 rounded-full items-center justify-center bg-nano-800">
+        <Text className="text-[10px] font-bold text-nano-400">{initials}</Text>
       </View>
     );
   };
@@ -84,34 +84,30 @@ export function ActivityFeed({
     return (
       <Animated.View
         key={activity.id}
-        style={[
-          styles.activityItem,
-          {
-            opacity: fadeAnim,
-          },
-        ]}
+        className="flex-row px-5 py-3 items-start"
+        style={{
+          opacity: fadeAnim,
+        }}
       >
-        <View style={styles.activityLeft}>
+        <View className="mr-3">
           <View
-            style={[
-              styles.activityIcon,
-              { backgroundColor: activity.iconBgColor },
-            ]}
+            className="w-10 h-10 rounded-full items-center justify-center"
+            style={{ backgroundColor: `${activity.iconColor}20` }}
           >
             <Ionicons
               name={activity.icon as any}
-              size={20}
+              size={18}
               color={activity.iconColor}
             />
           </View>
         </View>
 
-        <View style={styles.activityContent}>
-          <View style={styles.activityHeader}>
+        <View className="flex-1">
+          <View className="flex-row items-start gap-3">
             {renderAvatar(activity.userName, activity.userAvatarUrl)}
-            <View style={styles.activityTextContainer}>
-              <Text style={styles.activityMessage}>{activity.message}</Text>
-              <Text style={styles.activityTime}>
+            <View className="flex-1">
+              <Text className="text-white text-sm font-medium leading-5">{activity.message}</Text>
+              <Text className="text-nano-500 text-xs mt-1">
                 {getRelativeTime(activity.timestamp)}
               </Text>
             </View>
@@ -125,25 +121,27 @@ export function ActivityFeed({
     if (activities.length === 0) return null;
 
     return (
-      <View key={title} style={styles.activityGroup}>
-        <Text style={styles.groupTitle}>{title}</Text>
+      <View key={title} className="mb-2">
+        <Text className="text-[11px] font-bold text-nano-500 uppercase tracking-widest px-5 py-2 bg-nano-900/50">
+          {title}
+        </Text>
         {activities.map((activity, index) => renderActivity(activity, index))}
       </View>
     );
   };
 
   const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <View style={styles.emptyIconContainer}>
-        <Ionicons name="time-outline" size={48} color="#d1d5db" />
+    <View className="py-12 px-8 items-center">
+      <View className="w-20 h-20 rounded-full bg-nano-900 items-center justify-center mb-4">
+        <Ionicons name="time-outline" size={40} color="#333" />
       </View>
-      <Text style={styles.emptyTitle}>No activity yet</Text>
-      <Text style={styles.emptyMessage}>
+      <Text className="text-white text-lg font-bold">No activity yet</Text>
+      <Text className="text-nano-500 text-sm text-center mt-2 leading-5">
         Start logging feeds, diapers, sleep, and more to see activity here
       </Text>
-      <TouchableOpacity style={styles.emptyButton}>
-        <Ionicons name="add-circle-outline" size={20} color="#6366f1" />
-        <Text style={styles.emptyButtonText}>Log your first activity</Text>
+      <TouchableOpacity className="flex-row items-center gap-2 bg-banana-500/10 px-5 py-3 rounded-xl mt-6 border border-banana-500/20">
+        <Ionicons name="add-circle-outline" size={20} color="#FFE135" />
+        <Text className="text-banana-500 font-bold text-sm">Log first activity</Text>
       </TouchableOpacity>
     </View>
   );
@@ -155,19 +153,13 @@ export function ActivityFeed({
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="p-5">
         {[1, 2, 3].map((i) => (
-          <View key={i} style={styles.skeletonItem}>
-            <View
-              style={[styles.skeletonIcon, { backgroundColor: "#f3f4f6" }]}
-            />
-            <View style={styles.skeletonContent}>
-              <View
-                style={[styles.skeletonLine, { width: "70%", height: 14 }]}
-              />
-              <View
-                style={[styles.skeletonLine, { width: "40%", height: 12 }]}
-              />
+          <View key={i} className="flex-row mb-4">
+            <View className="w-10 h-10 rounded-full bg-nano-900 mr-3" />
+            <View className="flex-1 gap-2">
+              <View className="w-[70%] h-3 bg-nano-900 rounded" />
+              <View className="w-[40%] h-3 bg-nano-900 rounded" />
             </View>
           </View>
         ))}
@@ -176,28 +168,32 @@ export function ActivityFeed({
   }
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Ionicons name="pulse-outline" size={20} color="#6366f1" />
-          <Text style={styles.headerTitle}>Activity Feed</Text>
+    <Animated.View 
+      className="bg-nano-900 border border-nano-800 rounded-3xl overflow-hidden shadow-2xl"
+      style={{ opacity: fadeAnim }}
+    >
+      <View className="flex-row justify-between items-center px-5 py-4 border-b border-nano-800">
+        <View className="flex-row items-center gap-2">
+          <Ionicons name="pulse-outline" size={20} color="#FFE135" />
+          <Text className="text-white text-lg font-bold">Activity Feed</Text>
         </View>
         {!refreshing && hasActivity && (
           <Animated.View style={{ transform: [{ scale: liveIndicatorAnim }] }}>
-            <View style={styles.liveIndicator}>
-              <View style={styles.liveDot} />
-              <Text style={styles.liveText}>Live</Text>
+            <View className="flex-row items-center bg-green-500/10 px-2.5 py-1 rounded-full gap-1.5">
+              <View className="w-2 h-2 rounded-full bg-green-500" />
+              <Text className="text-[10px] font-bold text-green-500 uppercase">Live</Text>
             </View>
           </Animated.View>
         )}
       </View>
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="max-h-[400px]"
+        contentContainerStyle={{ paddingVertical: 8 }}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           onRefresh ? (
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFE135" />
           ) : undefined
         }
       >
@@ -239,189 +235,4 @@ function getRelativeTime(timestamp: number): string {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#ffffff",
-    borderRadius: 20,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f3f4f6",
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#0f172a",
-  },
-  liveIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#ecfdf5",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    gap: 6,
-  },
-  liveDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#10b981",
-  },
-  liveText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#059669",
-  },
-  scrollView: {
-    maxHeight: 400,
-  },
-  scrollContent: {
-    paddingVertical: 8,
-  },
-  activityGroup: {
-    marginBottom: 8,
-  },
-  groupTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#64748b",
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    backgroundColor: "#f9fafb",
-  },
-  activityItem: {
-    flexDirection: "row",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    alignItems: "flex-start",
-  },
-  activityLeft: {
-    marginRight: 12,
-  },
-  activityIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-  },
-  avatarImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-  },
-  avatarPlaceholder: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#e5e7eb",
-  },
-  avatarInitials: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#374151",
-  },
-  activityTextContainer: {
-    flex: 1,
-  },
-  activityMessage: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#1f2937",
-    lineHeight: 20,
-  },
-  activityTime: {
-    fontSize: 12,
-    color: "#9ca3af",
-    marginTop: 2,
-  },
-  emptyState: {
-    paddingVertical: 48,
-    paddingHorizontal: 32,
-    alignItems: "center",
-  },
-  emptyIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: "#f9fafb",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
-  },
-  emptyMessage: {
-    fontSize: 14,
-    color: "#6b7280",
-    textAlign: "center",
-    marginBottom: 24,
-    lineHeight: 20,
-  },
-  emptyButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    backgroundColor: "#eef2ff",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
-  emptyButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#6366f1",
-  },
-  loadingContainer: {
-    padding: 20,
-  },
-  skeletonItem: {
-    flexDirection: "row",
-    marginBottom: 16,
-  },
-  skeletonIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  skeletonContent: {
-    flex: 1,
-    gap: 8,
-  },
-  skeletonLine: {
-    backgroundColor: "#f3f4f6",
-    borderRadius: 4,
-  },
-});
+

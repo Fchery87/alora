@@ -1,6 +1,11 @@
 import { mutation, query } from "../../_generated/server";
 import { v } from "convex/values";
 import { requireMutationUserId, requireUserId } from "../../lib/users";
+import {
+  sanitizeTitle,
+  sanitizeUserContent,
+  sanitizeStringArray,
+} from "../../lib/sanitize";
 
 export const createJournal = mutation({
   args: {
@@ -25,6 +30,9 @@ export const createJournal = mutation({
 
     return await ctx.db.insert("journal", {
       ...args,
+      title: args.title ? sanitizeTitle(args.title) : undefined,
+      content: sanitizeUserContent(args.content),
+      tags: args.tags ? sanitizeStringArray(args.tags) : undefined,
       userId,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -113,6 +121,11 @@ export const updateJournal = mutation({
     const { id, ...updates } = args;
     return await ctx.db.patch(id, {
       ...updates,
+      title: updates.title ? sanitizeTitle(updates.title) : undefined,
+      content: updates.content
+        ? sanitizeUserContent(updates.content)
+        : undefined,
+      tags: updates.tags ? sanitizeStringArray(updates.tags) : undefined,
       updatedAt: Date.now(),
     });
   },

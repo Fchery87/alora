@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, ViewStyle, ColorValue } from "react-native";
+import { View, StyleSheet, ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
 import { GRADIENTS, GLASS, SHADOWS, RADIUS } from "@/lib/theme";
@@ -23,7 +23,7 @@ export function GlassCard({
   animated = true,
   delay = 0,
 }: GlassCardProps) {
-  const gradientColors: readonly [ColorValue, ColorValue] = React.useMemo(() => {
+  const gradientColors = React.useMemo((): string[] => {
     switch (variant) {
       case "primary":
         return [GRADIENTS.primary.start, GRADIENTS.primary.end];
@@ -34,7 +34,7 @@ export function GlassCard({
       case "calm":
         return [GRADIENTS.calm.start, GRADIENTS.calm.end];
       default:
-        return ["#ffffff", "#f8fafc"] as const;
+        return ["#ffffff", "#f8fafc"];
     }
   }, [variant]);
 

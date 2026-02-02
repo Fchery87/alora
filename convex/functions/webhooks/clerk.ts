@@ -1,6 +1,7 @@
 import { httpAction } from "../../_generated/server";
 import { Webhook } from "svix";
 import { internal } from "../../_generated/api";
+import { requireRateLimit, createIpRateLimitKey } from "../../lib/ratelimit";
 
 // Clerk webhook events we support
 const SUPPORTED_EVENTS = [
@@ -15,6 +16,20 @@ const SUPPORTED_EVENTS = [
 
 export const clerk = httpAction(async (ctx: any, request: any) => {
   try {
+    // Rate limit webhook requests by IP (60 per minute)
+    const clientIp =
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    const rateLimitKey = createIpRateLimitKey(clientIp, "webhook");
+
+    try {
+      await requireRateLimit(ctx, rateLimitKey, "webhook");
+    } catch (rateError: any) {
+      console.error("Webhook rate limit exceeded:", clientIp);
+      return new Response("Rate limit exceeded", { status: 429 });
+    }
+
     // Get Clerk webhook secret from environment
     const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 

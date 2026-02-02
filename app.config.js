@@ -42,7 +42,6 @@ export default {
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "READ_MEDIA_IMAGES",
-        "DETECT_SCREEN_CAPTURE",
         "VIBRATE",
         "RECEIVE_BOOT_COMPLETED",
       ],
@@ -73,7 +72,7 @@ export default {
       [
         "expo-notifications",
         {
-          icon: "./assets/images/notification-icon.png",
+          icon: "./assets/images/app-icon.png",
           color: "#7C3AED",
           defaultChannel: "default",
         },

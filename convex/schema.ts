@@ -253,4 +253,12 @@ export default defineSchema({
     .index("by_family", ["clerkOrganizationId"])
     .index("by_baby", ["babyId"])
     .index("by_active", ["isActive"]),
+
+  rateLimits: defineTable({
+    key: v.string(),
+    count: v.number(),
+    resetAt: v.number(),
+  })
+    .index("by_key", ["key"])
+    .index("by_reset", ["resetAt"]),
 });

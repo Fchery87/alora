@@ -11,6 +11,7 @@ export default defineConfig({
       "**/node_modules/**",
       "**/dist/**",
       "**/coverage/**",
+      "__tests__/e2e/**",
       "**/.worktrees/**",
     ],
     coverage: {

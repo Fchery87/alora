@@ -1,11 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Header } from "@/components/layout/Header";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 
 export default function JournalScreen() {
-  const { signOut } = useAuth();
   const router = useRouter();
 
   return (

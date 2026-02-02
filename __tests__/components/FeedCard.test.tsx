@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react-native";
-import { FeedCard } from "@/components/molecules";
+import { FeedCard } from "@/components/molecules/FeedCard";
 
 describe("FeedCard Component", () => {
   const mockFeed = {

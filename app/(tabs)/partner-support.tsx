@@ -8,11 +8,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { Header } from "@/components/layout/Header";
-import {
-  PARTNER_PROMPTS,
-  REFLECTION_QUESTIONS,
-  getRandomPrompt,
-} from "@/lib/partner-support";
+import { REFLECTION_QUESTIONS, getRandomPrompt } from "@/lib/partner-support";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 

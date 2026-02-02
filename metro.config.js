@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 // Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require("expo/metro-config");
-const { withTamagui } = require("@tamagui/metro-plugin");
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname, {
@@ -17,9 +16,5 @@ config.transformer.getTransformOptions = async () => ({
   },
 });
 
-// Apply Tamagui Metro plugin for optimizations
-module.exports = withTamagui(config, {
-  components: ["tamagui"],
-  config: "./config/tamagui.config.ts",
-  outputCSS: "./tamagui-web.css",
-});
+// Apply standard Expo Metro configuration
+module.exports = config;

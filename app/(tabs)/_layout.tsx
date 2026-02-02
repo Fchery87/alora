@@ -7,8 +7,12 @@ export default function TabsLayout() {
     <ProtectedRoute requireOrganization>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#6366f1",
-          tabBarInactiveTintColor: "#9ca3af",
+          tabBarActiveTintColor: "#FFE135", // Banana Yellow
+          tabBarInactiveTintColor: "#888888",
+          tabBarStyle: {
+            backgroundColor: "#0A0A0A", // Nano Black
+            borderTopColor: "#333333",
+          },
           headerShown: false,
         }}
       >

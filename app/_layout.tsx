@@ -1,8 +1,14 @@
 // Load Reanimated web shim before any animations
 import "@/lib/reanimated-web-shim";
+import "../global.css";
 
 import { Stack } from "expo-router";
-import { useFonts } from "expo-font";
+import {
+  useFonts,
+  Outfit_400Regular,
+  Outfit_500Medium,
+  Outfit_700Bold,
+} from "@expo-google-fonts/outfit";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { ClerkProviderWrapper } from "@/lib/clerk";
@@ -14,7 +20,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
+    Outfit: Outfit_400Regular,
+    OutfitMedium: Outfit_500Medium,
+    OutfitBold: Outfit_700Bold,
   });
 
   useEffect(() => {

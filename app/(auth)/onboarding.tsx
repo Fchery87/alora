@@ -59,13 +59,8 @@ export default function OnboardingScreen() {
     }
   }, [isLoaded, orgId, userMemberships.data, setActive]);
 
-  useEffect(() => {
-    if (isSignedIn && orgId && !redirectToDashboardAttempted.current) {
-      redirectToDashboardAttempted.current = true;
-      router.replace("/(tabs)/dashboard");
-    }
-  }, [isSignedIn, orgId]);
-
+  // Only redirect to dashboard when user is signed in, has org, AND has babies
+  // This prevents premature redirect during onboarding flow
   useEffect(() => {
     if (
       isSignedIn &&

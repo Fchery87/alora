@@ -1,6 +1,11 @@
 import { mutation, query } from "../../_generated/server";
 import { v } from "convex/values";
 import { requireUserId, requireBabyAccess } from "../../lib/users";
+import {
+  sanitizeTitle,
+  sanitizeDescription,
+  sanitizeText,
+} from "../../lib/sanitize";
 
 export const list = query({
   args: {
@@ -61,6 +66,9 @@ export const create = mutation({
 
     return await ctx.db.insert("milestones", {
       ...args,
+      title: sanitizeTitle(args.title),
+      description: sanitizeDescription(args.description),
+      photoUrl: args.photoUrl ? sanitizeText(args.photoUrl) : undefined,
       isCelebrated: false,
     });
   },
@@ -94,7 +102,14 @@ export const update = mutation({
 
     await requireBabyAccess(ctx, existing.babyId);
 
-    return await ctx.db.patch(id, updates);
+    return await ctx.db.patch(id, {
+      ...updates,
+      title: updates.title ? sanitizeTitle(updates.title) : undefined,
+      description: updates.description
+        ? sanitizeDescription(updates.description)
+        : undefined,
+      photoUrl: updates.photoUrl ? sanitizeText(updates.photoUrl) : undefined,
+    });
   },
 });
 

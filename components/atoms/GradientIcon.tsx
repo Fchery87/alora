@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity, ColorValue } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
@@ -24,22 +24,22 @@ export function GradientIcon({
   animated = true,
   delay = 0,
 }: GradientIconProps) {
-  const gradientColors: readonly [ColorValue, ColorValue] = React.useMemo(() => {
+  const gradientColors = React.useMemo((): string[] => {
     switch (variant) {
       case "primary":
-        return [GRADIENTS.primary.start, GRADIENTS.primary.end] as const;
+        return [GRADIENTS.primary.start, GRADIENTS.primary.end];
       case "secondary":
-        return [GRADIENTS.secondary.start, GRADIENTS.secondary.end] as const;
+        return [GRADIENTS.secondary.start, GRADIENTS.secondary.end];
       case "accent":
-        return [GRADIENTS.accent.start, GRADIENTS.accent.end] as const;
+        return [GRADIENTS.accent.start, GRADIENTS.accent.end];
       case "success":
-        return [GRADIENTS.success.start, GRADIENTS.success.end] as const;
+        return [GRADIENTS.success.start, GRADIENTS.success.end];
       case "danger":
-        return [GRADIENTS.danger.start, GRADIENTS.danger.end] as const;
+        return [GRADIENTS.danger.start, GRADIENTS.danger.end];
       case "calm":
-        return [GRADIENTS.calm.start, GRADIENTS.calm.end] as const;
+        return [GRADIENTS.calm.start, GRADIENTS.calm.end];
       default:
-        return [GRADIENTS.primary.start, GRADIENTS.primary.end] as const;
+        return [GRADIENTS.primary.start, GRADIENTS.primary.end];
     }
   }, [variant]);
 

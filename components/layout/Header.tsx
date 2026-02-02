@@ -1,6 +1,7 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { Text } from "@/components/ui/Text";
 
 interface HeaderProps {
   title: string;
@@ -20,29 +21,29 @@ export function Header({
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-      <View style={styles.leftContainer}>
+    <View className="flex-row items-center justify-between px-4 py-4 bg-nano-950 border-b border-nano-800">
+      <View className="w-10">
         {showBackButton && (
           <TouchableOpacity
-            style={styles.backButton}
+            className="p-2"
             onPress={() => navigation.goBack()}
           >
-            <Ionicons name="arrow-back" size={24} color="#0f172a" />
+            <Ionicons name="arrow-back" size={24} color="#FFE135" />
           </TouchableOpacity>
         )}
       </View>
 
-      <Text style={styles.title} numberOfLines={1}>
+      <Text variant="title" className="flex-1 text-center text-lg font-bold text-white" numberOfLines={1}>
         {title}
       </Text>
 
-      <View style={styles.rightContainer}>
+      <View className="w-10 items-end">
         {rightAction && (
           <TouchableOpacity
-            style={styles.actionButton}
+            className="p-2"
             onPress={rightAction.onPress}
           >
-            <Ionicons name={rightAction.icon} size={24} color="#6366f1" />
+            <Ionicons name={rightAction.icon} size={24} color="#FFE135" />
           </TouchableOpacity>
         )}
       </View>
@@ -50,35 +51,4 @@ export function Header({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
-  },
-  leftContainer: {
-    width: 40,
-  },
-  rightContainer: {
-    width: 40,
-    alignItems: "flex-end",
-  },
-  title: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#0f172a",
-    textAlign: "center",
-  },
-  backButton: {
-    padding: 4,
-  },
-  actionButton: {
-    padding: 4,
-  },
-});
+

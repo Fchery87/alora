@@ -1,35 +1,26 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
-  Text,
   TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  KeyboardAvoidingView,
   Platform,
+  KeyboardAvoidingView,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
 import { useSignUp, useOAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { cssInterop } from "react-native-css-interop";
+import { Ionicons } from "@expo/vector-icons";
 
-import { AloraLogo } from "@/components/atoms/AloraLogo";
-import { GlassCard } from "@/components/atoms/GlassCard";
-import {
-  GRADIENTS,
-  SHADOWS,
-  RADIUS,
-  SPACING,
-  TYPOGRAPHY,
-  TEXT,
-  COLORS,
-} from "@/lib/theme";
-import type { MotiTransition } from "@/lib/moti-types";
+import { Logo } from "@/components/Logo";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Text } from "@/components/ui/Text";
+
+cssInterop(MotiView, { className: "style" });
 
 // Warm up browser on Android for better UX
 export const useWarmUpBrowser = () => {
@@ -75,6 +66,7 @@ export default function RegisterScreen() {
       } else {
         console.error(JSON.stringify(result, null, 2));
         setError("Registration requires additional verification.");
+        // Use router to navigate to verification if needed, or handle inline
       }
     } catch (err: any) {
       setError(err.errors?.[0]?.message || "Registration failed");
@@ -110,329 +102,162 @@ export default function RegisterScreen() {
   }, [startOAuthFlow, googleLoading, router]);
 
   return (
-    <LinearGradient
-      colors={[GRADIENTS.secondary.start, GRADIENTS.secondary.end]}
-      style={styles.gradient}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    >
-      {/* Decorative floating circles */}
-      <MotiView
-        from={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 0.1, scale: 1 }}
-        transition={
-          { type: "timing", duration: 800, delay: 200 } as MotiTransition
-        }
-        style={[styles.floatingCircle, styles.circle1]}
-      />
-      <MotiView
-        from={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 0.08, scale: 1 }}
-        transition={
-          { type: "timing", duration: 800, delay: 400 } as MotiTransition
-        }
-        style={[styles.floatingCircle, styles.circle2]}
-      />
+    <View className="flex-1 bg-nano-950">
+       {/* Decorative Background Elements */}
+       <MotiView 
+         from={{ opacity: 0, scale: 0.8 }} 
+         animate={{ opacity: 0.15, scale: 1 }} 
+         transition={{ 
+           type: 'timing', 
+           duration: 2500, 
+           loop: true,
+           repeatReverse: true 
+         } as any}
+         className="absolute top-[-150px] left-[-50px] w-96 h-96 bg-banana-500 rounded-full blur-[100px]" 
+       />
+       <MotiView 
+         from={{ opacity: 0, scale: 0.8 }} 
+         animate={{ opacity: 0.1, scale: 1 }} 
+         transition={{ 
+           type: 'timing', 
+           duration: 3500, 
+           loop: true, 
+           delay: 500,
+           repeatReverse: true
+         } as any}
+         className="absolute bottom-[-100px] right-[-50px] w-80 h-80 bg-banana-600 rounded-full blur-[80px]" 
+       />
 
       <KeyboardAvoidingView
-        style={styles.keyboardAvoid}
+        className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 24 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Logo */}
+           {/* Logo */}
           <MotiView
             from={{ opacity: 0, translateY: -20 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "timing", duration: 500 } as MotiTransition}
-            style={styles.logoContainer}
+            transition={{
+              opacity: { type: "timing", duration: 700 },
+              translateY: { type: "timing", duration: 700 },
+            }}
+            className="items-center mb-6"
           >
-            <AloraLogo size={80} showText />
+            <Logo size={70} showText />
           </MotiView>
 
           {/* Register Card */}
           <MotiView
             from={{ opacity: 0, translateY: 30 }}
             animate={{ opacity: 1, translateY: 0 }}
-            transition={
-              { type: "timing", duration: 500, delay: 200 } as MotiTransition
-            }
+            transition={{
+              opacity: { type: "timing", duration: 700, delay: 200 },
+              translateY: { type: "timing", duration: 700, delay: 200 },
+            }}
           >
-            <GlassCard style={styles.card}>
-              <Text style={styles.title}>Create Account</Text>
-              <Text style={styles.subtitle}>Start your parenting journey</Text>
+            <Card variant="glass" className="w-full max-w-sm mx-auto bg-nano-900/90 border-nano-800 p-6 shadow-2xl backdrop-blur-xl">
+              <Text variant="title" className="text-center mb-1 text-white">Create Account</Text>
+              <Text variant="subtitle" className="text-center mb-8 text-nano-400">Join the Nano Banana revolution</Text>
 
               {error ? (
                 <MotiView
-                  from={{ opacity: 0, scale: 0.9 }}
+                  from={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  style={styles.errorContainer}
+                  className="flex-row items-center bg-red-500/10 border border-red-500/20 p-3 rounded-xl mb-4 gap-2"
                 >
-                  <Ionicons name="alert-circle" size={18} color={COLORS.rose} />
-                  <Text style={styles.error}>{error}</Text>
+                  <Ionicons name="alert-circle" size={18} color="#EF4444" />
+                  <Text className="text-red-500 text-sm flex-1 font-medium">{error}</Text>
                 </MotiView>
               ) : null}
 
               {/* Google OAuth Button */}
-              <TouchableOpacity
-                style={styles.oauthButton}
+              <Button
+                variant="outline"
                 onPress={handleGoogleSignUp}
                 disabled={googleLoading}
+                className="mb-6 flex-row items-center justify-center gap-2 border-nano-700 bg-nano-800/50 hover:bg-nano-800"
               >
-                {googleLoading ? (
-                  <ActivityIndicator color={TEXT.primary} />
-                ) : (
-                  <>
-                    <Ionicons
-                      name="logo-google"
-                      size={20}
-                      color={TEXT.primary}
-                    />
-                    <Text style={styles.oauthButtonText}>
-                      Continue with Google
-                    </Text>
-                  </>
-                )}
-              </TouchableOpacity>
+                  {googleLoading ? (
+                    <ActivityIndicator color="#FFE135" />
+                  ) : (
+                    <>
+                      <Ionicons name="logo-google" size={20} color="white" />
+                      <Text className="text-white font-semibold">Continue with Google</Text>
+                    </>
+                  )}
+              </Button>
 
               {/* Divider */}
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or</Text>
-                <View style={styles.dividerLine} />
+              <View className="flex-row items-center mb-6">
+                <View className="flex-1 h-[1px] bg-nano-800" />
+                <Text className="mx-4 text-nano-600 text-sm">or</Text>
+                <View className="flex-1 h-[1px] bg-nano-800" />
               </View>
 
               {/* Email Input */}
-              <View style={styles.inputContainer}>
-                <Ionicons
-                  name="mail-outline"
-                  size={20}
-                  color={TEXT.tertiary}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  placeholderTextColor={TEXT.tertiary}
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                />
+              <View className="mb-4">
+                <View className="flex-row items-center bg-nano-950 border border-nano-800 rounded-xl px-4 py-3.5 focus:border-banana-500">
+                  <Ionicons name="mail-outline" size={20} color="#666" />
+                  <TextInput
+                    className="flex-1 ml-3 text-white font-medium text-[16px]"
+                    placeholder="Email"
+                    placeholderTextColor="#555"
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    cursorColor="#FFE135"
+                  />
+                </View>
               </View>
 
               {/* Password Input */}
-              <View style={styles.inputContainer}>
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={20}
-                  color={TEXT.tertiary}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Password"
-                  placeholderTextColor={TEXT.tertiary}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                />
+              <View className="mb-6">
+                 <View className="flex-row items-center bg-nano-950 border border-nano-800 rounded-xl px-4 py-3.5 focus:border-banana-500">
+                  <Ionicons name="lock-closed-outline" size={20} color="#666" />
+                  <TextInput
+                    className="flex-1 ml-3 text-white font-medium text-[16px]"
+                    placeholder="Password"
+                    placeholderTextColor="#555"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                     cursorColor="#FFE135"
+                  />
+                </View>
               </View>
 
               {/* Sign Up Button */}
-              <TouchableOpacity
-                style={[styles.primaryButton, loading && styles.buttonDisabled]}
+              <Button
+                variant="primary"
                 onPress={handleRegister}
                 disabled={loading}
+                className="w-full shadow-lg shadow-banana-500/20"
               >
-                <LinearGradient
-                  colors={[GRADIENTS.secondary.start, GRADIENTS.secondary.end]}
-                  style={styles.buttonGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <>
-                      <Ionicons
-                        name="person-add-outline"
-                        size={20}
-                        color="#fff"
-                      />
-                      <Text style={styles.buttonText}>Sign Up</Text>
-                    </>
-                  )}
-                </LinearGradient>
-              </TouchableOpacity>
+                 {loading ? (
+                   <ActivityIndicator color="black" />
+                ) : (
+                   "Sign Up"
+                )}
+              </Button>
 
               {/* Sign In Link */}
-              <TouchableOpacity
-                style={styles.linkButton}
+              <Button
+                variant="ghost"
                 onPress={() => router.back()}
+                className="mt-6"
               >
-                <Text style={styles.linkTextSecondary}>
-                  Already have an account?{" "}
+                 <Text className="text-nano-400">
+                  Already have an account? <Text className="text-banana-500 font-bold">Sign in</Text>
                 </Text>
-                <Text style={styles.linkText}>Sign in</Text>
-              </TouchableOpacity>
-            </GlassCard>
+              </Button>
+            </Card>
           </MotiView>
         </ScrollView>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  keyboardAvoid: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: SPACING.lg,
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginBottom: SPACING.xl,
-  },
-  card: {
-    width: "100%",
-    maxWidth: 400,
-    alignSelf: "center",
-  },
-  title: {
-    ...TYPOGRAPHY.headings.h2,
-    color: TEXT.primary,
-    textAlign: "center",
-    marginBottom: SPACING.xs,
-  },
-  subtitle: {
-    ...TYPOGRAPHY.body.regular,
-    color: TEXT.secondary,
-    textAlign: "center",
-    marginBottom: SPACING.lg,
-  },
-  errorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(244, 63, 94, 0.1)",
-    padding: SPACING.sm,
-    borderRadius: RADIUS.sm,
-    marginBottom: SPACING.md,
-    gap: SPACING.xs,
-  },
-  error: {
-    ...TYPOGRAPHY.body.small,
-    color: COLORS.rose,
-    flex: 1,
-  },
-  oauthButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
-    padding: SPACING.md,
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.slate[200],
-    gap: SPACING.sm,
-    ...SHADOWS.sm,
-  },
-  oauthButtonText: {
-    ...TYPOGRAPHY.body.large,
-    fontWeight: "600",
-    color: TEXT.primary,
-  },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: SPACING.lg,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.slate[200],
-  },
-  dividerText: {
-    ...TYPOGRAPHY.body.small,
-    color: TEXT.tertiary,
-    marginHorizontal: SPACING.md,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: RADIUS.md,
-    borderWidth: 1,
-    borderColor: COLORS.slate[200],
-    marginBottom: SPACING.md,
-    ...SHADOWS.sm,
-  },
-  inputIcon: {
-    paddingLeft: SPACING.md,
-  },
-  input: {
-    flex: 1,
-    padding: SPACING.md,
-    fontSize: 16,
-    color: TEXT.primary,
-  },
-  primaryButton: {
-    borderRadius: RADIUS.md,
-    overflow: "hidden",
-    marginTop: SPACING.sm,
-    ...SHADOWS.md,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: SPACING.md,
-    gap: SPACING.sm,
-  },
-  buttonText: {
-    ...TYPOGRAPHY.button,
-    color: "#fff",
-  },
-  linkButton: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: SPACING.lg,
-  },
-  linkTextSecondary: {
-    ...TYPOGRAPHY.body.regular,
-    color: TEXT.secondary,
-  },
-  linkText: {
-    ...TYPOGRAPHY.body.regular,
-    color: COLORS.emerald,
-    fontWeight: "600",
-  },
-  floatingCircle: {
-    position: "absolute",
-    borderRadius: 999,
-    backgroundColor: "#fff",
-  },
-  circle1: {
-    width: 200,
-    height: 200,
-    top: -50,
-    right: -50,
-  },
-  circle2: {
-    width: 150,
-    height: 150,
-    bottom: 100,
-    left: -30,
-  },
-});

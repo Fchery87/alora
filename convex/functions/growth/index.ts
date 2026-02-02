@@ -6,6 +6,7 @@ import {
   requireMutationUserId,
   requireUserId,
 } from "../../lib/users";
+import { sanitizeNotes } from "../../lib/sanitize";
 
 export const list = query({
   args: { babyId: v.id("babies") },
@@ -71,7 +72,7 @@ export const create = mutation({
       value: args.value,
       unit: args.unit,
       date: args.date,
-      notes: args.notes,
+      notes: sanitizeNotes(args.notes),
       percentile: percentile ?? undefined,
     });
 
@@ -122,7 +123,11 @@ export const update = mutation({
       }
     }
 
-    await ctx.db.patch(id, updates);
+    await ctx.db.patch(id, {
+      ...updates,
+      notes:
+        updates.notes !== undefined ? sanitizeNotes(updates.notes) : undefined,
+    });
   },
 });
 

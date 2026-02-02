@@ -5,6 +5,12 @@ import {
   requireMutationUserId,
   requireOrganizationId,
 } from "../../lib/users";
+import {
+  sanitizeName,
+  sanitizeText,
+  sanitizeNotes,
+  sanitizeStringArray,
+} from "../../lib/sanitize";
 
 interface Medication {
   _id: any;
@@ -30,32 +36,32 @@ export const listMedications = query({
     babyId: v.optional(v.id("babies")),
     isActive: v.optional(v.boolean()),
   },
-  handler: async (ctx, args) => {
-    const userOrgId = await requireOrganizationId(ctx);
-
-    // Verify user's org matches requested org (HIPAA compliance)
-    if (userOrgId !== args.clerkOrganizationId) {
-      throw new Error(
-        "Not authorized to view medications for this organization"
-      );
-    }
-
-    let medications = (await ctx.db
-      .query("medications" as any)
-      .withIndex("by_family" as any, (q: any) =>
-        q.eq("clerkOrganizationId", args.clerkOrganizationId)
-      )
-      .collect()) as Medication[];
-
-    if (args.babyId) {
-      medications = medications.filter((m) => m.babyId === args.babyId);
-    }
-    if (args.isActive !== undefined) {
-      medications = medications.filter((m) => m.isActive === args.isActive);
-    }
-    return medications;
-  },
+  handler: listMedicationsHandler,
 });
+
+export async function listMedicationsHandler(ctx: any, args: any) {
+  const userOrgId = await requireOrganizationId(ctx);
+
+  // Verify user's org matches requested org (HIPAA compliance)
+  if (userOrgId !== args.clerkOrganizationId) {
+    throw new Error("Not authorized to view medications for this organization");
+  }
+
+  let medications = (await ctx.db
+    .query("medications" as any)
+    .withIndex("by_family" as any, (q: any) =>
+      q.eq("clerkOrganizationId", userOrgId)
+    )
+    .collect()) as Medication[];
+
+  if (args.babyId) {
+    medications = medications.filter((m: any) => m.babyId === args.babyId);
+  }
+  if (args.isActive !== undefined) {
+    medications = medications.filter((m: any) => m.isActive === args.isActive);
+  }
+  return medications;
+}
 
 export const getMedication = query({
   args: { medicationId: v.id("medications") },
@@ -78,7 +84,6 @@ export const getMedication = query({
 
 export const createMedication = mutation({
   args: {
-    clerkOrganizationId: v.string(),
     babyId: v.optional(v.id("babies")),
     name: v.string(),
     type: v.union(
@@ -98,19 +103,24 @@ export const createMedication = mutation({
     const userOrgId = await requireOrganizationId(ctx);
     const userId = await requireMutationUserId(ctx);
 
-    // Verify user's org matches requested org (HIPAA compliance)
-    if (userOrgId !== args.clerkOrganizationId) {
-      throw new Error(
-        "Not authorized to create medication for this organization"
-      );
-    }
-
     if (args.babyId) {
       await requireBabyAccess(ctx, args.babyId);
     }
 
     return await ctx.db.insert("medications", {
-      ...args,
+      clerkOrganizationId: userOrgId,
+      babyId: args.babyId,
+      name: sanitizeName(args.name),
+      type: args.type,
+      dosage: args.dosage ? sanitizeText(args.dosage) : undefined,
+      frequency: args.frequency ? sanitizeText(args.frequency) : undefined,
+      startDate: args.startDate,
+      endDate: args.endDate,
+      notes: sanitizeNotes(args.notes),
+      reminderEnabled: args.reminderEnabled,
+      reminderTimes: args.reminderTimes
+        ? sanitizeStringArray(args.reminderTimes)
+        : undefined,
       userId,
       isActive: true,
       createdAt: Date.now(),
@@ -142,7 +152,22 @@ export const updateMedication = mutation({
       throw new Error("Not authorized to update this medication");
     }
 
-    await ctx.db.patch(medicationId, updates);
+    await ctx.db.patch(medicationId, {
+      ...updates,
+      name: updates.name ? sanitizeName(updates.name) : undefined,
+      dosage:
+        updates.dosage !== undefined ? sanitizeText(updates.dosage) : undefined,
+      frequency:
+        updates.frequency !== undefined
+          ? sanitizeText(updates.frequency)
+          : undefined,
+      notes:
+        updates.notes !== undefined ? sanitizeNotes(updates.notes) : undefined,
+      reminderTimes:
+        updates.reminderTimes !== undefined
+          ? sanitizeStringArray(updates.reminderTimes)
+          : undefined,
+    });
   },
 });
 

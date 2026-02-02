@@ -5,6 +5,7 @@ import {
   requireMutationUserId,
   requireUserId,
 } from "../../lib/users";
+import { sanitizeText, sanitizeNotes } from "../../lib/sanitize";
 
 export const createFeed = mutation({
   args: {
@@ -29,6 +30,8 @@ export const createFeed = mutation({
 
     return await ctx.db.insert("feeds", {
       ...args,
+      amount: args.amount ? sanitizeText(args.amount) : undefined,
+      notes: sanitizeNotes(args.notes),
       createdById,
     });
   },
@@ -105,7 +108,12 @@ export const updateFeed = mutation({
     }
 
     const { id, ...updates } = args;
-    return await ctx.db.patch(id, updates);
+    return await ctx.db.patch(id, {
+      ...updates,
+      amount: updates.amount ? sanitizeText(updates.amount) : undefined,
+      notes:
+        updates.notes !== undefined ? sanitizeNotes(updates.notes) : undefined,
+    });
   },
 });
 

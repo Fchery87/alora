@@ -30,7 +30,7 @@ describe("Dashboard", () => {
 
   it("shows mood section", () => {
     render(<Dashboard />);
-    expect(screen.getByText("Your Mood This Week")).toBeTruthy();
+    expect(screen.getByText("Mood Trends")).toBeTruthy();
   });
 
   it("displays today's stats", () => {

@@ -41,21 +41,15 @@ export const getByClerkOrganizationId = query({
 
 export const sync = mutation({
   args: {
-    clerkOrganizationId: v.string(),
     name: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userOrgId = await requireOrganizationId(ctx);
 
-    // Verify user's org matches requested org
-    if (userOrgId !== args.clerkOrganizationId) {
-      throw new Error("Not authorized to sync family for this organization");
-    }
-
     const existingFamily = await ctx.db
       .query("families")
       .withIndex("by_clerk_org_id", (q) =>
-        q.eq("clerkOrganizationId", args.clerkOrganizationId)
+        q.eq("clerkOrganizationId", userOrgId)
       )
       .first();
 
@@ -67,7 +61,7 @@ export const sync = mutation({
     }
 
     const familyId = await ctx.db.insert("families", {
-      clerkOrganizationId: args.clerkOrganizationId,
+      clerkOrganizationId: userOrgId,
       name: args.name,
       createdAt: Date.now(),
       settings: {
@@ -81,7 +75,6 @@ export const sync = mutation({
 
 export const updateSettings = mutation({
   args: {
-    clerkOrganizationId: v.string(),
     settings: v.object({
       premiumPlan: v.union(v.literal("free"), v.literal("premium")),
       premiumExpiry: v.optional(v.number()),
@@ -90,17 +83,10 @@ export const updateSettings = mutation({
   handler: async (ctx, args) => {
     const userOrgId = await requireOrganizationId(ctx);
 
-    // Verify user's org matches requested org
-    if (userOrgId !== args.clerkOrganizationId) {
-      throw new Error(
-        "Not authorized to update settings for this organization"
-      );
-    }
-
     const family = await ctx.db
       .query("families")
       .withIndex("by_clerk_org_id", (q) =>
-        q.eq("clerkOrganizationId", args.clerkOrganizationId)
+        q.eq("clerkOrganizationId", userOrgId)
       )
       .first();
 

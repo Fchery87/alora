@@ -5,6 +5,7 @@ import {
   requireMutationUserId,
   requireUserId,
 } from "../../lib/users";
+import { sanitizeNotes } from "../../lib/sanitize";
 
 export const createDiaper = mutation({
   args: {
@@ -34,6 +35,7 @@ export const createDiaper = mutation({
 
     return await ctx.db.insert("diapers", {
       ...args,
+      notes: sanitizeNotes(args.notes),
       createdById,
     });
   },
@@ -121,7 +123,11 @@ export const updateDiaper = mutation({
     }
 
     const { id, ...updates } = args;
-    return await ctx.db.patch(id, updates);
+    return await ctx.db.patch(id, {
+      ...updates,
+      notes:
+        updates.notes !== undefined ? sanitizeNotes(updates.notes) : undefined,
+    });
   },
 });
 
