@@ -86,7 +86,7 @@ export default function OnboardingScreen() {
 
     if (!redirectToDashboardAttempted.current) {
       redirectToDashboardAttempted.current = true;
-      router.replace(href);
+      router.replace(href as any);
     }
   }, [isAuthLoaded, isSignedIn, orgId, babies]);
 
