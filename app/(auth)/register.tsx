@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { MotiView } from "moti";
 import * as WebBrowser from "expo-web-browser";
@@ -103,40 +104,44 @@ export default function RegisterScreen() {
 
   return (
     <View className="flex-1 bg-nano-950">
-       {/* Decorative Background Elements */}
-       <MotiView 
-         from={{ opacity: 0, scale: 0.8 }} 
-         animate={{ opacity: 0.15, scale: 1 }} 
-         transition={{ 
-           type: 'timing', 
-           duration: 2500, 
-           loop: true,
-           repeatReverse: true 
-         } as any}
-         className="absolute top-[-150px] left-[-50px] w-96 h-96 bg-banana-500 rounded-full blur-[100px]" 
-       />
-       <MotiView 
-         from={{ opacity: 0, scale: 0.8 }} 
-         animate={{ opacity: 0.1, scale: 1 }} 
-         transition={{ 
-           type: 'timing', 
-           duration: 3500, 
-           loop: true, 
-           delay: 500,
-           repeatReverse: true
-         } as any}
-         className="absolute bottom-[-100px] right-[-50px] w-80 h-80 bg-banana-600 rounded-full blur-[80px]" 
-       />
+      {/* Decorative Background Elements */}
+      <MotiView
+        from={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.15, scale: 1 }}
+        transition={
+          {
+            type: "timing",
+            duration: 2500,
+            loop: true,
+            repeatReverse: true,
+          } as any
+        }
+        className="absolute top-[-150px] left-[-50px] w-96 h-96 bg-banana-500 rounded-full blur-[100px]"
+      />
+      <MotiView
+        from={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.1, scale: 1 }}
+        transition={
+          {
+            type: "timing",
+            duration: 3500,
+            loop: true,
+            delay: 500,
+            repeatReverse: true,
+          } as any
+        }
+        className="absolute bottom-[-100px] right-[-50px] w-80 h-80 bg-banana-600 rounded-full blur-[80px]"
+      />
 
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 24 }}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-           {/* Logo */}
+          {/* Logo */}
           <MotiView
             from={{ opacity: 0, translateY: -20 }}
             animate={{ opacity: 1, translateY: 0 }}
@@ -158,9 +163,19 @@ export default function RegisterScreen() {
               translateY: { type: "timing", duration: 700, delay: 200 },
             }}
           >
-            <Card variant="glass" className="w-full max-w-sm mx-auto bg-nano-900/90 border-nano-800 p-6 shadow-2xl backdrop-blur-xl">
-              <Text variant="title" className="text-center mb-1 text-white">Create Account</Text>
-              <Text variant="subtitle" className="text-center mb-8 text-nano-400">Join the Nano Banana revolution</Text>
+            <Card
+              variant="glass"
+              className="w-full max-w-sm mx-auto bg-nano-900/90 border-nano-800 p-6 shadow-2xl backdrop-blur-xl"
+            >
+              <Text variant="title" className="text-center mb-1 text-white">
+                Create Account
+              </Text>
+              <Text
+                variant="subtitle"
+                className="text-center mb-8 text-nano-400"
+              >
+                Join the Nano Banana revolution
+              </Text>
 
               {error ? (
                 <MotiView
@@ -169,7 +184,9 @@ export default function RegisterScreen() {
                   className="flex-row items-center bg-red-500/10 border border-red-500/20 p-3 rounded-xl mb-4 gap-2"
                 >
                   <Ionicons name="alert-circle" size={18} color="#EF4444" />
-                  <Text className="text-red-500 text-sm flex-1 font-medium">{error}</Text>
+                  <Text className="text-red-500 text-sm flex-1 font-medium">
+                    {error}
+                  </Text>
                 </MotiView>
               ) : null}
 
@@ -180,14 +197,16 @@ export default function RegisterScreen() {
                 disabled={googleLoading}
                 className="mb-6 flex-row items-center justify-center gap-2 border-nano-700 bg-nano-800/50 hover:bg-nano-800"
               >
-                  {googleLoading ? (
-                    <ActivityIndicator color="#FFE135" />
-                  ) : (
-                    <>
-                      <Ionicons name="logo-google" size={20} color="white" />
-                      <Text className="text-white font-semibold">Continue with Google</Text>
-                    </>
-                  )}
+                {googleLoading ? (
+                  <ActivityIndicator color="#FFE135" />
+                ) : (
+                  <>
+                    <Ionicons name="logo-google" size={20} color="white" />
+                    <Text className="text-white font-semibold">
+                      Continue with Google
+                    </Text>
+                  </>
+                )}
               </Button>
 
               {/* Divider */}
@@ -216,7 +235,7 @@ export default function RegisterScreen() {
 
               {/* Password Input */}
               <View className="mb-6">
-                 <View className="flex-row items-center bg-nano-950 border border-nano-800 rounded-xl px-4 py-3.5 focus:border-banana-500">
+                <View className="flex-row items-center bg-nano-950 border border-nano-800 rounded-xl px-4 py-3.5 focus:border-banana-500">
                   <Ionicons name="lock-closed-outline" size={20} color="#666" />
                   <TextInput
                     className="flex-1 ml-3 text-white font-medium text-[16px]"
@@ -225,7 +244,7 @@ export default function RegisterScreen() {
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
-                     cursorColor="#FFE135"
+                    cursorColor="#FFE135"
                   />
                 </View>
               </View>
@@ -237,11 +256,7 @@ export default function RegisterScreen() {
                 disabled={loading}
                 className="w-full shadow-lg shadow-banana-500/20"
               >
-                 {loading ? (
-                   <ActivityIndicator color="black" />
-                ) : (
-                   "Sign Up"
-                )}
+                {loading ? <ActivityIndicator color="black" /> : "Sign Up"}
               </Button>
 
               {/* Sign In Link */}
@@ -250,8 +265,9 @@ export default function RegisterScreen() {
                 onPress={() => router.back()}
                 className="mt-6"
               >
-                 <Text className="text-nano-400">
-                  Already have an account? <Text className="text-banana-500 font-bold">Sign in</Text>
+                <Text className="text-nano-400">
+                  Already have an account?{" "}
+                  <Text className="text-banana-500 font-bold">Sign in</Text>
                 </Text>
               </Button>
             </Card>
@@ -261,3 +277,11 @@ export default function RegisterScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: 24,
+  },
+});

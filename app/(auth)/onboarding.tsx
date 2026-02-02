@@ -6,6 +6,7 @@ import {
   TextInput,
   ScrollView,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import { MotiView } from "moti";
 import { router } from "expo-router";
@@ -120,122 +121,67 @@ export default function OnboardingScreen() {
       from={{ opacity: 0, translateY: 20 }}
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ duration: 600 }}
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 24,
-      }}
+      style={styles.container}
     >
-      <Text
-        style={{
-          fontSize: 32,
-          fontWeight: "bold",
-          marginBottom: 12,
-          textAlign: "center",
-        }}
-      >
-        Set up your family
-      </Text>
-      <Text
-        style={{
-          fontSize: 16,
-          textAlign: "center",
-          marginBottom: 24,
-          color: "#666",
-        }}
-      >
+      <Text style={styles.title}>Set up your family</Text>
+      <Text style={styles.subtitle}>
         Create or select a family organization to continue.
       </Text>
 
-      <GlassCard style={{ width: "100%", padding: 20 }}>
+      <GlassCard style={styles.card}>
         {!isLoaded ? (
-          <View style={{ alignItems: "center", paddingVertical: 24 }}>
+          <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#6366f1" />
           </View>
         ) : (
-          <ScrollView style={{ maxHeight: 320 }}>
+          <ScrollView style={styles.scrollView}>
             {userMemberships.data?.length ? (
               <>
-                <Text
-                  style={{ fontSize: 16, fontWeight: "600", marginBottom: 12 }}
-                >
-                  Your organizations
-                </Text>
+                <Text style={styles.sectionTitle}>Your organizations</Text>
                 {userMemberships.data.map((membership) => (
                   <Pressable
                     key={membership.id}
                     onPress={() =>
                       handleSelectOrganization(membership.organization.id)
                     }
-                    style={{
-                      paddingVertical: 12,
-                      paddingHorizontal: 14,
-                      borderRadius: 10,
-                      borderWidth: 1,
-                      borderColor: "#e5e7eb",
-                      marginBottom: 10,
-                    }}
+                    style={styles.orgButton}
                   >
-                    <Text style={{ fontSize: 16, fontWeight: "600" }}>
+                    <Text style={styles.orgName}>
                       {membership.organization.name}
                     </Text>
-                    <Text style={{ fontSize: 12, color: "#666", marginTop: 2 }}>
-                      Tap to select
-                    </Text>
+                    <Text style={styles.orgHint}>Tap to select</Text>
                   </Pressable>
                 ))}
               </>
             ) : (
-              <Text style={{ fontSize: 14, color: "#666", marginBottom: 12 }}>
-                You don’t have any organizations yet.
+              <Text style={styles.emptyText}>
+                You don't have any organizations yet.
               </Text>
             )}
 
-            <Text style={{ fontSize: 16, fontWeight: "600", marginTop: 12 }}>
-              Create a new family
-            </Text>
+            <Text style={styles.createTitle}>Create a new family</Text>
             <TextInput
               value={orgName}
               onChangeText={setOrgName}
               placeholder="Family name (e.g., The Johnsons)"
               placeholderTextColor="#9ca3af"
-              style={{
-                borderWidth: 1,
-                borderColor: "#e5e7eb",
-                borderRadius: 10,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                marginTop: 10,
-                marginBottom: 12,
-                color: "#111827",
-              }}
+              style={styles.input}
             />
 
-            {error ? (
-              <Text style={{ color: "#ef4444", marginBottom: 10 }}>
-                {error}
-              </Text>
-            ) : null}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <Pressable
               onPress={handleCreateOrganization}
               disabled={creating || !isLoaded}
-              style={{
-                backgroundColor: creating ? "#a5b4fc" : "#6366f1",
-                paddingVertical: 14,
-                borderRadius: 12,
-                alignItems: "center",
-              }}
+              style={[
+                styles.createButton,
+                { backgroundColor: creating ? "#a5b4fc" : "#6366f1" },
+              ]}
             >
               {creating ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text
-                  style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}
-                >
-                  Create and continue
-                </Text>
+                <Text style={styles.createButtonText}>Create and continue</Text>
               )}
             </Pressable>
           </ScrollView>
@@ -250,3 +196,91 @@ export default function OnboardingScreen() {
     </MotiView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 24,
+    color: "#666",
+  },
+  card: {
+    width: "100%",
+    padding: 20,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 24,
+  },
+  scrollView: {
+    maxHeight: 320,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 12,
+  },
+  orgButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    marginBottom: 10,
+  },
+  orgName: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  orgHint: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 2,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 12,
+  },
+  createTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginTop: 10,
+    marginBottom: 12,
+    color: "#111827",
+  },
+  errorText: {
+    color: "#ef4444",
+    marginBottom: 10,
+  },
+  createButton: {
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  createButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+});

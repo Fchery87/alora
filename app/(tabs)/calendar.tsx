@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Header } from "@/components/layout/Header";
 import { CalendarView } from "@/components/organisms/CalendarView";
 import { useAuth } from "@clerk/clerk-expo";
@@ -22,11 +22,11 @@ export default function CalendarScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <Header title="Calendar" showBackButton={false} />
       {isLoaded && !orgId ? (
-        <View style={{ padding: 16 }}>
-          <Text style={{ color: "#6b7280" }}>
+        <View style={styles.messageContainer}>
+          <Text style={styles.messageText}>
             Please select a family to view calendar items.
           </Text>
         </View>
@@ -39,3 +39,15 @@ export default function CalendarScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  messageContainer: {
+    padding: 16,
+  },
+  messageText: {
+    color: "#6b7280",
+  },
+});
