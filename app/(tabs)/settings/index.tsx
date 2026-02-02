@@ -5,10 +5,12 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, Dispatch, SetStateAction } from "react";
 import { useRouter } from "expo-router";
+import { useDataExport } from "@/hooks/useDataExport";
 
 interface SettingsItemPress {
   icon: string;
@@ -40,6 +42,7 @@ export default function SettingsScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  const { exportDataToFile, isLoading } = useDataExport();
 
   const settingsSections: SettingsSection[] = [
     {
@@ -99,7 +102,7 @@ export default function SettingsScreen() {
         {
           icon: "download-outline",
           label: "Export Data",
-          onPress: () => console.log("Export data"),
+          onPress: exportDataToFile,
         },
         {
           icon: "cloud-upload-outline",
@@ -146,7 +149,9 @@ export default function SettingsScreen() {
                   itemIndex < section.items.length - 1 && styles.itemBorder,
                 ]}
                 onPress={item.onPress}
-                disabled={item.hasSwitch}
+                disabled={
+                  item.hasSwitch || (item.label === "Export Data" && isLoading)
+                }
               >
                 <View style={styles.itemLeft}>
                   <Ionicons
@@ -163,6 +168,8 @@ export default function SettingsScreen() {
                     trackColor={{ false: "#e5e7eb", true: "#6366f1" }}
                     thumbColor="#fff"
                   />
+                ) : item.label === "Export Data" && isLoading ? (
+                  <ActivityIndicator size="small" color="#6366f1" />
                 ) : (
                   <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
                 )}

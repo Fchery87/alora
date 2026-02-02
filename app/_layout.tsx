@@ -15,6 +15,11 @@ import { ClerkProviderWrapper } from "@/lib/clerk";
 import { ConvexProviderWrapper } from "@/components/providers/ConvexProviderWrapper";
 import { ToastProvider } from "@/components/atoms/Toast";
 import { QueryClientProviderWrapper } from "@/components/providers/QueryClientProviderWrapper";
+import { initSentry } from "@/lib/sentry";
+import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
+
+// Initialize Sentry before app starts
+initSentry();
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,14 +41,16 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProviderWrapper>
-      <ToastProvider>
-        <ClerkProviderWrapper>
-          <ConvexProviderWrapper>
-            <Stack screenOptions={{ headerShown: false }} />
-          </ConvexProviderWrapper>
-        </ClerkProviderWrapper>
-      </ToastProvider>
-    </QueryClientProviderWrapper>
+    <ErrorBoundary>
+      <QueryClientProviderWrapper>
+        <ToastProvider>
+          <ClerkProviderWrapper>
+            <ConvexProviderWrapper>
+              <Stack screenOptions={{ headerShown: false }} />
+            </ConvexProviderWrapper>
+          </ClerkProviderWrapper>
+        </ToastProvider>
+      </QueryClientProviderWrapper>
+    </ErrorBoundary>
   );
 }
