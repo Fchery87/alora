@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   extends: ["eslint-config-expo", "prettier"],
   plugins: ["react-hooks", "react-native", "import"],
   settings: {
@@ -18,5 +19,5 @@ module.exports = {
     "react-native/no-inline-styles": "warn",
     "react/no-unescaped-entities": "off",
   },
-  ignorePatterns: ["dist", ".expo", "node_modules"],
+  ignorePatterns: ["dist", ".expo", "node_modules", "e2e"],
 };

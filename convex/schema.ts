@@ -222,6 +222,7 @@ export default defineSchema({
       v.union(v.literal("daily"), v.literal("weekly"), v.literal("monthly"))
     ),
     reminderMinutesBefore: v.optional(v.number()),
+    pushReminderJobId: v.optional(v.id("_scheduled_functions")),
     isCompleted: v.optional(v.boolean()),
     createdAt: v.number(),
   })
@@ -261,4 +262,38 @@ export default defineSchema({
   })
     .index("by_key", ["key"])
     .index("by_reset", ["resetAt"]),
+
+  aiDailyInsights: defineTable({
+    clerkOrganizationId: v.string(),
+    userId: v.id("users"),
+    date: v.string(), // YYYY-MM-DD (local to user device; provided by client, but stored/cached per user)
+    model: v.string(),
+    promptVersion: v.string(),
+    title: v.string(),
+    message: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_user_and_date", ["userId", "date"])
+    .index("by_org_and_date", ["clerkOrganizationId", "date"]),
+
+  userPreferences: defineTable({
+    clerkOrganizationId: v.string(),
+    userId: v.id("users"),
+    aiInsightsEnabled: v.boolean(),
+    pushNotificationsEnabled: v.optional(v.boolean()),
+    updatedAt: v.number(),
+  })
+    .index("by_user_and_org", ["userId", "clerkOrganizationId"])
+    .index("by_org", ["clerkOrganizationId"]),
+
+  pushTokens: defineTable({
+    clerkOrganizationId: v.string(),
+    userId: v.id("users"),
+    expoPushToken: v.string(),
+    platform: v.optional(v.string()),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_and_token", ["userId", "expoPushToken"])
+    .index("by_org", ["clerkOrganizationId"]),
 });

@@ -13,6 +13,7 @@ export default defineConfig({
       "**/coverage/**",
       "__tests__/e2e/**",
       "**/.worktrees/**",
+      "**/__tests__/e2e/**",
     ],
     coverage: {
       provider: "v8",
@@ -42,11 +43,19 @@ export default defineConfig({
         "./__tests__/mocks/expo-secure-store.ts"
       ),
       "expo-crypto": resolve(__dirname, "./__tests__/mocks/expo-crypto.ts"),
+      "expo-constants": resolve(
+        __dirname,
+        "./__tests__/mocks/expo-constants.ts"
+      ),
       "@react-native-async-storage/async-storage": resolve(
         __dirname,
         "./__tests__/mocks/async-storage.ts"
       ),
       "react-native": resolve(__dirname, "./__tests__/mocks/react-native"),
+      "@clerk/clerk-expo": resolve(
+        __dirname,
+        "./__tests__/mocks/clerk-expo.ts"
+      ),
       "@expo/vector-icons": resolve(
         __dirname,
         "./__tests__/mocks/expo-vector-icons.ts"

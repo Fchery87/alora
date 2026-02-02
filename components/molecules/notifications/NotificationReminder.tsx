@@ -1,13 +1,5 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  Switch,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
 import { NotificationReminder } from "@/lib/notifications";
 
 interface NotificationReminderItemProps {
@@ -91,7 +83,9 @@ export function NotificationReminderItem({
           onPress={() => onDelete(reminder.id)}
         >
           <Ionicons name="trash-outline" size={16} color="#ef4444" />
-          <Text style={[styles.actionText, { color: "#ef4444" }]}>Delete</Text>
+          <Text style={[styles.actionText, styles.deleteActionText]}>
+            Delete
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -152,5 +146,8 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 13,
     color: "#6b7280",
+  },
+  deleteActionText: {
+    color: "#ef4444",
   },
 });

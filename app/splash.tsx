@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { SvgXml } from "react-native-svg";
 import { MotiView, AnimatePresence } from "moti";
 import { GRADIENTS, SHADOWS, TYPOGRAPHY, COLORS } from "@/lib/theme";
-import { softSpring, staggeredScaleIn } from "@/lib/animations";
+import { softSpring } from "@/lib/animations";
 
 const logoSvg = `
   <svg viewBox="0 0 120 120" width="200" height="200">
@@ -87,7 +87,7 @@ export default function SplashScreen() {
             translateY: 0,
           }}
           transition={
-            { ...softSpring, delay: 100 + (index * 100) } as MotiTransition
+            { ...softSpring, delay: 100 + index * 100 } as MotiTransition
           }
           style={[
             styles.floatingCircle,
@@ -110,18 +110,20 @@ export default function SplashScreen() {
             animate={{ opacity: 1, scale: 1, translateY: 0 }}
             exit={{ opacity: 0, scale: 1.2 }}
             transition={
-              { type: "spring", dampingRatio: 0.7, stiffness: 150 } as MotiTransition
+              {
+                type: "spring",
+                dampingRatio: 0.7,
+                stiffness: 150,
+              } as MotiTransition
             }
             style={styles.logoContainer}
           >
-            <View
-              style={[
-                styles.logoWrapper,
-                SHADOWS.xl,
-              ]}
-            >
+            <View style={[styles.logoWrapper, SHADOWS.xl]}>
               <LinearGradient
-                colors={["rgba(255, 255, 255, 0.25)", "rgba(255, 255, 255, 0.15)"]}
+                colors={[
+                  "rgba(255, 255, 255, 0.25)",
+                  "rgba(255, 255, 255, 0.15)",
+                ]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
@@ -146,9 +148,7 @@ export default function SplashScreen() {
         <MotiView
           from={{ opacity: 0, translateY: 15 }}
           animate={{ opacity: 1, translateY: 0 }}
-          transition={
-            { ...softSpring, delay: 400 } as MotiTransition
-          }
+          transition={{ ...softSpring, delay: 400 } as MotiTransition}
           style={styles.taglineBottom}
         >
           <Text style={styles.motto}>Your journey through parenthood</Text>
@@ -160,9 +160,7 @@ export default function SplashScreen() {
         <MotiView
           from={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={
-            { ...softSpring, delay: 600 } as MotiTransition
-          }
+          transition={{ ...softSpring, delay: 600 } as MotiTransition}
           style={styles.loadingContainer}
         >
           <View style={styles.loadingDots}>
@@ -172,7 +170,12 @@ export default function SplashScreen() {
                 from={{ scale: 0.8, opacity: 0.5 }}
                 animate={{ scale: 1.2, opacity: 1 }}
                 transition={
-                  { type: "spring", duration: 600, repeat: -Infinity, delay: i * 200 } as MotiTransition
+                  {
+                    type: "spring",
+                    duration: 600,
+                    repeat: -Infinity,
+                    delay: i * 200,
+                  } as MotiTransition
                 }
                 style={styles.loadingDot}
               />

@@ -1,8 +1,10 @@
 import { query, mutation } from "../../_generated/server";
 import { v } from "convex/values";
+import { internal } from "../../_generated/api";
+import type { Id } from "../../_generated/dataModel";
 import {
   requireBabyAccess,
-  requireMutationUserId,
+  requireUserId,
   requireOrganizationId,
 } from "../../lib/users";
 import {
@@ -26,6 +28,7 @@ interface Appointment {
   isRecurring?: boolean;
   recurringInterval?: "daily" | "weekly" | "monthly";
   reminderMinutesBefore?: number;
+  pushReminderJobId?: Id<"_scheduled_functions">;
   isCompleted?: boolean;
 }
 
@@ -109,31 +112,85 @@ export const createAppointment = mutation({
     reminderMinutesBefore: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userOrgId = await requireOrganizationId(ctx);
-    const userId = await requireMutationUserId(ctx);
+    const userId = await requireUserId(ctx);
+    const orgId = await requireOrganizationId(ctx);
 
-    if (args.babyId) {
-      await requireBabyAccess(ctx, args.babyId);
-    }
+    // Sanitize text inputs
+    const sanitizedTitle = sanitizeTitle(args.title);
+    const sanitizedLocation = args.location
+      ? sanitizeLocation(args.location)
+      : undefined;
+    const sanitizedNotes = args.notes ? sanitizeNotes(args.notes) : undefined;
 
-    return await ctx.db.insert("appointments", {
-      clerkOrganizationId: userOrgId,
+    const appointmentId = await ctx.db.insert("appointments", {
+      clerkOrganizationId: orgId,
       babyId: args.babyId,
-      title: sanitizeTitle(args.title),
+      createdById: userId,
+      title: sanitizedTitle,
       type: args.type,
       date: args.date,
       time: args.time,
-      location: sanitizeLocation(args.location),
-      notes: sanitizeNotes(args.notes),
-      isRecurring: args.isRecurring,
+      location: sanitizedLocation,
+      notes: sanitizedNotes,
+      isRecurring: args.isRecurring ?? false,
       recurringInterval: args.recurringInterval,
       reminderMinutesBefore: args.reminderMinutesBefore,
-      userId,
       isCompleted: false,
       createdAt: Date.now(),
     });
+
+    return appointmentId;
   },
 });
+
+export async function createAppointmentHandler(ctx: any, args: any) {
+  const userOrgId = await requireOrganizationId(ctx);
+  const userId = await requireMutationUserId(ctx);
+
+  // Verify user's org matches requested org (HIPAA compliance)
+  if (userOrgId !== args.clerkOrganizationId) {
+    throw new Error(
+      "Not authorized to create appointment for this organization"
+    );
+  }
+
+  if (args.babyId) {
+    await requireBabyAccess(ctx, args.babyId);
+  }
+
+  const appointmentId = await ctx.db.insert("appointments", {
+    ...args,
+    clerkOrganizationId: userOrgId,
+    userId,
+    isCompleted: false,
+    createdAt: Date.now(),
+  });
+
+  if (
+    args.reminderMinutesBefore &&
+    typeof ctx.scheduler?.runAt === "function"
+  ) {
+    const triggerMs = computeReminderTimeMs(
+      args.date,
+      args.time,
+      args.reminderMinutesBefore
+    );
+    if (triggerMs && triggerMs > Date.now()) {
+      const jobId = await ctx.scheduler.runAt(
+        triggerMs,
+        internal.functions.push.index.sendAppointmentReminder,
+        {
+          clerkOrganizationId: userOrgId,
+          appointmentTitle: args.title,
+          appointmentWhen: `${args.date} ${args.time}`,
+        }
+      );
+      await ctx.db.patch(appointmentId, { pushReminderJobId: jobId });
+    }
+  }
+
+  return appointmentId;
+}
 
 export const updateAppointment = mutation({
   args: {
@@ -143,6 +200,7 @@ export const updateAppointment = mutation({
     time: v.optional(v.string()),
     location: v.optional(v.string()),
     notes: v.optional(v.string()),
+    reminderMinutesBefore: v.optional(v.number()),
     isCompleted: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
@@ -156,17 +214,6 @@ export const updateAppointment = mutation({
     if (userOrgId !== existing.clerkOrganizationId) {
       throw new Error("Not authorized to update this appointment");
     }
-
-    await ctx.db.patch(appointmentId, {
-      ...updates,
-      title: updates.title ? sanitizeTitle(updates.title) : undefined,
-      location:
-        updates.location !== undefined
-          ? sanitizeLocation(updates.location)
-          : undefined,
-      notes:
-        updates.notes !== undefined ? sanitizeNotes(updates.notes) : undefined,
-    });
   },
 });
 
@@ -183,6 +230,13 @@ export const deleteAppointment = mutation({
     // Verify user's org matches appointment's org (HIPAA compliance)
     if (userOrgId !== existing.clerkOrganizationId) {
       throw new Error("Not authorized to delete this appointment");
+    }
+
+    if (
+      existing.pushReminderJobId &&
+      typeof ctx.scheduler?.cancel === "function"
+    ) {
+      await ctx.scheduler.cancel(existing.pushReminderJobId);
     }
 
     await ctx.db.delete(args.appointmentId);
@@ -207,3 +261,22 @@ export const completeAppointment = mutation({
     await ctx.db.patch(args.appointmentId, { isCompleted: true });
   },
 });
+
+function computeReminderTimeMs(
+  date: string,
+  time: string,
+  minutesBefore: number
+): number | null {
+  if (typeof date !== "string" || typeof time !== "string") return null;
+  const [year, month, day] = date.split("-").map((v) => Number(v));
+  const [hours, minutes] = time.split(":").map((v) => Number(v));
+  if (
+    !Number.isFinite(year) ||
+    !Number.isFinite(month) ||
+    !Number.isFinite(day)
+  )
+    return null;
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+  const local = new Date(year, month - 1, day, hours, minutes, 0, 0).getTime();
+  return local - minutesBefore * 60 * 1000;
+}

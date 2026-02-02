@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { GRADIENTS, SHADOWS, RADIUS } from "@/lib/theme";
+import { GRADIENTS, SHADOWS } from "@/lib/theme";
 
 interface GradientIconProps {
   name: string;
@@ -100,7 +100,6 @@ export function GradientIcon({
             styles.glowInner,
             {
               backgroundColor: gradientColors[0],
-              opacity: 0.2,
             },
           ]}
         />
@@ -150,5 +149,6 @@ const styles = StyleSheet.create({
   glowInner: {
     flex: 1,
     borderRadius: 9999,
+    opacity: 0.2,
   },
 });

@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Keyboard,
+  TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -16,8 +17,6 @@ import {
 } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
-
-import { TextInput } from "react-native";
 
 type MoodType = "great" | "good" | "okay" | "low" | "struggling";
 type EnergyType = "high" | "medium" | "low";
@@ -37,7 +36,6 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toast = useToast();
   const createMood = useCreateMood();
@@ -95,8 +93,6 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
       await createMood.mutateAsync({
         babyId: babyId as any,
@@ -123,17 +119,7 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
       logError(error, { context: "MoodCheckIn", mood });
 
       toast.error("Failed to Log Mood", getUserFriendlyMessage(appError));
-    } finally {
-      setIsSubmitting(false);
     }
-  };
-
-  const isValid = () => {
-    const formData: Partial<MoodFormData> = {
-      mood: mood || undefined,
-    };
-    const result = validateMood(formData);
-    return result.isValid;
   };
 
   const affirmations = [
@@ -280,7 +266,9 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
                 [
                   styles.input,
                   styles.notesInput,
-                  touched.notes && validationErrors.notes ? styles.inputError : undefined,
+                  touched.notes && validationErrors.notes
+                    ? styles.inputError
+                    : undefined,
                 ].filter(Boolean)
               )}
               placeholder="What's on your mind?"

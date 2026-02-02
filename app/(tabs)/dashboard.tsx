@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Header } from "@/components/layout/Header";
 import { Dashboard } from "@/components/organisms/Dashboard";
 import { ActivityFeed } from "@/components/organisms/ActivityFeed";
@@ -8,7 +8,7 @@ export default function DashboardScreen() {
   const babyId = useSelectedBabyId();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.screen}>
       <Header title="Dashboard" showBackButton={false} />
       {babyId ? (
         <Dashboard
@@ -18,12 +18,21 @@ export default function DashboardScreen() {
           activityFeed={<ActivityFeed babyId={babyId} limit={10} />}
         />
       ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+        <View style={styles.emptyState}>
           <Text>No baby selected - Select a baby to view your dashboard</Text>
         </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

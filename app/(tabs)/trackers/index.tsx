@@ -16,6 +16,7 @@ const trackers = [
     description: "Breast, bottle, or solid foods",
     icon: "restaurant",
     color: "#f97316",
+    bgStyle: "trackerIconFeed",
     href: "/(tabs)/trackers/feed",
   },
   {
@@ -24,6 +25,7 @@ const trackers = [
     description: "Wet, dirty, or mixed diapers",
     icon: "water",
     color: "#3b82f6",
+    bgStyle: "trackerIconDiaper",
     href: "/(tabs)/trackers/diaper",
   },
   {
@@ -32,6 +34,7 @@ const trackers = [
     description: "Naps and nighttime sleep",
     icon: "moon",
     color: "#8b5cf6",
+    bgStyle: "trackerIconSleep",
     href: "/(tabs)/trackers/sleep",
   },
   {
@@ -40,6 +43,7 @@ const trackers = [
     description: "How you're feeling",
     icon: "heart",
     color: "#ec4899",
+    bgStyle: "trackerIconMood",
     href: "/(tabs)/trackers/mood",
   },
   {
@@ -48,6 +52,7 @@ const trackers = [
     description: "Weight, length, head circ.",
     icon: "analytics",
     color: "#22c55e",
+    bgStyle: "trackerIconGrowth",
     href: "/(tabs)/trackers/growth",
   },
   {
@@ -56,6 +61,7 @@ const trackers = [
     description: "Track developmental milestones",
     icon: "trophy",
     color: "#f59e0b",
+    bgStyle: "trackerIconMilestones",
     href: "/(tabs)/trackers/milestones",
   },
 ];
@@ -64,7 +70,7 @@ export default function TrackersIndexScreen() {
   const router = useRouter();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.screen}>
       <Header title="Trackers" showBackButton={false} />
       <ScrollView
         style={styles.container}
@@ -83,7 +89,7 @@ export default function TrackersIndexScreen() {
               <View
                 style={[
                   styles.trackerIcon,
-                  { backgroundColor: `${tracker.color}20` },
+                  styles[tracker.bgStyle as keyof typeof styles] as any,
                 ]}
               >
                 <Ionicons
@@ -105,6 +111,9 @@ export default function TrackersIndexScreen() {
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#f8fafc",
@@ -147,6 +156,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
+  },
+  trackerIconFeed: {
+    backgroundColor: "#f9731620",
+  },
+  trackerIconDiaper: {
+    backgroundColor: "#3b82f620",
+  },
+  trackerIconSleep: {
+    backgroundColor: "#8b5cf620",
+  },
+  trackerIconMood: {
+    backgroundColor: "#ec489920",
+  },
+  trackerIconGrowth: {
+    backgroundColor: "#22c55e20",
+  },
+  trackerIconMilestones: {
+    backgroundColor: "#f59e0b20",
   },
   trackerTitle: {
     fontSize: 18,

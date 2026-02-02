@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { View, StyleSheet, Modal, Text } from "react-native";
 import { Confetti } from "@/components/atoms/Confetti";
 

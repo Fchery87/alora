@@ -5,7 +5,7 @@ import { requireUserId, requireOrganizationId } from "../../lib/users";
 export const get = query({
   args: { id: v.id("families") },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const family = await ctx.db.get(args.id);
     if (!family) throw new Error("Family not found");
@@ -22,22 +22,24 @@ export const get = query({
 
 export const getByClerkOrganizationId = query({
   args: { clerkOrganizationId: v.string() },
-  handler: async (ctx, args) => {
-    const userOrgId = await requireOrganizationId(ctx);
-
-    if (userOrgId !== args.clerkOrganizationId) {
-      throw new Error("Not authorized to view this organization");
-    }
-
-    const family = await ctx.db
-      .query("families")
-      .withIndex("by_clerk_org_id", (q) =>
-        q.eq("clerkOrganizationId", args.clerkOrganizationId)
-      )
-      .first();
-    return family;
-  },
+  handler: getByClerkOrganizationIdHandler,
 });
+
+export async function getByClerkOrganizationIdHandler(ctx: any, args: any) {
+  const userOrgId = await requireOrganizationId(ctx);
+
+  if (userOrgId !== args.clerkOrganizationId) {
+    throw new Error("Not authorized to view this organization");
+  }
+
+  const family = await ctx.db
+    .query("families")
+    .withIndex("by_clerk_org_id", (q: any) =>
+      q.eq("clerkOrganizationId", userOrgId)
+    )
+    .first();
+  return family;
+}
 
 export const sync = mutation({
   args: {

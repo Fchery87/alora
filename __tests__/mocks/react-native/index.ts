@@ -41,6 +41,7 @@ export const Animated = {
   Value: AnimatedValue as any,
   timing: () => ({ start: (cb?: any) => cb?.() }),
   sequence: () => ({ start: (cb?: any) => cb?.() }),
+  loop: () => ({ start: (cb?: any) => cb?.() }),
   View: createComponent("Animated.View"),
 };
 export const Platform = {

@@ -1,4 +1,3 @@
-import React from "react";
 import { describe, it, expect } from "vitest";
 import { screen, fireEvent } from "@testing-library/react-native";
 import { MoodCheckIn } from "@/components/organisms/MoodCheckIn";

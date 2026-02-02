@@ -13,7 +13,6 @@ import { useCreateDiaper } from "@/hooks/queries/useDiapers";
 import {
   validateDiaper,
   type DiaperFormData,
-  getErrorMessage,
   hasFieldError,
 } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";

@@ -168,7 +168,7 @@ export function AnalyticsDashboard({
         <Text style={styles.sectionTitle}>This Period</Text>
         <View style={styles.summaryGrid}>
           <View style={styles.summaryCard}>
-            <View style={[styles.summaryIcon, { backgroundColor: "#ecfdf5" }]}>
+            <View style={[styles.summaryIcon, styles.summaryIconMood]}>
               <Ionicons name="happy-outline" size={20} color="#10b981" />
             </View>
             <Text style={styles.summaryValue}>
@@ -177,7 +177,7 @@ export function AnalyticsDashboard({
             <Text style={styles.summaryLabel}>Avg Mood</Text>
           </View>
           <View style={styles.summaryCard}>
-            <View style={[styles.summaryIcon, { backgroundColor: "#f5f3ff" }]}>
+            <View style={[styles.summaryIcon, styles.summaryIconSleep]}>
               <Ionicons name="moon-outline" size={20} color="#8b5cf6" />
             </View>
             <Text style={styles.summaryValue}>
@@ -186,7 +186,7 @@ export function AnalyticsDashboard({
             <Text style={styles.summaryLabel}>Avg Sleep</Text>
           </View>
           <View style={styles.summaryCard}>
-            <View style={[styles.summaryIcon, { backgroundColor: "#fef2f2" }]}>
+            <View style={[styles.summaryIcon, styles.summaryIconFeeds]}>
               <Ionicons name="restaurant-outline" size={20} color="#ef4444" />
             </View>
             <Text style={styles.summaryValue}>
@@ -195,7 +195,7 @@ export function AnalyticsDashboard({
             <Text style={styles.summaryLabel}>Avg Feeds</Text>
           </View>
           <View style={styles.summaryCard}>
-            <View style={[styles.summaryIcon, { backgroundColor: "#eff6ff" }]}>
+            <View style={[styles.summaryIcon, styles.summaryIconTotal]}>
               <Ionicons name="stats-chart-outline" size={20} color="#3b82f6" />
             </View>
             <Text style={styles.summaryValue}>{summaryStats.totalEntries}</Text>
@@ -387,6 +387,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
+  },
+  summaryIconMood: {
+    backgroundColor: "#ecfdf5",
+  },
+  summaryIconSleep: {
+    backgroundColor: "#f5f3ff",
+  },
+  summaryIconFeeds: {
+    backgroundColor: "#fef2f2",
+  },
+  summaryIconTotal: {
+    backgroundColor: "#eff6ff",
   },
   summaryValue: {
     fontSize: 20,

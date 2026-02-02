@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Text,
   View,
@@ -13,6 +13,11 @@ import { router } from "expo-router";
 import { useOrganizationList, useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import {
+  getOnboardingRedirectHref,
+  shouldAutoSelectSingleOrganization,
+  shouldShowCreateBaby,
+} from "@/lib/onboarding";
 
 import { GlassCard } from "@/components/atoms/GlassCard";
 import { CreateBaby } from "@/components/organisms";
@@ -29,65 +34,97 @@ export default function OnboardingScreen() {
   const [orgName, setOrgName] = useState("");
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
+  const [selectingOrgId, setSelectingOrgId] = useState<string | null>(null);
+  const [orgActivationComplete, setOrgActivationComplete] = useState(false);
 
   const babies = useQuery(
     api.functions.babies.index.listByOrganization,
     isSignedIn && orgId ? {} : "skip"
   );
 
-  useEffect(() => {
-    if (!isAuthLoaded) return;
-    if (isSignedIn) return;
-
-    const timer = setTimeout(() => {
-      if (!redirectToLoginAttempted.current) {
-        redirectToLoginAttempted.current = true;
-        router.replace("/(auth)/login");
+  const activateOrganization = useCallback(
+    async (organizationId: string) => {
+      setError("");
+      setOrgActivationComplete(false);
+      if (!setActive) {
+        setError("Organizations are still loading. Please try again.");
+        return;
       }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [isAuthLoaded, isSignedIn]);
+      try {
+        await setActive({ organization: organizationId });
+        await getToken({ template: "convex", skipCache: true });
+        setOrgActivationComplete(true);
+      } catch (err: any) {
+        setError(
+          err?.errors?.[0]?.message || "Failed to activate organization."
+        );
+      }
+    },
+    [getToken, setActive]
+  );
 
   useEffect(() => {
-    if (!isLoaded || orgId) return;
-    if (autoSelectAttempted.current) return;
-    const memberships = userMemberships.data ?? [];
-    if (memberships.length === 1) {
-      if (!setActive) return;
-      autoSelectAttempted.current = true;
-      void setActive({ organization: memberships[0].organization.id });
+    const href = getOnboardingRedirectHref({
+      isAuthLoaded,
+      isSignedIn: Boolean(isSignedIn),
+      orgId,
+      babiesCount: Array.isArray(babies) ? babies.length : null,
+    });
+
+    if (!href) return;
+
+    if (href === "/(auth)/login") {
+      const timer = setTimeout(() => {
+        if (!redirectToLoginAttempted.current) {
+          redirectToLoginAttempted.current = true;
+          router.replace(href);
+        }
+      }, 300);
+
+      return () => clearTimeout(timer);
     }
-  }, [isLoaded, orgId, userMemberships.data, setActive]);
 
-  // Only redirect to dashboard when user is signed in, has org, AND has babies
-  // This prevents premature redirect during onboarding flow
-  useEffect(() => {
-    if (
-      isSignedIn &&
-      orgId &&
-      Array.isArray(babies) &&
-      babies.length > 0 &&
-      !showCreateBaby &&
-      !redirectToDashboardAttempted.current
-    ) {
+    if (!redirectToDashboardAttempted.current) {
       redirectToDashboardAttempted.current = true;
-      router.replace("/(tabs)/dashboard");
+      router.replace(href);
     }
-  }, [isSignedIn, orgId, babies, showCreateBaby]);
+  }, [isAuthLoaded, isSignedIn, orgId, babies]);
+
+  useEffect(() => {
+    if (autoSelectAttempted.current) return;
+    const membershipsCount = userMemberships.data?.length ?? null;
+
+    if (
+      shouldAutoSelectSingleOrganization({
+        isOrgListLoaded: isLoaded,
+        currentOrgId: orgId,
+        membershipsCount,
+      })
+    ) {
+      autoSelectAttempted.current = true;
+      void activateOrganization(userMemberships.data![0].organization.id);
+    }
+  }, [activateOrganization, isLoaded, orgId, userMemberships.data]);
+
+  useEffect(() => {
+    const shouldShow = shouldShowCreateBaby({
+      isAuthLoaded,
+      isSignedIn: Boolean(isSignedIn),
+      orgId,
+      babiesCount: Array.isArray(babies) ? babies.length : null,
+    });
+
+    if (orgActivationComplete && shouldShow) setShowCreateBaby(true);
+  }, [isAuthLoaded, isSignedIn, orgId, babies, orgActivationComplete]);
 
   const handleSelectOrganization = async (organizationId: string) => {
-    setError("");
-    if (!setActive) {
-      setError("Organizations are still loading. Please try again.");
-      return;
-    }
     try {
-      await setActive({ organization: organizationId });
-      await getToken({ template: "convex", skipCache: true });
-      setShowCreateBaby(true);
+      setSelectingOrgId(organizationId);
+      await activateOrganization(organizationId);
     } catch (err: any) {
       setError(err?.errors?.[0]?.message || "Failed to select organization.");
+    } finally {
+      setSelectingOrgId(null);
     }
   };
 
@@ -106,9 +143,7 @@ export default function OnboardingScreen() {
     setError("");
     try {
       const org = await createOrganization({ name: trimmedName });
-      await setActive({ organization: org.id });
-      await getToken({ template: "convex", skipCache: true });
-      setShowCreateBaby(true);
+      await activateOrganization(org.id);
     } catch (err: any) {
       setError(err?.errors?.[0]?.message || "Failed to create organization.");
     } finally {
@@ -144,7 +179,13 @@ export default function OnboardingScreen() {
                     onPress={() =>
                       handleSelectOrganization(membership.organization.id)
                     }
-                    style={styles.orgButton}
+                    disabled={Boolean(selectingOrgId) || creating}
+                    style={[
+                      styles.orgButton,
+                      Boolean(selectingOrgId) &&
+                        selectingOrgId !== membership.organization.id &&
+                        styles.orgButtonDisabled,
+                    ]}
                   >
                     <Text style={styles.orgName}>
                       {membership.organization.name}
@@ -175,7 +216,9 @@ export default function OnboardingScreen() {
               disabled={creating || !isLoaded}
               style={[
                 styles.createButton,
-                { backgroundColor: creating ? "#a5b4fc" : "#6366f1" },
+                creating
+                  ? styles.createButtonDisabled
+                  : styles.createButtonEnabled,
               ]}
             >
               {creating ? (
@@ -240,6 +283,9 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb",
     marginBottom: 10,
   },
+  orgButtonDisabled: {
+    opacity: 0.6,
+  },
   orgName: {
     fontSize: 16,
     fontWeight: "600",
@@ -277,6 +323,12 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
+  },
+  createButtonEnabled: {
+    backgroundColor: "#6366f1",
+  },
+  createButtonDisabled: {
+    backgroundColor: "#a5b4fc",
   },
   createButtonText: {
     color: "#fff",

@@ -59,12 +59,14 @@ export async function requireIdentity(ctx: any) {
     undefined;
 
   if (!organizationId) {
-    console.log("Missing orgId in identity:", {
-      subject: identity.subject,
-      issuer: identity.issuer,
-      orgId: organizationId,
-      tokenIdentifier: identity.tokenIdentifier,
-    });
+    if (process.env.NODE_ENV !== "test" && !process.env.VITEST) {
+      console.log("Missing orgId in identity:", {
+        subject: identity.subject,
+        issuer: identity.issuer,
+        orgId: organizationId,
+        tokenIdentifier: identity.tokenIdentifier,
+      });
+    }
   }
 
   return identity;

@@ -5,6 +5,7 @@ import {
   ScrollView,
   Pressable,
   TouchableOpacity,
+  Switch,
 } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
 import type { MotiTransition } from "@/lib/moti-types";
@@ -16,6 +17,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { getDailyAffirmation, getRandomSelfCareNudge } from "@/lib/self-care";
 import { MoodTrendChart } from "@/components/organisms/MoodTrendChart";
 import { useListMood } from "@/hooks/queries/useMoodCheckIns";
+import { generateDailyInsight } from "@/lib/insights/rules";
+import { useDailyInsight, useAiInsightSettings } from "@/hooks/useDailyInsight";
+import { useMutation, useAction, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { usePushSync } from "@/hooks/usePushSync";
+import { RESOURCES } from "@/lib/resources";
+import { recommendResources } from "@/lib/smart-resources";
 
 type DateRange = "7d" | "30d" | "90d" | "all";
 
@@ -23,6 +31,7 @@ export default function WellnessScreen() {
   const { isSignedIn } = useAuth();
   const router = useRouter();
   const [dateRange, setDateRange] = useState<DateRange>("7d");
+  const [savedInsights, setSavedInsights] = useState<Set<string>>(new Set());
   const [savedAffirmations, setSavedAffirmations] = useState<Set<string>>(
     new Set()
   );
@@ -30,10 +39,40 @@ export default function WellnessScreen() {
   const dailyAffirmation = getDailyAffirmation();
   const selfCareNudge = getRandomSelfCareNudge();
   const { data: moodData, isLoading } = useListMood();
+  const rulesInsight = generateDailyInsight({
+    moodEntries:
+      moodData?.map((entry: any) => ({
+        mood: entry.mood,
+        createdAt: entry.createdAt ?? entry._creationTime,
+      })) ?? [],
+  });
+  const { settings, setEnabled } = useAiInsightSettings();
+  const aiEnabled = Boolean(settings?.aiInsightsEnabled);
+  const { data: aiInsight, isLoading: isInsightLoading } =
+    useDailyInsight(aiEnabled);
+  const dailyInsight = aiInsight ?? rulesInsight;
+
+  const pushSettings = useQuery(api.functions.push.index.getPushSettings);
+  const setPushEnabled = useMutation(
+    api.functions.push.index.setPushNotificationsEnabled
+  );
+  const sendTestPush = useAction(api.functions.push.index.sendTestPush);
+  const pushEnabled = Boolean(pushSettings?.pushNotificationsEnabled);
+  const { error: pushError, isRegistering } = usePushSync(pushEnabled);
 
   if (!isSignedIn) {
     return <Redirect href="/(auth)/login" />;
   }
+
+  const toggleSaveInsight = (id: string) => {
+    const newSaved = new Set(savedInsights);
+    if (newSaved.has(id)) {
+      newSaved.delete(id);
+    } else {
+      newSaved.add(id);
+    }
+    setSavedInsights(newSaved);
+  };
 
   const toggleSaveAffirmation = (id: string) => {
     const newSaved = new Set(savedAffirmations);
@@ -43,6 +82,11 @@ export default function WellnessScreen() {
       newSaved.add(id);
     }
     setSavedAffirmations(newSaved);
+  };
+
+  const resetDailyCards = () => {
+    setSavedInsights(new Set());
+    setSavedAffirmations(new Set());
   };
 
   const moodChartData =
@@ -59,6 +103,17 @@ export default function WellnessScreen() {
                 ? 2
                 : 1,
     })) || [];
+
+  const smartResources = recommendResources({
+    resources: RESOURCES,
+    nowMs: Date.now(),
+    moodEntries:
+      moodData?.map((entry: any) => ({
+        mood: entry.mood,
+        createdAt: entry.createdAt ?? entry._creationTime,
+      })) ?? [],
+    limit: 2,
+  });
 
   const quickActions = [
     {
@@ -91,17 +146,108 @@ export default function WellnessScreen() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Wellness</Text>
-        <TouchableOpacity onPress={() => setSavedAffirmations(new Set())}>
+        <TouchableOpacity onPress={resetDailyCards}>
           <Ionicons name="refresh-outline" size={24} color="#64748b" />
         </TouchableOpacity>
       </View>
 
-      {/* Daily Affirmation Card - Hero Section */}
+      {/* Daily Insight Card - Hero Section */}
+      <MotiView
+        from={{ opacity: 0, translateY: 20 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{ type: "spring" } as MotiTransition}
+        style={styles.affirmationSection}
+      >
+        <LinearGradient
+          colors={["#dbeafe", "#fce7f3", "#ede9fe"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.affirmationCard}
+        >
+          <View style={styles.affirmationHeader}>
+            <View style={styles.affirmationBadge}>
+              <Ionicons name="sparkles" size={16} color="#f59e0b" />
+              <Text style={styles.affirmationBadgeText}>Today's Insight</Text>
+            </View>
+            <View style={styles.aiToggleRow}>
+              <Text style={styles.aiToggleLabel}>AI</Text>
+              <Switch
+                value={aiEnabled}
+                onValueChange={(v) => void setEnabled({ enabled: v })}
+              />
+            </View>
+            <TouchableOpacity
+              onPress={() => toggleSaveInsight(dailyInsight.id)}
+              style={styles.saveButton}
+            >
+              <Ionicons
+                name={
+                  savedInsights.has(dailyInsight.id)
+                    ? "bookmark"
+                    : "bookmark-outline"
+                }
+                size={22}
+                color={
+                  savedInsights.has(dailyInsight.id) ? "#ec4899" : "#9ca3af"
+                }
+              />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.affirmationMessage}>
+            {aiEnabled && isInsightLoading
+              ? "Loading your insight…"
+              : dailyInsight.message}
+          </Text>
+
+          <View style={styles.pushSection}>
+            <View style={styles.pushRow}>
+              <Text style={styles.pushLabel}>Push notifications</Text>
+              <Switch
+                value={pushEnabled}
+                onValueChange={(v) => void setPushEnabled({ enabled: v })}
+              />
+            </View>
+            {pushEnabled ? (
+              <Pressable
+                style={styles.testPushButton}
+                onPress={() => void sendTestPush({})}
+                disabled={isRegistering}
+              >
+                <Text style={styles.testPushButtonText}>
+                  {isRegistering ? "Registering…" : "Send test push"}
+                </Text>
+              </Pressable>
+            ) : null}
+            {pushError ? (
+              <Text style={styles.pushErrorText}>{pushError}</Text>
+            ) : null}
+          </View>
+
+          <View style={styles.affirmationMeta}>
+            <View style={styles.affirmationMetaItem}>
+              <Ionicons name="heart-outline" size={14} color="#9ca3af" />
+              <Text style={styles.affirmationMetaText}>
+                {dailyInsight.title}
+              </Text>
+            </View>
+            <Text style={styles.affirmationDate}>
+              {new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })}
+            </Text>
+          </View>
+        </LinearGradient>
+      </MotiView>
+
+      {/* Daily Affirmation Card */}
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
         animate={{ opacity: 1, translateY: 0 }}
         transition={
-          { type: "spring" } as MotiTransition
+          { type: "spring", delay: 80, damping: 12 } as MotiTransition
         }
         style={styles.affirmationSection}
       >
@@ -234,6 +380,37 @@ export default function WellnessScreen() {
         )}
       </MotiView>
 
+      {/* Smart Resources */}
+      {smartResources.length > 0 ? (
+        <MotiView
+          from={{ opacity: 0, translateY: 20 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={
+            { type: "spring", delay: 250, damping: 10 } as MotiTransition
+          }
+          style={styles.section}
+        >
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Smart Resources</Text>
+          </View>
+
+          {smartResources.map((rec) => (
+            <View key={rec.resource.id} style={styles.nudgeCard}>
+              <View style={[styles.nudgeIcon, styles.resourceNudgeIcon]}>
+                <Ionicons name="book" size={24} color="#6366f1" />
+              </View>
+              <View style={styles.nudgeContent}>
+                <Text style={styles.nudgeCategory}>{rec.resource.title}</Text>
+                <Text style={styles.nudgeMessage}>
+                  {rec.reason ||
+                    "Recommended for you based on recent check-ins."}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </MotiView>
+      ) : null}
+
       {/* Self-Care Nudges Section */}
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
@@ -246,7 +423,7 @@ export default function WellnessScreen() {
         <Text style={styles.sectionTitle}>Gentle Reminders</Text>
 
         <TouchableOpacity style={styles.nudgeCard} activeOpacity={0.7}>
-          <View style={[styles.nudgeIcon, { backgroundColor: "#ecfeff" }]}>
+          <View style={[styles.nudgeIcon, styles.mindfulnessNudgeIcon]}>
             <Ionicons name="leaf" size={24} color="#0891b2" />
           </View>
           <View style={styles.nudgeContent}>
@@ -372,6 +549,46 @@ const styles = StyleSheet.create({
     color: "#d97706",
     letterSpacing: 0.5,
     textTransform: "uppercase",
+  },
+  aiToggleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  aiToggleLabel: {
+    fontSize: 12,
+    color: "#6b7280",
+  },
+  pushSection: {
+    marginTop: 14,
+  },
+  pushRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  pushLabel: {
+    fontSize: 12,
+    color: "#6b7280",
+  },
+  testPushButton: {
+    marginTop: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#e5e7eb",
+  },
+  testPushButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  pushErrorText: {
+    marginTop: 8,
+    fontSize: 12,
+    color: "#ef4444",
   },
   saveButton: {
     padding: 4,
@@ -527,6 +744,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: 14,
+  },
+  resourceNudgeIcon: {
+    backgroundColor: "#eef2ff",
+  },
+  mindfulnessNudgeIcon: {
+    backgroundColor: "#ecfeff",
   },
   nudgeContent: {
     flex: 1,

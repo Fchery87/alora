@@ -1,5 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
+import Constants from "expo-constants";
 import { getRandomSelfCareNudge, getDailyAffirmation } from "./self-care";
 
 export interface NotificationReminder {
@@ -53,8 +54,15 @@ export async function registerForPushNotificationsAsync(): Promise<
     return null;
   }
 
+  const projectId =
+    Constants.easConfig?.projectId ||
+    (Constants.expoConfig as any)?.extra?.eas?.projectId ||
+    process.env.EXPO_PROJECT_ID ||
+    process.env.EXPO_PUBLIC_EXPO_PROJECT_ID ||
+    "your-project-id";
+
   const tokenData = await Notifications.getExpoPushTokenAsync({
-    projectId: process.env.EXPO_PROJECT_ID || "your-project-id",
+    projectId,
   });
 
   return tokenData.data;

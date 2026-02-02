@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 interface Entry {
@@ -60,9 +67,15 @@ export function EntryList({
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
-        refreshControl={onRefresh ? (
-          <RefreshControl refreshing={refreshing ?? false} onRefresh={onRefresh} tintColor="#6366f1" />
-        ) : undefined}
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl
+              refreshing={refreshing ?? false}
+              onRefresh={onRefresh}
+              tintColor="#6366f1"
+            />
+          ) : undefined
+        }
       >
         {entries.length === 0 ? (
           <View style={styles.empty}>
@@ -79,17 +92,30 @@ export function EntryList({
               <View style={styles.entryHeader}>
                 <View style={styles.entryIcon}>
                   {entry.icon ? (
-                    <Ionicons name={entry.icon} size={20} color={entry.iconColor || "#6366f1"} />
+                    <Ionicons
+                      name={entry.icon}
+                      size={20}
+                      color={entry.iconColor || "#6366f1"}
+                    />
                   ) : null}
                   <Text style={styles.entryTitle}>{entry.title}</Text>
                 </View>
                 <View style={styles.entryMeta}>
                   {entry.timestamp && (
-                    <Text style={styles.entryTime}>{formatTime(entry.timestamp)}</Text>
+                    <Text style={styles.entryTime}>
+                      {formatTime(entry.timestamp)}
+                    </Text>
                   )}
                   {entry.onDelete && (
-                    <TouchableOpacity onPress={entry.onDelete} style={{ padding: 4 }}>
-                      <Ionicons name="trash-outline" size={18} color="#94a3b8" />
+                    <TouchableOpacity
+                      onPress={entry.onDelete}
+                      style={styles.deleteButton}
+                    >
+                      <Ionicons
+                        name="trash-outline"
+                        size={18}
+                        color="#94a3b8"
+                      />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -178,6 +204,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+  },
+  deleteButton: {
+    padding: 4,
   },
   entryTime: {
     fontSize: 12,

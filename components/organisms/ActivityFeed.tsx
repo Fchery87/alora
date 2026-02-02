@@ -26,7 +26,6 @@ export function ActivityFeed({
   refreshing = false,
   limit = 20,
 }: ActivityFeedProps) {
-  const { userId } = useAuth();
   const { groupedActivities, isLoading } = useActivityFeed(
     babyId as any,
     limit
@@ -70,7 +69,9 @@ export function ActivityFeed({
       : "U";
 
     if (avatarUrl) {
-      return <Image source={{ uri: avatarUrl }} className="w-8 h-8 rounded-full" />;
+      return (
+        <Image source={{ uri: avatarUrl }} className="w-8 h-8 rounded-full" />
+      );
     }
 
     return (
@@ -106,7 +107,9 @@ export function ActivityFeed({
           <View className="flex-row items-start gap-3">
             {renderAvatar(activity.userName, activity.userAvatarUrl)}
             <View className="flex-1">
-              <Text className="text-white text-sm font-medium leading-5">{activity.message}</Text>
+              <Text className="text-white text-sm font-medium leading-5">
+                {activity.message}
+              </Text>
               <Text className="text-nano-500 text-xs mt-1">
                 {getRelativeTime(activity.timestamp)}
               </Text>
@@ -141,7 +144,9 @@ export function ActivityFeed({
       </Text>
       <TouchableOpacity className="flex-row items-center gap-2 bg-banana-500/10 px-5 py-3 rounded-xl mt-6 border border-banana-500/20">
         <Ionicons name="add-circle-outline" size={20} color="#FFE135" />
-        <Text className="text-banana-500 font-bold text-sm">Log first activity</Text>
+        <Text className="text-banana-500 font-bold text-sm">
+          Log first activity
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -168,7 +173,7 @@ export function ActivityFeed({
   }
 
   return (
-    <Animated.View 
+    <Animated.View
       className="bg-nano-900 border border-nano-800 rounded-3xl overflow-hidden shadow-2xl"
       style={{ opacity: fadeAnim }}
     >
@@ -181,7 +186,9 @@ export function ActivityFeed({
           <Animated.View style={{ transform: [{ scale: liveIndicatorAnim }] }}>
             <View className="flex-row items-center bg-green-500/10 px-2.5 py-1 rounded-full gap-1.5">
               <View className="w-2 h-2 rounded-full bg-green-500" />
-              <Text className="text-[10px] font-bold text-green-500 uppercase">Live</Text>
+              <Text className="text-[10px] font-bold text-green-500 uppercase">
+                Live
+              </Text>
             </View>
           </Animated.View>
         )}
@@ -193,7 +200,11 @@ export function ActivityFeed({
         showsVerticalScrollIndicator={false}
         refreshControl={
           onRefresh ? (
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FFE135" />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#FFE135"
+            />
           ) : undefined
         }
       >
@@ -234,5 +245,3 @@ function getRelativeTime(timestamp: number): string {
     return `${days} days ago`;
   }
 }
-
-

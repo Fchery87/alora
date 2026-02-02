@@ -8,6 +8,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 globalThis.__DEV__ = true;
 globalThis.React = require("react");
 
+// Keep test output clean; individual tests can opt-in by spying and asserting.
+vi.spyOn(console, "log").mockImplementation(() => {});
+
 vi.mock("@tanstack/react-query", async () => {
   const actual = await vi.importActual<typeof import("@tanstack/react-query")>(
     "@tanstack/react-query"
@@ -73,7 +76,6 @@ vi.mock(
   }),
   { virtual: true }
 );
-
 
 beforeEach(() => {
   vi.clearAllMocks();

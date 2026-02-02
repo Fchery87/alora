@@ -4,7 +4,7 @@ import { View, StyleSheet, Pressable, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
-import { GRADIENTS, GLASS, SHADOWS, RADIUS, COLORS } from "@/lib/theme";
+import { GRADIENTS, SHADOWS, COLORS } from "@/lib/theme";
 import { softSpring, iconTap } from "@/lib/animations";
 
 interface TabItem {
@@ -62,19 +62,14 @@ const TABS: TabItem[] = [
   },
 ];
 
-export function ModernTabBar({
-  state,
-  navigation,
-}: ModernTabBarProps) {
+export function ModernTabBar({ state, navigation }: ModernTabBarProps) {
   const currentRoute = state.routes[state.index]?.key;
 
   return (
     <MotiView
       from={{ translateY: 100 }}
       animate={{ translateY: 0 }}
-      transition={
-        { ...softSpring, delay: 300 } as MotiTransition
-      }
+      transition={{ ...softSpring, delay: 300 } as MotiTransition}
       style={styles.container}
     >
       {/* Glass background */}
@@ -109,7 +104,12 @@ export function ModernTabBar({
                     transition={
                       { ...softSpring, delay: index * 30 } as MotiTransition
                     }
-                    style={[styles.activeGlow, { backgroundColor: `${tab.color}20` }]}
+                    style={[
+                      styles.activeGlow,
+                      styles[
+                        `activeGlow_${tab.id}` as keyof typeof styles
+                      ] as any,
+                    ]}
                   />
                 )}
 
@@ -138,7 +138,16 @@ export function ModernTabBar({
                 </View>
 
                 {/* Tab label */}
-                <Text style={[styles.tabLabel, isActive && { color: tab.color, fontWeight: "600" }]}>
+                <Text
+                  style={[
+                    styles.tabLabel,
+                    isActive ? styles.tabLabelActive : styles.tabLabelInactive,
+                    isActive &&
+                      (styles[
+                        `tabLabel_${tab.id}` as keyof typeof styles
+                      ] as any),
+                  ]}
+                >
                   {tab.label}
                 </Text>
               </Pressable>
@@ -211,9 +220,44 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 11,
     fontWeight: "500",
-    color: COLORS.slate[400],
     marginTop: 2,
     textTransform: "capitalize",
+  },
+  tabLabelInactive: {
+    color: COLORS.slate[400],
+  },
+  tabLabelActive: {
+    fontWeight: "600",
+  },
+  tabLabel_dashboard: {
+    color: "#6366f1",
+  },
+  tabLabel_trackers: {
+    color: "#22c55e",
+  },
+  tabLabel_wellness: {
+    color: "#f43f5e",
+  },
+  tabLabel_journal: {
+    color: "#8b5cf6",
+  },
+  tabLabel_calendar: {
+    color: "#f59e0b",
+  },
+  activeGlow_dashboard: {
+    backgroundColor: "#6366f120",
+  },
+  activeGlow_trackers: {
+    backgroundColor: "#22c55e20",
+  },
+  activeGlow_wellness: {
+    backgroundColor: "#f43f5e20",
+  },
+  activeGlow_journal: {
+    backgroundColor: "#8b5cf620",
+  },
+  activeGlow_calendar: {
+    backgroundColor: "#f59e0b20",
   },
   safeArea: {
     height: 34,

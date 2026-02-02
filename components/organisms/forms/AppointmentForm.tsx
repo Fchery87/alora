@@ -8,12 +8,9 @@ import {
   StyleProp,
   TextStyle,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  validateAppointment,
-  validateAppointment as validateAppointmentData,
-} from "@/lib/validation";
+import { validateAppointment as validateAppointmentData } from "@/lib/validation";
 
 export interface AppointmentFormData {
   title: string;

@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import {
   VictoryChart,
@@ -326,15 +326,15 @@ export function GrowthChart({
       {showPercentiles && percentileData && (
         <View style={styles.legend}>
           <View style={styles.legendItem}>
-            <View style={[styles.legendLine, { backgroundColor: "#6ee7b7" }]} />
+            <View style={[styles.legendLine, styles.legendLineMedian]} />
             <Text style={styles.legendText}>50th percentile</Text>
           </View>
           <View style={styles.legendItem}>
-            <View style={[styles.legendLine, { backgroundColor: "#fbbf24" }]} />
+            <View style={[styles.legendLine, styles.legendLineHigh]} />
             <Text style={styles.legendText}>90th</Text>
           </View>
           <View style={styles.legendItem}>
-            <View style={[styles.legendLine, { backgroundColor: "#fca5a5" }]} />
+            <View style={[styles.legendLine, styles.legendLineLow]} />
             <Text style={styles.legendText}>10th</Text>
           </View>
         </View>
@@ -425,6 +425,15 @@ const styles = StyleSheet.create({
     width: 20,
     height: 2,
     borderRadius: 1,
+  },
+  legendLineMedian: {
+    backgroundColor: "#6ee7b7",
+  },
+  legendLineHigh: {
+    backgroundColor: "#fbbf24",
+  },
+  legendLineLow: {
+    backgroundColor: "#fca5a5",
   },
   legendText: {
     fontSize: 11,

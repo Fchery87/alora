@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
-import { GRADIENTS, SHADOWS, RADIUS, TYPOGRAPHY, COLORS } from "@/lib/theme";
+import { GRADIENTS, SHADOWS, TYPOGRAPHY } from "@/lib/theme";
 import { softSpring, iconTap } from "@/lib/animations";
 import type { MotiTransition } from "@/lib/moti-types";
 
@@ -36,10 +36,11 @@ export function ModernHeader({
     <MotiView
       from={{ translateY: -50, opacity: 0 }}
       animate={{ translateY: 0, opacity: 1 }}
-      transition={
-        { ...softSpring, delay: 100 } as MotiTransition
-      }
-      style={[styles.container, backgroundColor === "transparent" && styles.transparentBg]}
+      transition={{ ...softSpring, delay: 100 } as MotiTransition}
+      style={[
+        styles.container,
+        backgroundColor === "transparent" && styles.transparentBg,
+      ]}
     >
       {/* Gradient or glass background */}
       {backgroundColor === "gradient" && (
@@ -65,17 +66,19 @@ export function ModernHeader({
         {showBackButton && (
           <Pressable
             onPress={onBackPress}
-            style={({ pressed }) => [
-              styles.iconButton,
-              iconTap(pressed),
-            ]}
+            style={({ pressed }) => [styles.iconButton, iconTap(pressed)]}
           >
             <Ionicons name="arrow-back" size={24} color="#0f172a" />
           </Pressable>
         )}
 
         {/* Title section */}
-        <View style={[styles.titleSection, showBackButton && { marginLeft: 12 }]}>
+        <View
+          style={[
+            styles.titleSection,
+            showBackButton && styles.titleSectionWithBack,
+          ]}
+        >
           <Text style={styles.title}>{title}</Text>
           {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
         </View>
@@ -86,10 +89,7 @@ export function ModernHeader({
         {showNotifications && (
           <Pressable
             onPress={onNotificationPress}
-            style={({ pressed }) => [
-              styles.iconButton,
-              iconTap(pressed),
-            ]}
+            style={({ pressed }) => [styles.iconButton, iconTap(pressed)]}
           >
             <Ionicons name="notifications-outline" size={24} color="#0f172a" />
             {notificationCount > 0 && (
@@ -105,10 +105,7 @@ export function ModernHeader({
         {showMenuButton && (
           <Pressable
             onPress={onMenuPress}
-            style={({ pressed }) => [
-              styles.iconButton,
-              iconTap(pressed),
-            ]}
+            style={({ pressed }) => [styles.iconButton, iconTap(pressed)]}
           >
             <Ionicons name="menu-outline" size={24} color="#0f172a" />
           </Pressable>
@@ -144,6 +141,9 @@ const styles = StyleSheet.create({
   },
   titleSection: {
     flex: 1,
+  },
+  titleSectionWithBack: {
+    marginLeft: 12,
   },
   title: {
     ...TYPOGRAPHY.headings.h3,

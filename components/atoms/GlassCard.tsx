@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { GRADIENTS, GLASS, SHADOWS, RADIUS } from "@/lib/theme";
+import { GRADIENTS, SHADOWS, RADIUS } from "@/lib/theme";
 
 interface GlassCardProps {
   children: React.ReactNode;

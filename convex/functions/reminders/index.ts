@@ -12,7 +12,7 @@ export const list = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
     await requireBabyAccess(ctx, args.babyId);
 
     const reminders = await ctx.db
@@ -53,7 +53,7 @@ export const get = query({
     id: v.id("reminders"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const reminder = await ctx.db.get(args.id);
     if (!reminder) throw new Error("Reminder not found");
@@ -104,7 +104,7 @@ export const update = mutation({
     isEnabled: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const { id, ...updates } = args;
     const existing = await ctx.db.get(id);
@@ -121,7 +121,7 @@ export const toggleEnabled = mutation({
     id: v.id("reminders"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const reminder = await ctx.db.get(args.id);
     if (!reminder) {
@@ -141,7 +141,7 @@ export const remove = mutation({
     id: v.id("reminders"),
   },
   handler: async (ctx, args) => {
-    const userId = await requireUserId(ctx);
+    await requireUserId(ctx);
 
     const reminder = await ctx.db.get(args.id);
     if (!reminder) throw new Error("Reminder not found");

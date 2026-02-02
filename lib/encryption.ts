@@ -1,7 +1,6 @@
 import AES from "crypto-js/aes";
 import HmacSHA256 from "crypto-js/hmac-sha256";
 import CryptoJS from "crypto-js";
-import SHA256 from "crypto-js/sha256";
 
 type AsyncStorageType = {
   setItem: (key: string, value: string) => Promise<void>;

@@ -9,7 +9,6 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { GrowthTracker } from "@/components/organisms/growth/GrowthTracker";
-import { GrowthChart } from "@/components/organisms/GrowthChart";
 import { FadeContainer } from "@/components/atoms/MotiContainers";
 import { useSelectedBabyId } from "@/stores/babyStore";
 import { BabySelectorModal } from "@/components/organisms";

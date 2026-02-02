@@ -4,60 +4,6 @@ import type { Id } from "../convex/_generated/dataModel";
 import { useAuth } from "@clerk/clerk-expo";
 import { useMemo } from "react";
 
-// Type assertions for Convex functions
-type FeedsApi = {
-  listFeeds: (args: {
-    babyId: string;
-    startDate?: number;
-    endDate?: number;
-    limit?: number;
-  }) => Promise<any[]>;
-};
-
-type DiapersApi = {
-  listDiapers: (args: {
-    babyId: string;
-    startDate?: number;
-    endDate?: number;
-    limit?: number;
-  }) => Promise<any[]>;
-};
-
-type SleepApi = {
-  listSleep: (args: {
-    babyId: string;
-    startDate?: number;
-    endDate?: number;
-    limit?: number;
-  }) => Promise<any[]>;
-};
-
-type MilestonesApi = {
-  list: (args: {
-    babyId: string;
-    limit?: number;
-  }) => Promise<any[]>;
-};
-
-type WellnessApi = {
-  listMood: (args: {
-    babyId: string;
-    limit?: number;
-  }) => Promise<any[]>;
-};
-
-type JournalApi = {
-  list: (args: {
-    limit?: number;
-  }) => Promise<any[]>;
-};
-
-type UsersApi = {
-  getUsersByIds: (args: {
-    userIds: Id<"users">[];
-  }) => Promise<any[]>;
-};
-
 const feedsApi = (api as any).feeds as any;
 const diapersApi = (api as any).diapers as any;
 const sleepApi = (api as any).sleep as any;
@@ -65,6 +11,8 @@ const milestonesApi = (api as any).milestones as any;
 const wellnessApi = (api as any).wellness as any;
 const journalApi = (api as any).journal as any;
 const usersApi = (api as any).users as any;
+
+const EMPTY_ARRAY: any[] = [];
 
 export type ActivityType =
   | "feed"
@@ -97,35 +45,35 @@ export function useActivityFeed(babyId?: Id<"babies">, limit: number = 20) {
     useQuery(feedsApi.listFeeds, {
       babyId: babyId as any,
       limit: 50,
-    }) || [];
+    }) ?? EMPTY_ARRAY;
 
   const diapers =
     useQuery(diapersApi.listDiapers, {
       babyId: babyId as any,
       limit: 50,
-    }) || [];
+    }) ?? EMPTY_ARRAY;
 
   const sleep =
     useQuery(sleepApi.listSleep, {
       babyId: babyId as any,
       limit: 50,
-    }) || [];
+    }) ?? EMPTY_ARRAY;
 
   const milestones =
     useQuery(milestonesApi.list, {
       babyId: babyId as any,
-    }) || [];
+    }) ?? EMPTY_ARRAY;
 
   const moodCheckIns =
     useQuery(wellnessApi.listMood, {
       babyId: babyId as any,
       limit: 20,
-    }) || [];
+    }) ?? EMPTY_ARRAY;
 
   const journalEntries =
     useQuery(journalApi.list, {
       limit: 20,
-    }) || [];
+    }) ?? EMPTY_ARRAY;
 
   // Fetch user data for each activity
   const userIds = useMemo(() => {
@@ -138,7 +86,7 @@ export function useActivityFeed(babyId?: Id<"babies">, limit: number = 20) {
     return Array.from(ids) as Id<"users">[];
   }, [feeds, diapers, sleep, moodCheckIns, journalEntries]);
 
-  const users = useQuery(usersApi.getUsersByIds, { userIds }) || [];
+  const users = useQuery(usersApi.getUsersByIds, { userIds }) ?? EMPTY_ARRAY;
 
   // Transform all data into a unified activity feed
   const activities = useMemo(() => {
@@ -157,7 +105,10 @@ export function useActivityFeed(babyId?: Id<"babies">, limit: number = 20) {
 
     // Process feeds
     feeds.forEach((feed: any) => {
-      const user = userMap.get(feed.createdById) as { name?: string; avatarUrl?: string };
+      const user = userMap.get(feed.createdById) as {
+        name?: string;
+        avatarUrl?: string;
+      };
       const durationText = feed.duration ? ` (${feed.duration} min)` : "";
       const typeText = feed.type === "breast" ? "breast feeding" : feed.type;
 
@@ -178,7 +129,10 @@ export function useActivityFeed(babyId?: Id<"babies">, limit: number = 20) {
 
     // Process diapers
     diapers.forEach((diaper: any) => {
-      const user = userMap.get(diaper.createdById) as { name?: string; avatarUrl?: string };
+      const user = userMap.get(diaper.createdById) as {
+        name?: string;
+        avatarUrl?: string;
+      };
 
       allActivities.push({
         id: `diaper-${diaper._id}`,
@@ -197,7 +151,10 @@ export function useActivityFeed(babyId?: Id<"babies">, limit: number = 20) {
 
     // Process sleep
     sleep.forEach((s: any) => {
-      const user = userMap.get(s.createdById) as { name?: string; avatarUrl?: string };
+      const user = userMap.get(s.createdById) as {
+        name?: string;
+        avatarUrl?: string;
+      };
       const durationText = s.duration
         ? `${Math.round(s.duration / 60000)} min`
         : s.endTime
@@ -240,7 +197,10 @@ export function useActivityFeed(babyId?: Id<"babies">, limit: number = 20) {
 
     // Process mood check-ins
     moodCheckIns.forEach((mood: any) => {
-      const user = userMap.get(mood.userId) as { name?: string; avatarUrl?: string };
+      const user = userMap.get(mood.userId) as {
+        name?: string;
+        avatarUrl?: string;
+      };
       const moodEmojis: Record<string, string> = {
         great: "😊",
         good: "🙂",
@@ -266,7 +226,10 @@ export function useActivityFeed(babyId?: Id<"babies">, limit: number = 20) {
 
     // Process journal entries
     journalEntries.forEach((entry: any) => {
-      const user = userMap.get(entry.userId) as { name?: string; avatarUrl?: string };
+      const user = userMap.get(entry.userId) as {
+        name?: string;
+        avatarUrl?: string;
+      };
 
       allActivities.push({
         id: `journal-${entry._id}`,
@@ -296,11 +259,11 @@ export function useActivityFeed(babyId?: Id<"babies">, limit: number = 20) {
     journalEntries,
     users,
     userId,
+    limit,
   ]);
 
   // Group activities by time period
   const groupedActivities = useMemo(() => {
-    const now = Date.now();
     const todayStart = new Date().setHours(0, 0, 0, 0);
     const yesterdayStart = todayStart - 24 * 60 * 60 * 1000;
 

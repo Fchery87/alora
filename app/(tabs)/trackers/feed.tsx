@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { FeedForm } from "@/components/organisms";
 import { Header } from "@/components/layout/Header";
 import { useSelectedBabyId } from "@/stores/babyStore";
@@ -10,14 +10,12 @@ export default function FeedTrackerScreen() {
   const selectedBabyId = useSelectedBabyId();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.screen}>
       <Header title="Feed Tracker" showBackButton />
       {selectedBabyId ? (
         <FeedForm babyId={selectedBabyId} />
       ) : (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+        <View style={styles.emptyState}>
           <Text>No baby selected</Text>
         </View>
       )}
@@ -28,3 +26,14 @@ export default function FeedTrackerScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

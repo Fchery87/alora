@@ -100,7 +100,11 @@ export function DiaperDetailsModal({
               <Text style={styles.headerTitle}>Diaper Details</Text>
               {isEditing ? (
                 <TouchableOpacity onPress={handleSave}>
-                  <Ionicons name="checkmark-outline" size={24} color="#22c55e" />
+                  <Ionicons
+                    name="checkmark-outline"
+                    size={24}
+                    color="#22c55e"
+                  />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => setIsEditing(true)}>
@@ -125,10 +129,9 @@ export function DiaperDetailsModal({
                     <View
                       style={[
                         styles.colorDot,
-                        { backgroundColor: DIAPER_COLORS.includes(diaper.color)
-                          ? getDiaperColor(diaper.color)
-                          : "#6366f1"
-                        },
+                        (styles as any)[
+                          `colorSwatch_${DIAPER_COLORS.includes(diaper.color) ? diaper.color : "default"}`
+                        ],
                       ]}
                     />
                     <Text style={styles.value}>{diaper.color}</Text>
@@ -137,7 +140,9 @@ export function DiaperDetailsModal({
 
                 <View style={styles.section}>
                   <Text style={styles.label}>Time</Text>
-                  <Text style={styles.value}>{formatDateTime(diaper.timestamp)}</Text>
+                  <Text style={styles.value}>
+                    {formatDateTime(diaper.timestamp)}
+                  </Text>
                 </View>
 
                 {diaper.notes && (
@@ -189,7 +194,7 @@ export function DiaperDetailsModal({
                         <View
                           style={[
                             styles.colorDotSmall,
-                            { backgroundColor: getDiaperColor(color) },
+                            (styles as any)[`colorSwatch_${color}`],
                           ]}
                         />
                         <Text
@@ -240,17 +245,6 @@ export function DiaperDetailsModal({
     </Modal>
   );
 }
-
-const getDiaperColor = (color: string) => {
-  const colors: Record<string, string> = {
-    yellow: "#fbbf24",
-    orange: "#f97316",
-    green: "#22c55e",
-    brown: "#a52a2a",
-    red: "#ef4444",
-  };
-  return colors[color] || "#6366f1";
-};
 
 const styles = StyleSheet.create({
   overlay: {
@@ -348,6 +342,24 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     marginRight: 6,
+  },
+  colorSwatch_default: {
+    backgroundColor: "#6366f1",
+  },
+  colorSwatch_yellow: {
+    backgroundColor: "#fbbf24",
+  },
+  colorSwatch_orange: {
+    backgroundColor: "#f97316",
+  },
+  colorSwatch_green: {
+    backgroundColor: "#22c55e",
+  },
+  colorSwatch_brown: {
+    backgroundColor: "#a52a2a",
+  },
+  colorSwatch_red: {
+    backgroundColor: "#ef4444",
   },
   input: {
     backgroundColor: "#f8fafc",
