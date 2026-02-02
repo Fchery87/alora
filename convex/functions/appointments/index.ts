@@ -125,7 +125,7 @@ export const createAppointment = mutation({
     const appointmentId = await ctx.db.insert("appointments", {
       clerkOrganizationId: orgId,
       babyId: args.babyId,
-      createdById: userId,
+      userId: userId,
       title: sanitizedTitle,
       type: args.type,
       date: args.date,
@@ -145,7 +145,7 @@ export const createAppointment = mutation({
 
 export async function createAppointmentHandler(ctx: any, args: any) {
   const userOrgId = await requireOrganizationId(ctx);
-  const userId = await requireMutationUserId(ctx);
+  const userId = await requireUserId(ctx);
 
   // Verify user's org matches requested org (HIPAA compliance)
   if (userOrgId !== args.clerkOrganizationId) {
