@@ -20,7 +20,7 @@ export function useSessionManager() {
     lastRefreshed: null,
     refreshAttempts: 0,
   });
-  const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const maxRefreshAttempts = 3;
 
   /**

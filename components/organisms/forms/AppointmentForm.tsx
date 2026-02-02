@@ -6,7 +6,7 @@ import {
   Pressable,
   ScrollView,
   StyleProp,
-  ViewStyle,
+  TextStyle,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
@@ -102,7 +102,12 @@ export function AppointmentForm({
 
       <Text style={styles.label}>Title</Text>
       <TextInput
-        style={[styles.input, errors.title ? styles.inputError : null] as StyleProp<ViewStyle>}
+        style={
+          [
+            styles.input,
+            errors.title ? styles.inputError : null,
+          ] as StyleProp<TextStyle>
+        }
         placeholder="Appointment title"
         value={formData.title}
         onChangeText={(text) => updateField("title", text)}
@@ -142,7 +147,12 @@ export function AppointmentForm({
         <View style={styles.halfWidth}>
           <Text style={styles.label}>Date</Text>
           <TextInput
-            style={[styles.input, errors.date ? styles.inputError : null] as StyleProp<ViewStyle>}
+            style={
+              [
+                styles.input,
+                errors.date ? styles.inputError : null,
+              ] as StyleProp<TextStyle>
+            }
             placeholder="YYYY-MM-DD"
             value={formData.date}
             onChangeText={(text) => updateField("date", text)}
@@ -153,7 +163,12 @@ export function AppointmentForm({
         <View style={styles.halfWidth}>
           <Text style={styles.label}>Time</Text>
           <TextInput
-            style={[styles.input, errors.time ? styles.inputError : null] as StyleProp<ViewStyle>}
+            style={
+              [
+                styles.input,
+                errors.time ? styles.inputError : null,
+              ] as StyleProp<TextStyle>
+            }
             placeholder="HH:MM"
             value={formData.time}
             onChangeText={(text) => updateField("time", text)}

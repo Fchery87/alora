@@ -23,7 +23,7 @@ export function GlassCard({
   animated = true,
   delay = 0,
 }: GlassCardProps) {
-  const gradientColors = React.useMemo((): string[] => {
+  const gradientColors = React.useMemo((): [string, string] => {
     switch (variant) {
       case "primary":
         return [GRADIENTS.primary.start, GRADIENTS.primary.end];

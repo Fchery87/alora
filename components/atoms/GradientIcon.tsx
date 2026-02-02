@@ -24,7 +24,7 @@ export function GradientIcon({
   animated = true,
   delay = 0,
 }: GradientIconProps) {
-  const gradientColors = React.useMemo((): string[] => {
+  const gradientColors = React.useMemo((): [string, string] => {
     switch (variant) {
       case "primary":
         return [GRADIENTS.primary.start, GRADIENTS.primary.end];
@@ -61,12 +61,23 @@ export function GradientIcon({
         colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[styles.iconWrapper, { width: size * 1.8, height: size * 1.8, borderRadius: (size * 1.8) / 2 }]}
+        style={[
+          styles.iconWrapper,
+          {
+            width: size * 1.8,
+            height: size * 1.8,
+            borderRadius: (size * 1.8) / 2,
+          },
+        ]}
       >
         <View
           style={[
             styles.iconContainer,
-            { width: size * 1.6, height: size * 1.6, borderRadius: (size * 1.6) / 2 },
+            {
+              width: size * 1.6,
+              height: size * 1.6,
+              borderRadius: (size * 1.6) / 2,
+            },
           ]}
         >
           <Ionicons name={name as any} size={size} color="#ffffff" />
@@ -110,9 +121,7 @@ export function GradientIcon({
   }
 
   return (
-    <AnimatedContainer
-      style={[styles.container, style, containerStyle]}
-    >
+    <AnimatedContainer style={[styles.container, style, containerStyle]}>
       {iconContent}
     </AnimatedContainer>
   );

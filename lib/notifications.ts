@@ -65,14 +65,14 @@ export async function scheduleReminderNotification(
 ): Promise<string | null> {
   if (!reminder.isEnabled) return null;
 
-  let trigger: Notifications.NotificationTrigger | null = null;
+  let trigger: any = null;
 
   if (reminder.intervalMinutes) {
     trigger = {
       type: "timeInterval",
       seconds: reminder.intervalMinutes * 60,
       repeats: true,
-    } as unknown as Notifications.TimeIntervalNotificationTrigger;
+    };
   } else if (reminder.specificTime) {
     const [hours, minutes] = reminder.specificTime.split(":").map(Number);
     const now = new Date();

@@ -6,7 +6,7 @@ import * as SecureStore from "expo-secure-store";
 const ENCRYPTION_KEY = "alora-encryption-key";
 
 export class SecurityManager {
-  private static lockTimer: NodeJS.Timeout | null = null;
+  private static lockTimer: ReturnType<typeof setInterval> | null = null;
 
   static async clearOnLogout(): Promise<void> {
     await SessionLockManager.lock();

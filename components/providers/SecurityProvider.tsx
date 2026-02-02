@@ -64,7 +64,7 @@ export function SecurityProvider({
   const [showLockScreen, setShowLockScreen] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const lastActivityTime = useRef(Date.now());
-  const lockTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lockTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const checkBiometricSupport = async () => {
