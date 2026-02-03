@@ -14,8 +14,9 @@
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "typecheck": "tsc --noEmit",
-    "format": "prettier --write .",
-    "prepare": "husky"
+    "format": "prettier . --write --ignore-unknown",
+    "format:check": "prettier . --check --ignore-unknown",
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@clerk/clerk-expo": "2.19.21",
