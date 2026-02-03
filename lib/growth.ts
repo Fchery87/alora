@@ -58,7 +58,7 @@ export function calculatePercentile(
 export function getWHOData(
   type: "weight" | "length" | "head_circumference",
   ageMonths: number,
-  sex: "male" | "female" = "male"
+  _sex: "male" | "female" = "male"
 ): WHOGrowthData | null {
   const clampedAge = Math.max(0, Math.min(24, ageMonths));
 

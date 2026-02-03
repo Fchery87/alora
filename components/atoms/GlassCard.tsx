@@ -9,7 +9,6 @@ interface GlassCardProps {
   variant?: "default" | "primary" | "secondary" | "accent" | "calm";
   size?: "sm" | "md" | "lg";
   style?: ViewStyle;
-  onPress?: () => void;
   animated?: boolean;
   delay?: number;
 }
@@ -19,7 +18,6 @@ export function GlassCard({
   variant = "default",
   size = "md",
   style,
-  onPress,
   animated = true,
   delay = 0,
 }: GlassCardProps) {

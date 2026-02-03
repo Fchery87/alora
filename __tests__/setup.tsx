@@ -6,7 +6,7 @@ import { ToastProvider } from "@/components/atoms/Toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 globalThis.__DEV__ = true;
-globalThis.React = require("react");
+globalThis.React = React;
 
 // Keep test output clean; individual tests can opt-in by spying and asserting.
 vi.spyOn(console, "log").mockImplementation(() => {});

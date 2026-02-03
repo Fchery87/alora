@@ -1,5 +1,3 @@
-import { v } from "convex/values";
-
 /**
  * Data Retention Configuration
  * Defines retention periods for different data types

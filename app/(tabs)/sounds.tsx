@@ -68,7 +68,7 @@ export default function SoundsScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.soundGrid}>
-          {displayedSounds.map((sound, index) => (
+          {displayedSounds.map((sound) => (
             <Pressable
               key={sound.id}
               style={[

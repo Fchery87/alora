@@ -4,6 +4,10 @@ module.exports = {
   plugins: ["react-hooks", "react-native", "import", "@typescript-eslint"],
   settings: {
     "import/resolver": {
+      node: {
+        extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
+        paths: ["."],
+      },
       typescript: {
         alwaysTryTypes: true,
         project: ".",

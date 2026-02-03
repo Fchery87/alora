@@ -317,7 +317,7 @@ export function GrowthChart({
           </Text>
           {percentileData && (
             <Text style={styles.tooltipPercentile}>
-              {getPercentileLabel(selectedPoint.y, percentileData, config.unit)}
+              {getPercentileLabel(selectedPoint.y, percentileData)}
             </Text>
           )}
         </Pressable>
@@ -345,8 +345,7 @@ export function GrowthChart({
 
 function getPercentileLabel(
   value: number,
-  percentile: WHOPercentile,
-  unit: string
+  percentile: WHOPercentile
 ): string {
   if (value >= percentile.p90) return `~95th percentile`;
   if (value >= percentile.p75) return `~85th percentile`;

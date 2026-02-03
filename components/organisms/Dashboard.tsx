@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, ScrollView } from "react-native";
+import { View, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { VictoryPie } from "victory-native";
 import { ReactNode } from "react";
@@ -50,7 +50,7 @@ export function Dashboard({
   return (
     <ScrollView
       className="flex-1 bg-nano-950"
-      contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+      contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
       <Text variant="title" className="text-3xl font-bold text-white mb-6">
@@ -210,3 +210,10 @@ export function Dashboard({
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    padding: 16,
+    paddingBottom: 40,
+  },
+});

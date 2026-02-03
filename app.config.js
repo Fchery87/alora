@@ -60,7 +60,7 @@ export default {
       ],
     },
     web: {
-      bundler: "metro",
+      bundler: "webpack",
       output: "single",
       favicon: "./assets/images/app-icon.png",
     },

@@ -25,7 +25,7 @@ export const clerk = httpAction(async (ctx: any, request: any) => {
 
     try {
       await requireRateLimit(ctx, rateLimitKey, "webhook");
-    } catch (rateError: any) {
+    } catch {
       console.error("Webhook rate limit exceeded:", clientIp);
       return new Response("Rate limit exceeded", { status: 429 });
     }

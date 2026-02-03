@@ -71,7 +71,7 @@ export function Button({
   return (
     <StyledMotiPressable
       onPress={disabled ? undefined : onPress}
-      animate={({ hovered, pressed }) => {
+      animate={({ pressed }) => {
         "worklet";
         return {
           opacity: pressed ? 0.9 : disabled ? 0.5 : 1,

@@ -181,33 +181,6 @@ export function useAppStateSession() {
   const lastActiveRef = useRef<number>(Date.now());
 
   useEffect(() => {
-    // Refresh token when app comes to foreground after being inactive
-    const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === "active") {
-        const timeAway = Date.now() - lastActiveRef.current;
-
-        // If app was inactive for more than 5 minutes, refresh token
-        if (timeAway > 5 * 60 * 1000 && isSignedIn) {
-          addBreadcrumb(
-            "App resumed after inactivity, refreshing token",
-            "auth",
-            "info",
-            {
-              inactiveDuration: timeAway,
-            }
-          );
-          refreshToken();
-        }
-
-        lastActiveRef.current = Date.now();
-      }
-    };
-
-    // Note: In a real implementation, you'd use AppState from react-native
-    // This is a simplified version
-
-    return () => {
-      lastActiveRef.current = Date.now();
-    };
+    lastActiveRef.current = Date.now();
   }, [isSignedIn, isLoaded, refreshToken]);
 }

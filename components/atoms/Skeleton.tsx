@@ -21,7 +21,7 @@ export function TextSkeleton({
   );
 }
 
-export function CardSkeleton({ children }: { children: React.ReactNode }) {
+export function CardSkeleton() {
   return (
     <View style={styles.cardSkeleton}>
       <TextSkeleton height={20} width={60} />

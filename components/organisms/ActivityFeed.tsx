@@ -6,12 +6,11 @@ import {
   Animated,
   RefreshControl,
   Image,
+  StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useActivityFeed, ActivityItem } from "@/hooks/useActivityFeed";
-import { useAuth } from "@clerk/clerk-expo";
 import { Text } from "@/components/ui/Text";
-import { Card } from "@/components/ui/Card";
 
 interface ActivityFeedProps {
   babyId?: string;
@@ -81,7 +80,7 @@ export function ActivityFeed({
     );
   };
 
-  const renderActivity = (activity: ActivityItem, index: number) => {
+  const renderActivity = (activity: ActivityItem) => {
     return (
       <Animated.View
         key={activity.id}
@@ -128,7 +127,7 @@ export function ActivityFeed({
         <Text className="text-[11px] font-bold text-nano-500 uppercase tracking-widest px-5 py-2 bg-nano-900/50">
           {title}
         </Text>
-        {activities.map((activity, index) => renderActivity(activity, index))}
+        {activities.map((activity) => renderActivity(activity))}
       </View>
     );
   };
@@ -196,7 +195,7 @@ export function ActivityFeed({
 
       <ScrollView
         className="max-h-[400px]"
-        contentContainerStyle={{ paddingVertical: 8 }}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
           onRefresh ? (
@@ -221,6 +220,12 @@ export function ActivityFeed({
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  scrollContent: {
+    paddingVertical: 8,
+  },
+});
 
 function getRelativeTime(timestamp: number): string {
   const now = Date.now();

@@ -206,7 +206,7 @@ export const updateAppointment = mutation({
   handler: async (ctx, args) => {
     const userOrgId = await requireOrganizationId(ctx);
 
-    const { appointmentId, ...updates } = args;
+    const { appointmentId } = args;
     const existing = (await ctx.db.get(appointmentId)) as Appointment | null;
     if (!existing) throw new Error("Appointment not found");
 

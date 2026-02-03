@@ -1,8 +1,3 @@
-import type { Id } from "../_generated/dataModel";
-
-const DEFAULT_WINDOW_MS = 60 * 1000; // 1 minute
-const DEFAULT_MAX_REQUESTS = 100; // 100 requests per minute
-
 interface RateLimitConfig {
   windowMs: number;
   maxRequests: number;
