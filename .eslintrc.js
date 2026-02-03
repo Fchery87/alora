@@ -8,10 +8,6 @@ module.exports = {
         extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
         paths: ["."],
       },
-      typescript: {
-        alwaysTryTypes: true,
-        project: ".",
-      },
     },
     "import/parsers": {
       "@typescript-eslint/parser": [".ts", ".tsx"],
