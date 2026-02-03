@@ -35,6 +35,7 @@ export const listMedications = query({
     clerkOrganizationId: v.string(),
     babyId: v.optional(v.id("babies")),
     isActive: v.optional(v.boolean()),
+    limit: v.optional(v.number()),
   },
   handler: listMedicationsHandler,
 });
@@ -47,20 +48,24 @@ export async function listMedicationsHandler(ctx: any, args: any) {
     throw new Error("Not authorized to view medications for this organization");
   }
 
-  let medications = (await ctx.db
+  let medicationQuery = ctx.db
     .query("medications" as any)
     .withIndex("by_family" as any, (q: any) =>
       q.eq("clerkOrganizationId", userOrgId)
-    )
-    .collect()) as Medication[];
+    );
 
   if (args.babyId) {
-    medications = medications.filter((m: any) => m.babyId === args.babyId);
+    medicationQuery = medicationQuery.filter((q: any) =>
+      q.eq(q.field("babyId"), args.babyId)
+    );
   }
   if (args.isActive !== undefined) {
-    medications = medications.filter((m: any) => m.isActive === args.isActive);
+    medicationQuery = medicationQuery.filter((q: any) =>
+      q.eq(q.field("isActive"), args.isActive)
+    );
   }
-  return medications;
+
+  return (await medicationQuery.take(args.limit ?? 100)) as Medication[];
 }
 
 export const getMedication = query({
@@ -127,6 +132,38 @@ export const createMedication = mutation({
     });
   },
 });
+
+export async function createMedicationHandler(ctx: any, args: any) {
+  const userOrgId = await requireOrganizationId(ctx);
+  const userId = await requireMutationUserId(ctx);
+
+  if (userOrgId !== args.clerkOrganizationId) {
+    throw new Error("Not authorized to create medication for this organization");
+  }
+
+  if (args.babyId) {
+    await requireBabyAccess(ctx, args.babyId);
+  }
+
+  return await ctx.db.insert("medications", {
+    clerkOrganizationId: userOrgId,
+    babyId: args.babyId,
+    name: sanitizeName(args.name),
+    type: args.type,
+    dosage: args.dosage ? sanitizeText(args.dosage) : undefined,
+    frequency: args.frequency ? sanitizeText(args.frequency) : undefined,
+    startDate: args.startDate,
+    endDate: args.endDate,
+    notes: sanitizeNotes(args.notes),
+    reminderEnabled: args.reminderEnabled,
+    reminderTimes: args.reminderTimes
+      ? sanitizeStringArray(args.reminderTimes)
+      : undefined,
+    userId,
+    isActive: true,
+    createdAt: Date.now(),
+  });
+}
 
 export const updateMedication = mutation({
   args: {

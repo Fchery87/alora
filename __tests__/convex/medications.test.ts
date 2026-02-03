@@ -89,7 +89,12 @@ describe("medications.listMedications org scoping", () => {
             indexedOrg = value;
           },
         });
-        return { collect: async () => [] };
+        return {
+          filter: () => ({
+            take: async () => [],
+          }),
+          take: async () => [],
+        };
       },
     });
 

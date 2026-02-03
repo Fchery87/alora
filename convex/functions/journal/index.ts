@@ -1,6 +1,6 @@
 import { mutation, query } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireMutationUserId, requireUserId } from "../../lib/users";
+import { requireUserId } from "../../lib/users";
 import {
   sanitizeTitle,
   sanitizeUserContent,
@@ -48,7 +48,7 @@ export const listJournal = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireMutationUserId(ctx);
+    const userId = await requireUserId(ctx);
 
     let entries = await ctx.db
       .query("journal")
