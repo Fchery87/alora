@@ -6,7 +6,11 @@ import {
   mutation,
 } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireOrganizationId, requireUserId } from "../../lib/users";
+import {
+  requireMutationUserId,
+  requireOrganizationId,
+  requireUserId,
+} from "../../lib/users";
 
 const PROMPT_VERSION = "v1";
 const DEFAULT_MODEL = "gemini-1.5-flash";
