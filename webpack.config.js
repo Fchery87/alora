@@ -1,3 +1,4 @@
+const path = require("path");
 const createExpoWebpackConfigAsync = require("@expo/webpack-config");
 
 module.exports = async function (env, argv) {
@@ -26,6 +27,7 @@ module.exports = async function (env, argv) {
   config.resolve.alias = {
     ...config.resolve.alias,
     "react-native$": "react-native-web",
+    "@": path.resolve(__dirname), // eslint-disable-line no-undef
   };
 
   // Fix for native modules that shouldn't be bundled for web

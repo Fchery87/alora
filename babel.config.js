@@ -8,7 +8,17 @@ module.exports = function (api) {
       "nativewind/babel",
     ],
     plugins: [
-      // Reanimated plugin - will be handled by its own config
+      [
+        "module-resolver",
+        {
+          root: ["./"],
+          alias: {
+            "@": "./",
+          },
+          extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
+        },
+      ],
+      // Reanimated plugin
       "react-native-reanimated/plugin",
     ],
   };
