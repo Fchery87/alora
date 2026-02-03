@@ -1,2 +1,9 @@
 #!/usr/bin/env sh
-node ./node_modules/.bin/lint-staged --concurrent false --no-stash
+if command -v node >/dev/null 2>&1; then
+  node ./node_modules/.bin/lint-staged --concurrent false --no-stash
+elif command -v bun >/dev/null 2>&1; then
+  bunx lint-staged --concurrent false --no-stash
+else
+  echo "Error: neither node nor bun found in PATH. Install Node.js or Bun to run lint-staged."
+  exit 1
+fi
