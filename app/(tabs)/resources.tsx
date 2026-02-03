@@ -1,6 +1,5 @@
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   Pressable,
@@ -8,12 +7,16 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { Header } from "@/components/layout/Header";
+import { Text } from "@/components/ui/Text";
+import { Card } from "@/components/ui/Card";
+import { OrganicBackground } from "@/components/atoms/OrganicBackground";
 import {
   CATEGORIES,
   getResourcesByCategory,
   searchResources,
 } from "@/lib/resources";
 import { Ionicons } from "@expo/vector-icons";
+import { COLORS, SHADOWS } from "@/lib/theme";
 
 type CategoryId = (typeof CATEGORIES)[number]["id"];
 
@@ -31,206 +34,256 @@ export default function ResourcesScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Header title="Resource Library" showBackButton={false} />
+    <OrganicBackground>
+      <View style={styles.container}>
+        <Header title="Resource Library" showBackButton={false} />
 
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={20} color="#9ca3af" />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search resources..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          {searchQuery ? (
-            <Pressable onPress={() => setSearchQuery("")}>
-              <Ionicons name="close-circle" size={20} color="#9ca3af" />
-            </Pressable>
-          ) : null}
-        </View>
-      </View>
-
-      <ScrollView
-        horizontal
-        style={styles.categoryRow}
-        contentContainerStyle={styles.categoryContent}
-        showsHorizontalScrollIndicator={false}
-      >
-        {CATEGORIES.map((cat) => (
-          <Pressable
-            key={cat.id}
-            style={[
-              styles.categoryChip,
-              category === cat.id && styles.categoryChipActive,
-            ]}
-            onPress={() => {
-              setCategory(cat.id);
-              setSearchQuery("");
-            }}
-          >
-            <Ionicons
-              name={cat.icon as any}
-              size={16}
-              color={category === cat.id ? "#fff" : "#64748b"}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBar}>
+            <Ionicons name="search" size={20} color={COLORS.stone} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search resources..."
+              placeholderTextColor={COLORS.stone}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
             />
-            <Text
+            {searchQuery ? (
+              <Pressable onPress={() => setSearchQuery("")}>
+                <Ionicons name="close-circle" size={20} color={COLORS.stone} />
+              </Pressable>
+            ) : null}
+          </View>
+        </View>
+
+        <ScrollView
+          horizontal
+          style={styles.categoryRow}
+          contentContainerStyle={styles.categoryContent}
+          showsHorizontalScrollIndicator={false}
+        >
+          {CATEGORIES.map((cat) => (
+            <Pressable
+              key={cat.id}
               style={[
-                styles.categoryText,
-                category === cat.id && styles.categoryTextActive,
+                styles.categoryChip,
+                category === cat.id && styles.categoryChipActive,
               ]}
+              onPress={() => {
+                setCategory(cat.id);
+                setSearchQuery("");
+              }}
             >
-              {cat.label}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+              <Ionicons
+                name={cat.icon as any}
+                size={16}
+                color={category === cat.id ? "#fff" : COLORS.warmDark}
+              />
+              <Text
+                style={[
+                  styles.categoryText,
+                  category === cat.id && styles.categoryTextActive,
+                ]}
+              >
+                {cat.label}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.resultsCount}>
-          {displayedResources.length}{" "}
-          {displayedResources.length === 1 ? "article" : "articles"}
-        </Text>
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <Text style={styles.resultsCount}>
+            {displayedResources.length}{" "}
+            {displayedResources.length === 1 ? "article" : "articles"}
+          </Text>
 
-        {displayedResources.map((resource) => (
-          <Pressable
-            key={resource.id}
-            style={styles.resourceCard}
-            onPress={() => toggleResource(resource.id)}
-          >
-            <View style={styles.cardHeader}>
-              <View style={styles.cardTitleRow}>
-                <View style={styles.categoryBadge}>
-                  <Text style={styles.categoryBadgeText}>
-                    {resource.category.charAt(0).toUpperCase() +
-                      resource.category.slice(1)}
+          {displayedResources.map((resource) => (
+            <Pressable
+              key={resource.id}
+              style={styles.cardWrapper}
+              onPress={() => toggleResource(resource.id)}
+            >
+              <Card variant="elevated" style={styles.resourceCard}>
+                <View style={styles.cardHeader}>
+                  <View style={styles.cardTitleRow}>
+                    <View style={styles.categoryBadge}>
+                      <Text style={styles.categoryBadgeText}>
+                        {resource.category.charAt(0).toUpperCase() +
+                          resource.category.slice(1)}
+                      </Text>
+                    </View>
+                    <View style={styles.readTime}>
+                      <Ionicons name="time" size={12} color={COLORS.stone} />
+                      <Text style={styles.readTimeText}>
+                        {resource.readTime} min
+                      </Text>
+                    </View>
+                  </View>
+                  <Text
+                    variant="h3"
+                    color="primary"
+                    style={styles.resourceTitle}
+                  >
+                    {resource.title}
                   </Text>
                 </View>
-                <Text style={styles.readTime}>
-                  <Ionicons name="time" size={12} color="#9ca3af" />{" "}
-                  {resource.readTime} min
-                </Text>
-              </View>
-              <Text style={styles.resourceTitle}>{resource.title}</Text>
-            </View>
 
-            <View style={styles.tagRow}>
-              {resource.tags.slice(0, 3).map((tag) => (
-                <View key={tag} style={styles.tag}>
-                  <Text style={styles.tagText}>#{tag}</Text>
+                <View style={styles.tagRow}>
+                  {resource.tags.slice(0, 3).map((tag) => (
+                    <View key={tag} style={styles.tag}>
+                      <Text style={styles.tagText}>#{tag}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
-            </View>
 
-            {expandedResource === resource.id && (
-              <View style={styles.expandedContent}>
-                <Text style={styles.contentText}>{resource.content}</Text>
-              </View>
-            )}
+                {expandedResource === resource.id && (
+                  <View style={styles.expandedContent}>
+                    <Text
+                      variant="body"
+                      color="secondary"
+                      style={styles.contentText}
+                    >
+                      {resource.content}
+                    </Text>
+                  </View>
+                )}
 
-            <View style={styles.cardFooter}>
-              <Text style={styles.expandText}>
-                {expandedResource === resource.id ? "Show less" : "Read more"}
+                <View style={styles.cardFooter}>
+                  <Text style={styles.expandText}>
+                    {expandedResource === resource.id
+                      ? "Show less"
+                      : "Read more"}
+                  </Text>
+                  <Ionicons
+                    name={
+                      expandedResource === resource.id
+                        ? "chevron-up"
+                        : "chevron-down"
+                    }
+                    size={18}
+                    color={COLORS.terracotta}
+                  />
+                </View>
+              </Card>
+            </Pressable>
+          ))}
+
+          {displayedResources.length === 0 && (
+            <View style={styles.emptyState}>
+              <Ionicons name="book-outline" size={56} color={COLORS.sage} />
+              <Text
+                variant="h3"
+                color="secondary"
+                style={styles.emptyStateTitle}
+              >
+                No resources found
               </Text>
-              <Ionicons
-                name={
-                  expandedResource === resource.id
-                    ? "chevron-up"
-                    : "chevron-down"
-                }
-                size={18}
-                color="#6366f1"
-              />
+              <Text
+                variant="caption"
+                color="tertiary"
+                style={styles.emptyStateText}
+              >
+                Try adjusting your search or category
+              </Text>
             </View>
-          </Pressable>
-        ))}
-
-        {displayedResources.length === 0 && (
-          <View style={styles.emptyState}>
-            <Ionicons name="book-outline" size={48} color="#d1d5db" />
-            <Text style={styles.emptyStateTitle}>No resources found</Text>
-            <Text style={styles.emptyStateText}>
-              Try adjusting your search or category
-            </Text>
-          </View>
-        )}
-      </ScrollView>
-    </View>
+          )}
+        </ScrollView>
+      </View>
+    </OrganicBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
   },
   searchContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 12,
-    gap: 10,
+    backgroundColor: "#ffffff",
+    borderRadius: 14,
+    padding: 14,
+    gap: 12,
+    shadowColor: COLORS.warmDark,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "rgba(212, 165, 116, 0.15)",
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: "#0f172a",
+    color: COLORS.warmDark,
+    fontFamily: "DMSans",
   },
   categoryRow: {
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
+    maxHeight: 64,
+    backgroundColor: "transparent",
   },
   categoryContent: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 12,
-    gap: 8,
+    gap: 10,
   },
   categoryChip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: "#f1f5f9",
-    marginRight: 8,
+    gap: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 24,
+    backgroundColor: "#ffffff",
+    marginRight: 4,
+    borderWidth: 1,
+    borderColor: "rgba(139, 154, 125, 0.2)",
+    shadowColor: COLORS.warmDark,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
   },
   categoryChipActive: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
+    shadowColor: COLORS.terracotta,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
   },
   categoryText: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#64748b",
+    fontWeight: "600",
+    color: COLORS.warmDark,
+    fontFamily: "DMSans",
   },
   categoryTextActive: {
     color: "#fff",
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: 20,
+    paddingTop: 8,
   },
   resultsCount: {
     fontSize: 14,
-    color: "#9ca3af",
-    marginBottom: 12,
+    color: COLORS.stone,
+    marginBottom: 16,
+    fontFamily: "DMSans",
+    fontWeight: "500",
+  },
+  cardWrapper: {
+    marginBottom: 16,
   },
   resourceCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    padding: 18,
+    ...SHADOWS.sm,
   },
   cardHeader: {
     marginBottom: 12,
@@ -239,57 +292,64 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   categoryBadge: {
-    backgroundColor: "#f1f5f9",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    backgroundColor: "rgba(212, 165, 116, 0.15)",
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 16,
   },
   categoryBadgeText: {
     fontSize: 11,
-    fontWeight: "600",
-    color: "#64748b",
+    fontWeight: "700",
+    color: COLORS.terracotta,
     textTransform: "uppercase",
+    letterSpacing: 0.5,
+    fontFamily: "DMSans",
   },
   readTime: {
-    fontSize: 12,
-    color: "#9ca3af",
     flexDirection: "row",
     alignItems: "center",
+    gap: 4,
+  },
+  readTimeText: {
+    fontSize: 12,
+    color: COLORS.stone,
+    fontFamily: "DMSans",
+    fontWeight: "500",
   },
   resourceTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#0f172a",
-    lineHeight: 24,
+    lineHeight: 26,
   },
   tagRow: {
     flexDirection: "row",
     gap: 8,
     marginBottom: 12,
+    flexWrap: "wrap",
   },
   tag: {
-    backgroundColor: "#f0f9ff",
+    backgroundColor: "rgba(139, 154, 125, 0.1)",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(139, 154, 125, 0.2)",
   },
   tagText: {
     fontSize: 12,
-    color: "#0369a1",
+    color: COLORS.sage,
+    fontFamily: "DMSans",
+    fontWeight: "500",
   },
   expandedContent: {
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: "rgba(212, 165, 116, 0.15)",
     marginTop: 12,
-    paddingTop: 12,
+    paddingTop: 14,
   },
   contentText: {
-    fontSize: 15,
-    color: "#475569",
-    lineHeight: 22,
+    lineHeight: 24,
   },
   cardFooter: {
     flexDirection: "row",
@@ -299,26 +359,22 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#f8fafc",
+    borderTopColor: "rgba(139, 154, 125, 0.1)",
   },
   expandText: {
     fontSize: 14,
-    color: "#6366f1",
-    fontWeight: "500",
+    color: COLORS.terracotta,
+    fontWeight: "600",
+    fontFamily: "DMSans",
   },
   emptyState: {
     alignItems: "center",
-    paddingVertical: 48,
+    paddingVertical: 56,
   },
   emptyStateTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#64748b",
-    marginTop: 16,
+    marginTop: 20,
   },
   emptyStateText: {
-    fontSize: 14,
-    color: "#9ca3af",
-    marginTop: 4,
+    marginTop: 8,
   },
 });

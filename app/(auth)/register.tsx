@@ -15,6 +15,7 @@ import { useSignUp, useOAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { cssInterop } from "react-native-css-interop";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
@@ -22,6 +23,19 @@ import { Card } from "@/components/ui/Card";
 import { Text } from "@/components/ui/Text";
 
 cssInterop(MotiView, { className: "style" });
+
+// Celestial Nurture Design System Colors
+const COLORS = {
+  background: "#FAF7F2",
+  primary: "#D4A574", // Terracotta
+  secondary: "#8B9A7D", // Sage
+  accent: "#C9A227", // Gold
+  textPrimary: "#2D2A26",
+  textSecondary: "#6B6560",
+  cream: "#FAF7F2",
+  clay: "#B8956A",
+  moss: "#7A8B6E",
+};
 
 // Warm up browser on Android for better UX
 export const useWarmUpBrowser = () => {
@@ -64,13 +78,32 @@ export default function RegisterScreen() {
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
         router.replace("/");
+      } else if (result.status === "missing_requirements") {
+        // Check if email verification is needed
+        if (result.unverifiedFields?.includes("email_address")) {
+          setError("Please check your email to verify your account.");
+        } else {
+          setError("Please complete all required fields.");
+        }
       } else {
-        console.error(JSON.stringify(result, null, 2));
+        console.error("[Register] Unexpected status:", result.status, result);
         setError("Registration requires additional verification.");
-        // Use router to navigate to verification if needed, or handle inline
       }
     } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Registration failed");
+      console.error("[Register] Error:", err);
+      const errorMessage =
+        err.errors?.[0]?.message || err.message || "Registration failed";
+
+      // Provide more user-friendly error messages
+      if (errorMessage.includes("email")) {
+        setError("Invalid email address or email already in use.");
+      } else if (errorMessage.includes("password")) {
+        setError("Password is too weak. Please use at least 8 characters.");
+      } else if (errorMessage.includes("already exists")) {
+        setError("An account with this email already exists. Please sign in.");
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -103,34 +136,43 @@ export default function RegisterScreen() {
   }, [startOAuthFlow, googleLoading, router]);
 
   return (
-    <View className="flex-1 bg-nano-950">
-      {/* Decorative Background Elements */}
+    <View className="flex-1" style={{ backgroundColor: COLORS.background }}>
+      {/* Subtle Organic Background Pattern */}
+      <LinearGradient
+        colors={["#FAF7F2", "#F5F0E8", "#FAF7F2"]}
+        locations={[0, 0.5, 1]}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Decorative Celestial Elements */}
       <MotiView
         from={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.15, scale: 1 }}
+        animate={{ opacity: 0.08, scale: 1 }}
         transition={
           {
             type: "timing",
-            duration: 2500,
+            duration: 4500,
             loop: true,
             repeatReverse: true,
           } as any
         }
-        className="absolute top-[-150px] left-[-50px] w-96 h-96 bg-banana-500 rounded-full blur-[100px]"
+        className="absolute top-[-150px] left-[-100px] w-[500px] h-[500px] rounded-full"
+        style={{ backgroundColor: COLORS.secondary }}
       />
       <MotiView
         from={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.1, scale: 1 }}
+        animate={{ opacity: 0.06, scale: 1 }}
         transition={
           {
             type: "timing",
-            duration: 3500,
+            duration: 5500,
             loop: true,
-            delay: 500,
+            delay: 2000,
             repeatReverse: true,
           } as any
         }
-        className="absolute bottom-[-100px] right-[-50px] w-80 h-80 bg-banana-600 rounded-full blur-[80px]"
+        className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full"
+        style={{ backgroundColor: COLORS.accent }}
       />
 
       <KeyboardAvoidingView
@@ -164,27 +206,61 @@ export default function RegisterScreen() {
             }}
           >
             <Card
-              variant="glass"
-              className="w-full max-w-sm mx-auto bg-nano-900/90 border-nano-800 p-6 shadow-2xl backdrop-blur-xl"
+              variant="default"
+              className="w-full max-w-sm mx-auto p-8 shadow-xl"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.85)",
+                borderWidth: 1,
+                borderColor: "rgba(139, 154, 125, 0.2)",
+                borderRadius: 24,
+              }}
             >
-              <Text variant="title" className="text-center mb-1 text-white">
+              <Text
+                variant="title"
+                className="text-center mb-2"
+                style={{
+                  color: COLORS.textPrimary,
+                  fontFamily: "CrimsonPro-SemiBold",
+                  fontSize: 32,
+                }}
+              >
                 Create Account
               </Text>
               <Text
                 variant="subtitle"
-                className="text-center mb-8 text-nano-400"
+                className="text-center mb-8"
+                style={{
+                  color: COLORS.textSecondary,
+                  fontFamily: "DMSans-Regular",
+                  fontSize: 15,
+                }}
               >
-                Join the Nano Banana revolution
+                Begin your parenting journey with Alora
               </Text>
 
               {error ? (
                 <MotiView
                   from={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="flex-row items-center bg-red-500/10 border border-red-500/20 p-3 rounded-xl mb-4 gap-2"
+                  className="flex-row items-center p-4 rounded-xl mb-5 gap-2"
+                  style={{
+                    backgroundColor: "rgba(212, 165, 116, 0.1)",
+                    borderWidth: 1,
+                    borderColor: "rgba(212, 165, 116, 0.3)",
+                  }}
                 >
-                  <Ionicons name="alert-circle" size={18} color="#EF4444" />
-                  <Text className="text-red-500 text-sm flex-1 font-medium">
+                  <Ionicons
+                    name="alert-circle"
+                    size={18}
+                    color={COLORS.primary}
+                  />
+                  <Text
+                    className="text-sm flex-1"
+                    style={{
+                      color: COLORS.primary,
+                      fontFamily: "DMSans-Medium",
+                    }}
+                  >
                     {error}
                   </Text>
                 </MotiView>
@@ -195,14 +271,31 @@ export default function RegisterScreen() {
                 variant="outline"
                 onPress={handleGoogleSignUp}
                 disabled={googleLoading}
-                className="mb-6 flex-row items-center justify-center gap-2 border-nano-700 bg-nano-800/50 hover:bg-nano-800"
+                className="mb-5 flex-row items-center justify-center gap-2 rounded-xl"
+                style={{
+                  borderWidth: 1.5,
+                  borderColor: "rgba(139, 154, 125, 0.4)",
+                  backgroundColor: "rgba(255, 255, 255, 0.6)",
+                  paddingVertical: 14,
+                }}
               >
                 {googleLoading ? (
-                  <ActivityIndicator color="#FFE135" />
+                  <ActivityIndicator color={COLORS.secondary} />
                 ) : (
                   <>
-                    <Ionicons name="logo-google" size={20} color="white" />
-                    <Text className="text-white font-semibold">
+                    <Ionicons
+                      name="logo-google"
+                      size={20}
+                      color={COLORS.textPrimary}
+                    />
+                    <Text
+                      className="font-semibold"
+                      style={{
+                        color: COLORS.textPrimary,
+                        fontFamily: "DMSans-SemiBold",
+                        fontSize: 15,
+                      }}
+                    >
                       Continue with Google
                     </Text>
                   </>
@@ -210,41 +303,85 @@ export default function RegisterScreen() {
               </Button>
 
               {/* Divider */}
-              <View className="flex-row items-center mb-6">
-                <View className="flex-1 h-[1px] bg-nano-800" />
-                <Text className="mx-4 text-nano-600 text-sm">or</Text>
-                <View className="flex-1 h-[1px] bg-nano-800" />
+              <View className="flex-row items-center mb-5">
+                <View
+                  className="flex-1 h-[1px]"
+                  style={{ backgroundColor: "rgba(139, 154, 125, 0.3)" }}
+                />
+                <Text
+                  className="mx-4 text-sm"
+                  style={{
+                    color: COLORS.textSecondary,
+                    fontFamily: "DMSans-Regular",
+                  }}
+                >
+                  or
+                </Text>
+                <View
+                  className="flex-1 h-[1px]"
+                  style={{ backgroundColor: "rgba(139, 154, 125, 0.3)" }}
+                />
               </View>
 
               {/* Email Input */}
               <View className="mb-4">
-                <View className="flex-row items-center bg-nano-950 border border-nano-800 rounded-xl px-4 py-3.5 focus:border-banana-500">
-                  <Ionicons name="mail-outline" size={20} color="#666" />
+                <View
+                  className="flex-row items-center rounded-xl px-4 py-3.5"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    borderWidth: 1.5,
+                    borderColor: "rgba(139, 154, 125, 0.3)",
+                  }}
+                >
+                  <Ionicons
+                    name="mail-outline"
+                    size={20}
+                    color={COLORS.textSecondary}
+                  />
                   <TextInput
-                    className="flex-1 ml-3 text-white font-medium text-[16px]"
+                    className="flex-1 ml-3 text-[16px]"
+                    style={{
+                      color: COLORS.textPrimary,
+                      fontFamily: "DMSans-Regular",
+                    }}
                     placeholder="Email"
-                    placeholderTextColor="#555"
+                    placeholderTextColor={COLORS.textSecondary}
                     value={email}
                     onChangeText={setEmail}
                     autoCapitalize="none"
                     keyboardType="email-address"
-                    cursorColor="#FFE135"
+                    cursorColor={COLORS.primary}
                   />
                 </View>
               </View>
 
               {/* Password Input */}
               <View className="mb-6">
-                <View className="flex-row items-center bg-nano-950 border border-nano-800 rounded-xl px-4 py-3.5 focus:border-banana-500">
-                  <Ionicons name="lock-closed-outline" size={20} color="#666" />
+                <View
+                  className="flex-row items-center rounded-xl px-4 py-3.5"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.9)",
+                    borderWidth: 1.5,
+                    borderColor: "rgba(139, 154, 125, 0.3)",
+                  }}
+                >
+                  <Ionicons
+                    name="lock-closed-outline"
+                    size={20}
+                    color={COLORS.textSecondary}
+                  />
                   <TextInput
-                    className="flex-1 ml-3 text-white font-medium text-[16px]"
+                    className="flex-1 ml-3 text-[16px]"
+                    style={{
+                      color: COLORS.textPrimary,
+                      fontFamily: "DMSans-Regular",
+                    }}
                     placeholder="Password"
-                    placeholderTextColor="#555"
+                    placeholderTextColor={COLORS.textSecondary}
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
-                    cursorColor="#FFE135"
+                    cursorColor={COLORS.primary}
                   />
                 </View>
               </View>
@@ -254,9 +391,30 @@ export default function RegisterScreen() {
                 variant="primary"
                 onPress={handleRegister}
                 disabled={loading}
-                className="w-full shadow-lg shadow-banana-500/20"
+                className="w-full rounded-xl"
+                style={{
+                  backgroundColor: COLORS.primary,
+                  paddingVertical: 16,
+                  shadowColor: COLORS.primary,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}
               >
-                {loading ? <ActivityIndicator color="black" /> : "Sign Up"}
+                {loading ? (
+                  <ActivityIndicator color="#FFF" />
+                ) : (
+                  <Text
+                    style={{
+                      color: "#FFF",
+                      fontFamily: "DMSans-SemiBold",
+                      fontSize: 16,
+                    }}
+                  >
+                    Create Account
+                  </Text>
+                )}
               </Button>
 
               {/* Sign In Link */}
@@ -265,9 +423,21 @@ export default function RegisterScreen() {
                 onPress={() => router.back()}
                 className="mt-6"
               >
-                <Text className="text-nano-400">
+                <Text
+                  style={{
+                    color: COLORS.textSecondary,
+                    fontFamily: "DMSans-Regular",
+                  }}
+                >
                   Already have an account?{" "}
-                  <Text className="text-banana-500 font-bold">Sign in</Text>
+                  <Text
+                    style={{
+                      color: COLORS.primary,
+                      fontFamily: "DMSans-SemiBold",
+                    }}
+                  >
+                    Sign in
+                  </Text>
                 </Text>
               </Button>
             </Card>

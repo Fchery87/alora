@@ -5,18 +5,29 @@ import { SleepTracker } from "@/components/organisms/SleepTracker";
 import { useSelectedBabyId } from "@/stores/babyStore";
 import { BabySelectorModal } from "@/components/organisms";
 
+// Celestial Nurture Design System Colors
+const COLORS = {
+  background: "#FAF7F2",
+  primary: "#D4A574", // Terracotta
+  secondary: "#8B9A7D", // Sage
+  accent: "#C9A227", // Gold
+  textPrimary: "#2D2A26",
+  textSecondary: "#6B6560",
+  sleep: "#6B8E9F", // Soft blue for sleep
+};
+
 export default function SleepTrackerScreen() {
   const [showBabySelector, setShowBabySelector] = useState(false);
   const selectedBabyId = useSelectedBabyId();
 
   return (
     <View style={styles.screen}>
-      <Header title="Log Sleep" showBackButton />
+      <Header title="Sleep Tracker" showBackButton />
       {selectedBabyId ? (
         <SleepTracker babyId={selectedBabyId} />
       ) : (
         <View style={styles.emptyState}>
-          <Text>No baby selected</Text>
+          <Text style={styles.emptyStateText}>No baby selected</Text>
         </View>
       )}
       <BabySelectorModal
@@ -30,10 +41,16 @@ export default function SleepTrackerScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    backgroundColor: COLORS.background,
   },
   emptyState: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  emptyStateText: {
+    color: COLORS.textSecondary,
+    fontFamily: "DMSans-Regular",
+    fontSize: 16,
   },
 });

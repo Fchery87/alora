@@ -12,6 +12,21 @@ import { Ionicons } from "@expo/vector-icons";
 import { useActivityFeed, ActivityItem } from "@/hooks/useActivityFeed";
 import { Text } from "@/components/ui/Text";
 
+// Celestial Nurture Design System - Earth Tones
+const COLORS = {
+  cream: "#FAF7F2",
+  terracotta: "#D4A574",
+  sage: "#8B9A7D",
+  moss: "#6B7A6B",
+  gold: "#C9A227",
+  clay: "#C17A5C",
+  warmDark: "#2D2A26",
+  warmGray: "#6B6560",
+  stone: "#8B8680",
+  sand: "#E8E0D5",
+  warmLight: "#F5F0E8",
+};
+
 interface ActivityFeedProps {
   babyId?: string;
   onRefresh?: () => void;
@@ -68,14 +83,12 @@ export function ActivityFeed({
       : "U";
 
     if (avatarUrl) {
-      return (
-        <Image source={{ uri: avatarUrl }} className="w-8 h-8 rounded-full" />
-      );
+      return <Image source={{ uri: avatarUrl }} style={styles.avatar} />;
     }
 
     return (
-      <View className="w-8 h-8 rounded-full items-center justify-center bg-nano-800">
-        <Text className="text-[10px] font-bold text-nano-400">{initials}</Text>
+      <View style={styles.avatarFallback}>
+        <Text style={styles.avatarInitials}>{initials}</Text>
       </View>
     );
   };
@@ -84,15 +97,14 @@ export function ActivityFeed({
     return (
       <Animated.View
         key={activity.id}
-        className="flex-row px-5 py-3 items-start"
-        style={{
-          opacity: fadeAnim,
-        }}
+        style={[styles.activityContainer, { opacity: fadeAnim }]}
       >
-        <View className="mr-3">
+        <View style={styles.iconWrapper}>
           <View
-            className="w-10 h-10 rounded-full items-center justify-center"
-            style={{ backgroundColor: `${activity.iconColor}20` }}
+            style={[
+              styles.iconCircle,
+              { backgroundColor: `${activity.iconColor}20` },
+            ]}
           >
             <Ionicons
               name={activity.icon as any}
@@ -102,14 +114,12 @@ export function ActivityFeed({
           </View>
         </View>
 
-        <View className="flex-1">
-          <View className="flex-row items-start gap-3">
+        <View style={styles.contentWrapper}>
+          <View style={styles.activityRow}>
             {renderAvatar(activity.userName, activity.userAvatarUrl)}
-            <View className="flex-1">
-              <Text className="text-white text-sm font-medium leading-5">
-                {activity.message}
-              </Text>
-              <Text className="text-nano-500 text-xs mt-1">
+            <View style={styles.textWrapper}>
+              <Text style={styles.activityMessage}>{activity.message}</Text>
+              <Text style={styles.timestamp}>
                 {getRelativeTime(activity.timestamp)}
               </Text>
             </View>
@@ -123,29 +133,29 @@ export function ActivityFeed({
     if (activities.length === 0) return null;
 
     return (
-      <View key={title} className="mb-2">
-        <Text className="text-[11px] font-bold text-nano-500 uppercase tracking-widest px-5 py-2 bg-nano-900/50">
-          {title}
-        </Text>
+      <View key={title} style={styles.groupContainer}>
+        <Text style={styles.groupHeader}>{title}</Text>
         {activities.map((activity) => renderActivity(activity))}
       </View>
     );
   };
 
   const renderEmptyState = () => (
-    <View className="py-12 px-8 items-center">
-      <View className="w-20 h-20 rounded-full bg-nano-900 items-center justify-center mb-4">
-        <Ionicons name="time-outline" size={40} color="#333" />
+    <View style={styles.emptyContainer}>
+      <View style={styles.emptyIconCircle}>
+        <Ionicons name="time-outline" size={40} color={COLORS.stone} />
       </View>
-      <Text className="text-white text-lg font-bold">No activity yet</Text>
-      <Text className="text-nano-500 text-sm text-center mt-2 leading-5">
+      <Text style={styles.emptyTitle}>No activity yet</Text>
+      <Text style={styles.emptySubtitle}>
         Start logging feeds, diapers, sleep, and more to see activity here
       </Text>
-      <TouchableOpacity className="flex-row items-center gap-2 bg-banana-500/10 px-5 py-3 rounded-xl mt-6 border border-banana-500/20">
-        <Ionicons name="add-circle-outline" size={20} color="#FFE135" />
-        <Text className="text-banana-500 font-bold text-sm">
-          Log first activity
-        </Text>
+      <TouchableOpacity style={styles.emptyButton}>
+        <Ionicons
+          name="add-circle-outline"
+          size={20}
+          color={COLORS.terracotta}
+        />
+        <Text style={styles.emptyButtonText}>Log first activity</Text>
       </TouchableOpacity>
     </View>
   );
@@ -157,13 +167,13 @@ export function ActivityFeed({
 
   if (isLoading) {
     return (
-      <View className="p-5">
+      <View style={styles.loadingContainer}>
         {[1, 2, 3].map((i) => (
-          <View key={i} className="flex-row mb-4">
-            <View className="w-10 h-10 rounded-full bg-nano-900 mr-3" />
-            <View className="flex-1 gap-2">
-              <View className="w-[70%] h-3 bg-nano-900 rounded" />
-              <View className="w-[40%] h-3 bg-nano-900 rounded" />
+          <View key={i} style={styles.skeletonRow}>
+            <View style={styles.skeletonCircle} />
+            <View style={styles.skeletonTextWrapper}>
+              <View style={styles.skeletonLine1} />
+              <View style={styles.skeletonLine2} />
             </View>
           </View>
         ))}
@@ -172,29 +182,24 @@ export function ActivityFeed({
   }
 
   return (
-    <Animated.View
-      className="bg-nano-900 border border-nano-800 rounded-3xl overflow-hidden shadow-2xl"
-      style={{ opacity: fadeAnim }}
-    >
-      <View className="flex-row justify-between items-center px-5 py-4 border-b border-nano-800">
-        <View className="flex-row items-center gap-2">
-          <Ionicons name="pulse-outline" size={20} color="#FFE135" />
-          <Text className="text-white text-lg font-bold">Activity Feed</Text>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Ionicons name="pulse-outline" size={20} color={COLORS.terracotta} />
+          <Text style={styles.headerTitle}>Activity Feed</Text>
         </View>
         {!refreshing && hasActivity && (
           <Animated.View style={{ transform: [{ scale: liveIndicatorAnim }] }}>
-            <View className="flex-row items-center bg-green-500/10 px-2.5 py-1 rounded-full gap-1.5">
-              <View className="w-2 h-2 rounded-full bg-green-500" />
-              <Text className="text-[10px] font-bold text-green-500 uppercase">
-                Live
-              </Text>
+            <View style={styles.liveBadge}>
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>Live</Text>
             </View>
           </Animated.View>
         )}
       </View>
 
       <ScrollView
-        className="max-h-[400px]"
+        style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -202,7 +207,7 @@ export function ActivityFeed({
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#FFE135"
+              tintColor={COLORS.terracotta}
             />
           ) : undefined
         }
@@ -222,8 +227,207 @@ export function ActivityFeed({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: COLORS.cream,
+    borderRadius: 24,
+    overflow: "hidden",
+    shadowColor: COLORS.warmDark,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: COLORS.sand,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.sand,
+    backgroundColor: COLORS.warmLight,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: COLORS.warmDark,
+  },
+  liveBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(139, 154, 125, 0.15)",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 6,
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: COLORS.sage,
+  },
+  liveText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: COLORS.sage,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  scrollView: {
+    maxHeight: 400,
+  },
   scrollContent: {
     paddingVertical: 8,
+  },
+  groupContainer: {
+    marginBottom: 8,
+  },
+  groupHeader: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.warmGray,
+    textTransform: "uppercase",
+    letterSpacing: 1.5,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: "rgba(232, 224, 213, 0.5)",
+  },
+  activityContainer: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    alignItems: "flex-start",
+  },
+  iconWrapper: {
+    marginRight: 12,
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  contentWrapper: {
+    flex: 1,
+  },
+  activityRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  avatarFallback: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.sand,
+  },
+  avatarInitials: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: COLORS.warmGray,
+  },
+  textWrapper: {
+    flex: 1,
+  },
+  activityMessage: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: COLORS.warmDark,
+    lineHeight: 20,
+  },
+  timestamp: {
+    fontSize: 12,
+    color: COLORS.warmGray,
+    marginTop: 4,
+  },
+  emptyContainer: {
+    paddingVertical: 48,
+    paddingHorizontal: 32,
+    alignItems: "center",
+  },
+  emptyIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: COLORS.sand,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: COLORS.warmDark,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: COLORS.warmGray,
+    textAlign: "center",
+    marginTop: 8,
+    lineHeight: 20,
+  },
+  emptyButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "rgba(212, 165, 116, 0.15)",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 20,
+    borderWidth: 1,
+    borderColor: "rgba(212, 165, 116, 0.3)",
+  },
+  emptyButtonText: {
+    color: COLORS.terracotta,
+    fontWeight: "700",
+    fontSize: 14,
+  },
+  loadingContainer: {
+    padding: 20,
+  },
+  skeletonRow: {
+    flexDirection: "row",
+    marginBottom: 16,
+  },
+  skeletonCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.sand,
+    marginRight: 12,
+  },
+  skeletonTextWrapper: {
+    flex: 1,
+    gap: 8,
+  },
+  skeletonLine1: {
+    width: "70%",
+    height: 12,
+    backgroundColor: COLORS.sand,
+    borderRadius: 6,
+  },
+  skeletonLine2: {
+    width: "40%",
+    height: 12,
+    backgroundColor: COLORS.sand,
+    borderRadius: 6,
   },
 });
 

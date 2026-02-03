@@ -4,6 +4,7 @@ import { VictoryPie } from "victory-native";
 import { ReactNode } from "react";
 import { Text } from "@/components/ui/Text";
 import { Card } from "@/components/ui/Card";
+import { BACKGROUND, COLORS, TEXT } from "@/lib/theme";
 
 interface DashboardStatsProps {
   todayFeeds?: number;
@@ -25,54 +26,61 @@ export function Dashboard({
       id: "feed",
       label: "Log Feed",
       icon: "restaurant",
-      color: "#f97316",
+      color: COLORS.terracotta,
+      bgColor: "rgba(212, 165, 116, 0.15)",
     },
     {
       id: "diaper",
       label: "Log Diaper",
       icon: "water",
-      color: "#3b82f6",
+      color: COLORS.sage,
+      bgColor: "rgba(139, 154, 125, 0.15)",
     },
     {
       id: "sleep",
       label: "Log Sleep",
       icon: "moon",
-      color: "#8b5cf6",
+      color: COLORS.gold,
+      bgColor: "rgba(201, 162, 39, 0.15)",
     },
     {
       id: "mood",
       label: "Check In",
       icon: "heart",
-      color: "#ec4899",
+      color: COLORS.clay,
+      bgColor: "rgba(193, 122, 92, 0.15)",
     },
   ];
 
   return (
     <ScrollView
-      className="flex-1 bg-nano-950"
+      style={{ backgroundColor: BACKGROUND.primary }}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      <Text variant="title" className="text-3xl font-bold text-white mb-6">
-        Welcome back!
+      <Text variant="h1" color="primary" style={styles.welcomeText}>
+        Welcome back, caregiver
+      </Text>
+      <Text variant="body" color="secondary" style={styles.welcomeSubtext}>
+        Another beautiful day with your little one
       </Text>
 
-      <View className="mb-8">
-        <Text
-          variant="subtitle"
-          className="text-nano-400 mb-4 font-semibold uppercase tracking-wider text-xs"
-        >
+      <View style={styles.section}>
+        <Text variant="label" color="tertiary" style={styles.sectionLabel}>
           Quick Actions
         </Text>
-        <View className="flex-row flex-wrap gap-3">
+        <View style={styles.quickActionsGrid}>
           {quickActions.map((action) => (
             <TouchableOpacity
               key={action.id}
-              className="w-[48%] bg-nano-900 border border-nano-800 rounded-2xl p-4 items-center shadow-sm active:scale-95"
+              style={styles.quickActionCard}
+              activeOpacity={0.8}
             >
               <View
-                className="w-12 h-12 rounded-full items-center justify-center mb-3"
-                style={{ backgroundColor: `${action.color}20` }}
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: action.bgColor },
+                ]}
               >
                 <Ionicons
                   name={action.icon as keyof typeof Ionicons.glyphMap}
@@ -80,7 +88,11 @@ export function Dashboard({
                   color={action.color}
                 />
               </View>
-              <Text className="text-white font-semibold text-sm">
+              <Text
+                variant="caption"
+                color="primary"
+                style={styles.actionLabel}
+              >
                 {action.label}
               </Text>
             </TouchableOpacity>
@@ -88,89 +100,104 @@ export function Dashboard({
         </View>
       </View>
 
-      <View className="mb-8">
-        <Text
-          variant="subtitle"
-          className="text-nano-400 mb-4 font-semibold uppercase tracking-wider text-xs"
-        >
-          Today&apos;s Stats
+      <View style={styles.section}>
+        <Text variant="label" color="tertiary" style={styles.sectionLabel}>
+          Today's Stats
         </Text>
-        <View className="flex-row gap-3">
-          <Card variant="glass" className="flex-1 items-center p-4">
-            <View className="w-10 h-10 rounded-full items-center justify-center mb-2 bg-orange-500/20">
-              <Ionicons name="restaurant" size={20} color="#f97316" />
+        <View style={styles.statsRow}>
+          <Card variant="soft" style={styles.statCard}>
+            <View
+              style={[
+                styles.iconContainer,
+                { backgroundColor: "rgba(212, 165, 116, 0.15)" },
+              ]}
+            >
+              <Ionicons name="restaurant" size={20} color={COLORS.terracotta} />
             </View>
-            <Text className="text-white text-xl font-bold">{todayFeeds}</Text>
-            <Text className="text-nano-500 text-[10px] uppercase font-bold mt-1">
+            <Text variant="h3" color="primary" style={styles.statNumber}>
+              {todayFeeds}
+            </Text>
+            <Text variant="label" color="tertiary">
               Feeds
             </Text>
           </Card>
 
-          <Card variant="glass" className="flex-1 items-center p-4">
-            <View className="w-10 h-10 rounded-full items-center justify-center mb-2 bg-blue-500/20">
-              <Ionicons name="water" size={20} color="#3b82f6" />
+          <Card variant="soft" style={styles.statCard}>
+            <View
+              style={[
+                styles.iconContainer,
+                { backgroundColor: "rgba(139, 154, 125, 0.15)" },
+              ]}
+            >
+              <Ionicons name="water" size={20} color={COLORS.sage} />
             </View>
-            <Text className="text-white text-xl font-bold">{todayDiapers}</Text>
-            <Text className="text-nano-500 text-[10px] uppercase font-bold mt-1">
+            <Text variant="h3" color="primary" style={styles.statNumber}>
+              {todayDiapers}
+            </Text>
+            <Text variant="label" color="tertiary">
               Diapers
             </Text>
           </Card>
 
-          <Card variant="glass" className="flex-1 items-center p-4">
-            <View className="w-10 h-10 rounded-full items-center justify-center mb-2 bg-purple-500/20">
-              <Ionicons name="moon" size={20} color="#8b5cf6" />
+          <Card variant="soft" style={styles.statCard}>
+            <View
+              style={[
+                styles.iconContainer,
+                { backgroundColor: "rgba(201, 162, 39, 0.15)" },
+              ]}
+            >
+              <Ionicons name="moon" size={20} color={COLORS.gold} />
             </View>
             <Text
-              className="text-white text-xl font-bold text-center"
+              variant="h3"
+              color="primary"
+              style={styles.statNumber}
               numberOfLines={1}
             >
               {todaySleep}
             </Text>
-            <Text className="text-nano-500 text-[10px] uppercase font-bold mt-1">
+            <Text variant="label" color="tertiary">
               Sleep
             </Text>
           </Card>
         </View>
       </View>
 
-      <View className="mb-8">
-        <View className="flex-row justify-between items-center mb-4">
-          <Text
-            variant="subtitle"
-            className="text-nano-400 font-semibold uppercase tracking-wider text-xs"
-          >
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text variant="label" color="tertiary">
             Recent Activity
           </Text>
           <TouchableOpacity>
-            <Text className="text-banana-500 text-xs font-bold">SEE ALL</Text>
+            <Text variant="caption" color="terracotta" style={styles.seeAll}>
+              SEE ALL
+            </Text>
           </TouchableOpacity>
         </View>
 
         {activityFeed || (
-          <Card
-            variant="default"
-            className="bg-nano-900 border-nano-800 p-8 items-center"
-          >
-            <Ionicons name="time-outline" size={48} color="#333" />
-            <Text className="text-white font-semibold mt-4">
+          <Card variant="elevated" style={styles.emptyActivityCard}>
+            <Ionicons name="time-outline" size={48} color={TEXT.tertiary} />
+            <Text variant="subtitle" color="primary" style={styles.emptyTitle}>
               No activity yet
             </Text>
-            <Text className="text-nano-500 text-sm text-center mt-2">
-              Tap a quick action above to start logging.
+            <Text
+              variant="caption"
+              color="secondary"
+              style={styles.emptySubtext}
+            >
+              Tap a quick action above to start logging precious moments.
             </Text>
           </Card>
         )}
       </View>
 
-      <View className="mb-0">
-        <Text
-          variant="subtitle"
-          className="text-nano-400 mb-4 font-semibold uppercase tracking-wider text-xs"
-        >
+      <View style={styles.section}>
+        <Text variant="label" color="tertiary" style={styles.sectionLabel}>
           Mood Trends
         </Text>
         {moodData.length > 0 ? (
-          <Card variant="glass" className="items-center p-4">
+          <Card variant="soft" style={styles.moodCard}>
             <VictoryPie
               data={moodData}
               x="mood"
@@ -178,32 +205,45 @@ export function Dashboard({
               innerRadius={60}
               padding={40}
               colorScale={[
-                "#10b981", // Happy
-                "#6ee7b7",
-                "#fcd34d", // Neutral
-                "#fb923c",
-                "#f87171", // Sad
+                COLORS.sage, // Happy
+                COLORS.terracotta,
+                COLORS.gold, // Neutral
+                COLORS.clay,
+                "#A65A42", // Sad
               ]}
               style={{
-                labels: { fill: "white", fontSize: 12, fontWeight: "bold" },
+                labels: {
+                  fill: TEXT.primary,
+                  fontSize: 12,
+                  fontWeight: "bold",
+                },
               }}
             />
           </Card>
         ) : (
-          <Card
-            variant="default"
-            className="bg-nano-900 border-nano-800 p-6 items-center flex-row gap-4"
-          >
-            <View className="w-12 h-12 rounded-full bg-nano-800 items-center justify-center">
-              <Ionicons name="happy-outline" size={24} color="#666" />
+          <Card variant="elevated" style={styles.moodPlaceholderCard}>
+            <View style={styles.moodPlaceholderContent}>
+              <View style={styles.moodIconContainer}>
+                <Ionicons
+                  name="happy-outline"
+                  size={24}
+                  color={TEXT.secondary}
+                />
+              </View>
+              <View style={styles.moodTextContainer}>
+                <Text variant="subtitle" color="primary">
+                  Track Mood
+                </Text>
+                <Text variant="caption" color="secondary">
+                  Start tracking to see weekly trends.
+                </Text>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={TEXT.tertiary}
+              />
             </View>
-            <View className="flex-1">
-              <Text className="text-white font-semibold">Track Mood</Text>
-              <Text className="text-nano-500 text-xs mt-1">
-                Start tracking to see weekly trends.
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#444" />
           </Card>
         )}
       </View>
@@ -215,5 +255,104 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 16,
     paddingBottom: 40,
+  },
+  welcomeText: {
+    marginBottom: 8,
+  },
+  welcomeSubtext: {
+    marginBottom: 24,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionLabel: {
+    marginBottom: 12,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  quickActionsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  quickActionCard: {
+    width: "48%",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 16,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(212, 165, 116, 0.2)",
+    shadowColor: "rgba(45, 42, 38, 0.06)",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  actionLabel: {
+    fontWeight: "600",
+  },
+  statsRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    alignItems: "center",
+    padding: 16,
+  },
+  statNumber: {
+    marginTop: 4,
+    marginBottom: 2,
+  },
+  seeAll: {
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  emptyActivityCard: {
+    padding: 32,
+    alignItems: "center",
+  },
+  emptyTitle: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    textAlign: "center",
+  },
+  moodCard: {
+    alignItems: "center",
+    padding: 16,
+  },
+  moodPlaceholderCard: {
+    padding: 16,
+  },
+  moodPlaceholderContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  moodIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "rgba(212, 165, 116, 0.1)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  moodTextContainer: {
+    flex: 1,
   },
 });

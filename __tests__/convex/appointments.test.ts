@@ -1,8 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   createAppointmentHandler,
   listAppointmentsHandler,
+  updateAppointmentHandler,
 } from "../../convex/functions/appointments";
+import { sanitizeTitle } from "../../convex/lib/sanitize";
 
 const identity = (orgId: string) =>
   ({
@@ -89,14 +91,55 @@ describe("appointments.listAppointments org scoping", () => {
         fn({
           eq: (_field: string, value: string) => {
             indexedOrg = value;
+            return {
+              gte: () => ({ lte: () => ({}) }),
+              lte: () => ({}),
+            };
           },
         });
-        return { collect: async () => [] };
+        return {
+          filter: () => ({
+            order: () => ({ take: async () => [] }),
+            take: async () => [],
+          }),
+          order: () => ({ take: async () => [] }),
+          take: async () => [],
+        };
       },
     });
 
     await listAppointmentsHandler(ctx as any, { clerkOrganizationId: "org_1" });
 
     expect(indexedOrg).toBe("org_1");
+  });
+});
+
+describe("appointments.updateAppointment", () => {
+  it("patches sanitized fields when authorized", async () => {
+    const { ctx } = makeCtx("org_1");
+    const patch = vi.fn();
+    ctx.db.patch = patch;
+    ctx.db.get = async () =>
+      ({
+        _id: "appointment_1",
+        clerkOrganizationId: "org_1",
+      }) as any;
+
+    await updateAppointmentHandler(ctx as any, {
+      appointmentId: "appointment_1",
+      title: "<script>alert(1)</script>Checkup",
+      location: "Clinic <b>North</b>",
+      notes: "note",
+      isCompleted: true,
+    });
+
+    expect(patch).toHaveBeenCalledTimes(1);
+    const [, updates] = patch.mock.calls[0];
+    expect(updates.title).toBe(
+      sanitizeTitle("<script>alert(1)</script>Checkup")
+    );
+    expect(updates.location).toBe("Clinic &lt;b&gt;North&lt;/b&gt;");
+    expect(updates.notes).toBe("note");
+    expect(updates.isCompleted).toBe(true);
   });
 });

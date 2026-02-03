@@ -1,5 +1,4 @@
 {
-  "*.{ts,tsx}": ["bunx --bun eslint --fix", "bunx --bun prettier --write"],
-  "*.{js,jsx}": ["bunx --bun eslint --fix", "bunx --bun prettier --write"],
-  "*.{json,md}": ["bunx --bun prettier --write"]
+  "*.{ts,tsx}": ["node ./node_modules/eslint/bin/eslint.js --fix"],
+  "*.{js,jsx}": ["node ./node_modules/eslint/bin/eslint.js --fix"]
 }

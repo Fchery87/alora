@@ -9,6 +9,22 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+// Celestial Nurture Design System - Earth Tones
+const COLORS = {
+  cream: "#FAF7F2",
+  terracotta: "#D4A574",
+  sage: "#8B9A7D",
+  moss: "#6B7A6B",
+  gold: "#C9A227",
+  clay: "#C17A5C",
+  warmDark: "#2D2A26",
+  warmGray: "#6B6560",
+  stone: "#8B8680",
+  sand: "#E8E0D5",
+  warmLight: "#F5F0E8",
+  white: "#FFFFFF",
+};
+
 interface Entry {
   id: string;
   title: string;
@@ -61,7 +77,7 @@ export function EntryList({
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
-        <Ionicons name={icon} size={24} color="#6366f1" />
+        <Ionicons name={icon} size={24} color={COLORS.terracotta} />
       </View>
 
       <ScrollView
@@ -72,14 +88,14 @@ export function EntryList({
             <RefreshControl
               refreshing={refreshing ?? false}
               onRefresh={onRefresh}
-              tintColor="#6366f1"
+              tintColor={COLORS.terracotta}
             />
           ) : undefined
         }
       >
         {entries.length === 0 ? (
           <View style={styles.empty}>
-            <Ionicons name="document-outline" size={48} color="#cbd5e1" />
+            <Ionicons name="document-outline" size={48} color={COLORS.sand} />
             <Text style={styles.emptyText}>{emptyMessage}</Text>
           </View>
         ) : (
@@ -95,7 +111,7 @@ export function EntryList({
                     <Ionicons
                       name={entry.icon}
                       size={20}
-                      color={entry.iconColor || "#6366f1"}
+                      color={entry.iconColor || COLORS.terracotta}
                     />
                   ) : null}
                   <Text style={styles.entryTitle}>{entry.title}</Text>
@@ -114,7 +130,7 @@ export function EntryList({
                       <Ionicons
                         name="trash-outline"
                         size={18}
-                        color="#94a3b8"
+                        color={COLORS.stone}
                       />
                     </TouchableOpacity>
                   )}
@@ -139,21 +155,21 @@ export function EntryList({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.cream,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.warmLight,
     borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
+    borderBottomColor: COLORS.sand,
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#0f172a",
+    color: COLORS.warmDark,
   },
   scrollView: {
     flex: 1,
@@ -170,19 +186,21 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: "#94a3b8",
+    color: COLORS.stone,
     textAlign: "center",
   },
   entryCard: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 14,
     padding: 16,
     gap: 8,
-    shadowColor: "#000",
+    shadowColor: COLORS.warmDark,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: COLORS.sand,
   },
   entryHeader: {
     flexDirection: "row",
@@ -192,13 +210,13 @@ const styles = StyleSheet.create({
   entryIcon: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
     flex: 1,
   },
   entryTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#0f172a",
+    color: COLORS.warmDark,
   },
   entryMeta: {
     flexDirection: "row",
@@ -210,15 +228,15 @@ const styles = StyleSheet.create({
   },
   entryTime: {
     fontSize: 12,
-    color: "#64748b",
+    color: COLORS.stone,
   },
   entrySubtitle: {
     fontSize: 14,
-    color: "#475569",
+    color: COLORS.warmGray,
   },
   entryDetails: {
     fontSize: 13,
-    color: "#64748b",
+    color: COLORS.stone,
     lineHeight: 18,
   },
 });

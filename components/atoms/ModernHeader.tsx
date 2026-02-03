@@ -3,7 +3,15 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
-import { GRADIENTS, SHADOWS, TYPOGRAPHY } from "@/lib/theme";
+import {
+  GRADIENTS,
+  SHADOWS,
+  TYPOGRAPHY,
+  TEXT,
+  GLASS,
+  COLORS,
+  BACKGROUND,
+} from "@/lib/theme";
 import { softSpring, iconTap } from "@/lib/animations";
 import type { MotiTransition } from "@/lib/moti-types";
 
@@ -17,7 +25,7 @@ interface ModernHeaderProps {
   onBackPress?: () => void;
   onMenuPress?: () => void;
   onNotificationPress?: () => void;
-  backgroundColor?: "transparent" | "gradient" | "white" | "glass";
+  backgroundColor?: "transparent" | "gradient" | "cream" | "glass";
 }
 
 export function ModernHeader({
@@ -40,6 +48,7 @@ export function ModernHeader({
       style={[
         styles.container,
         backgroundColor === "transparent" && styles.transparentBg,
+        backgroundColor === "cream" && styles.creamBg,
       ]}
     >
       {/* Gradient or glass background */}
@@ -54,7 +63,7 @@ export function ModernHeader({
 
       {backgroundColor === "glass" && (
         <LinearGradient
-          colors={["rgba(255, 255, 255, 0.85)", "rgba(248, 250, 252, 0.95)"]}
+          colors={[GLASS.light.background, "rgba(250, 247, 242, 0.98)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
@@ -68,7 +77,7 @@ export function ModernHeader({
             onPress={onBackPress}
             style={({ pressed }) => [styles.iconButton, iconTap(pressed)]}
           >
-            <Ionicons name="arrow-back" size={24} color="#0f172a" />
+            <Ionicons name="arrow-back" size={24} color={TEXT.primary} />
           </Pressable>
         )}
 
@@ -91,7 +100,11 @@ export function ModernHeader({
             onPress={onNotificationPress}
             style={({ pressed }) => [styles.iconButton, iconTap(pressed)]}
           >
-            <Ionicons name="notifications-outline" size={24} color="#0f172a" />
+            <Ionicons
+              name="notifications-outline"
+              size={24}
+              color={TEXT.primary}
+            />
             {notificationCount > 0 && (
               <View style={styles.notificationBadge}>
                 <Text style={styles.notificationCount}>
@@ -107,7 +120,7 @@ export function ModernHeader({
             onPress={onMenuPress}
             style={({ pressed }) => [styles.iconButton, iconTap(pressed)]}
           >
-            <Ionicons name="menu-outline" size={24} color="#0f172a" />
+            <Ionicons name="menu-outline" size={24} color={TEXT.primary} />
           </Pressable>
         )}
       </View>
@@ -126,9 +139,15 @@ const styles = StyleSheet.create({
     minHeight: 100,
     position: "relative",
     overflow: "hidden",
+    borderBottomWidth: 1,
+    borderBottomColor: GLASS.light.border,
   },
   transparentBg: {
     backgroundColor: "transparent",
+    borderBottomWidth: 0,
+  },
+  creamBg: {
+    backgroundColor: BACKGROUND.primary,
   },
   leftSection: {
     flexDirection: "row",
@@ -147,27 +166,29 @@ const styles = StyleSheet.create({
   },
   title: {
     ...TYPOGRAPHY.headings.h3,
-    color: "#0f172a",
+    color: TEXT.primary,
   },
   subtitle: {
     ...TYPOGRAPHY.body.small,
-    color: "#64748b",
+    color: TEXT.secondary,
     marginTop: 2,
   },
   iconButton: {
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    backgroundColor: "rgba(212, 165, 116, 0.1)",
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 8,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   notificationBadge: {
     position: "absolute",
     top: 8,
     right: 8,
-    backgroundColor: "#f43f5e",
+    backgroundColor: COLORS.clay,
     minWidth: 20,
     height: 20,
     borderRadius: 10,

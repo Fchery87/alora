@@ -31,6 +31,12 @@ interface SleepDetailsModalProps {
 const SLEEP_TYPES = ["nap", "night", "day"];
 const SLEEP_QUALITY = ["awake", "drowsy", "sleeping", "deep"];
 
+const MOSS = "#6B7A6B";
+const SAGE = "#8B9A7D";
+const CLAY = "#C17A5C";
+const GOLD = "#C9A227";
+const TERRACOTTA = "#D4A574";
+
 export function SleepDetailsModal({
   visible,
   sleep,
@@ -109,16 +115,16 @@ export function SleepDetailsModal({
             {/* Header */}
             <View style={styles.header}>
               <TouchableOpacity onPress={onClose}>
-                <Ionicons name="close-outline" size={24} color="#6366f1" />
+                <Ionicons name="close-outline" size={24} color={MOSS} />
               </TouchableOpacity>
               <Text style={styles.headerTitle}>Sleep Details</Text>
               {isEditing ? (
                 <TouchableOpacity onPress={handleSave}>
-                  <Ionicons name="checkmark-outline" size={24} color="#22c55e" />
+                  <Ionicons name="checkmark-outline" size={24} color={SAGE} />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <Ionicons name="create-outline" size={24} color="#6366f1" />
+                  <Ionicons name="create-outline" size={24} color={MOSS} />
                 </TouchableOpacity>
               )}
             </View>
@@ -128,8 +134,12 @@ export function SleepDetailsModal({
               <>
                 <View style={styles.section}>
                   <Text style={styles.label}>Type</Text>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{sleep.type}</Text>
+                  <View
+                    style={[styles.badge, { backgroundColor: `${MOSS}20` }]}
+                  >
+                    <Text style={[styles.badgeText, { color: MOSS }]}>
+                      {sleep.type}
+                    </Text>
                   </View>
                 </View>
 
@@ -150,21 +160,27 @@ export function SleepDetailsModal({
                 {sleep.startTime && (
                   <View style={styles.section}>
                     <Text style={styles.label}>Start Time</Text>
-                    <Text style={styles.value}>{formatDateTime(sleep.startTime)}</Text>
+                    <Text style={styles.value}>
+                      {formatDateTime(sleep.startTime)}
+                    </Text>
                   </View>
                 )}
 
                 {sleep.endTime && (
                   <View style={styles.section}>
                     <Text style={styles.label}>End Time</Text>
-                    <Text style={styles.value}>{formatDateTime(sleep.endTime)}</Text>
+                    <Text style={styles.value}>
+                      {formatDateTime(sleep.endTime)}
+                    </Text>
                   </View>
                 )}
 
                 {sleep.duration && (
                   <View style={styles.section}>
                     <Text style={styles.label}>Duration</Text>
-                    <Text style={styles.value}>{formatDuration(sleep.duration)}</Text>
+                    <Text style={styles.value}>
+                      {formatDuration(sleep.duration)}
+                    </Text>
                   </View>
                 )}
 
@@ -185,19 +201,27 @@ export function SleepDetailsModal({
                         key={type}
                         style={[
                           styles.chip,
-                          editedType === type && styles.chipActive,
+                          editedType === type && [
+                            styles.chipActive,
+                            { backgroundColor: MOSS, borderColor: MOSS },
+                          ],
+                          editedType !== type && {
+                            backgroundColor: "rgba(107, 122, 107, 0.1)",
+                            borderColor: "rgba(107, 122, 107, 0.3)",
+                          },
                         ]}
                         onPress={() => setEditedType(type)}
                       >
                         <Ionicons
                           name={getSleepIcon(type)}
                           size={16}
-                          color={editedType === type ? "#ffffff" : "#475569"}
+                          color={editedType === type ? "#ffffff" : MOSS}
                         />
                         <Text
                           style={[
                             styles.chipText,
                             editedType === type && styles.chipTextActive,
+                            editedType !== type && { color: MOSS },
                           ]}
                         >
                           {type}
@@ -215,7 +239,14 @@ export function SleepDetailsModal({
                         key={quality}
                         style={[
                           styles.chip,
-                          editedQuality === quality && styles.chipActive,
+                          editedQuality === quality && [
+                            styles.chipActive,
+                            { backgroundColor: SAGE, borderColor: SAGE },
+                          ],
+                          editedQuality !== quality && {
+                            backgroundColor: "rgba(139, 154, 125, 0.1)",
+                            borderColor: "rgba(139, 154, 125, 0.3)",
+                          },
                         ]}
                         onPress={() => setEditedQuality(quality)}
                       >
@@ -223,6 +254,7 @@ export function SleepDetailsModal({
                           style={[
                             styles.chipText,
                             editedQuality === quality && styles.chipTextActive,
+                            editedQuality !== quality && { color: SAGE },
                           ]}
                         >
                           {quality}
@@ -239,6 +271,7 @@ export function SleepDetailsModal({
                     value={editedNotes}
                     onChangeText={setEditedNotes}
                     placeholder="Add notes about sleep..."
+                    placeholderTextColor="#9B8B7A"
                     multiline
                     numberOfLines={4}
                   />
@@ -257,7 +290,7 @@ export function SleepDetailsModal({
                   onClose();
                 }}
               >
-                <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                <Ionicons name="trash-outline" size={20} color={CLAY} />
                 <Text style={styles.deleteButtonText}>Delete</Text>
               </TouchableOpacity>
             )}
@@ -270,12 +303,22 @@ export function SleepDetailsModal({
 
 const getQualityColor = (quality: string) => {
   const colors: Record<string, string> = {
-    awake: "#94a3b8",
-    drowsy: "#fbbf24",
-    sleeping: "#3b82f6",
-    deep: "#1e40af",
+    awake: "rgba(155, 139, 122, 0.2)",
+    drowsy: "rgba(201, 162, 39, 0.2)",
+    sleeping: "rgba(107, 122, 107, 0.2)",
+    deep: "rgba(93, 78, 55, 0.2)",
   };
-  return `${colors[quality] || "#6366f1"}20`;
+  return colors[quality] || "rgba(107, 122, 107, 0.2)";
+};
+
+const getQualityTextColor = (quality: string) => {
+  const colors: Record<string, string> = {
+    awake: "#7A6A5A",
+    drowsy: "#9A7A20",
+    sleeping: "#6B7A6B",
+    deep: "#5D4E37",
+  };
+  return colors[quality] || "#6B7A6B";
 };
 
 const getSleepIcon = (type: string): keyof typeof Ionicons.glyphMap => {
@@ -290,132 +333,126 @@ const getSleepIcon = (type: string): keyof typeof Ionicons.glyphMap => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(45, 42, 38, 0.5)",
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: "#ffffff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: "#FFFBF7", // warm cream
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     maxHeight: "80%",
   },
   content: {
-    padding: 20,
+    padding: 24,
     paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#2D2A26",
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
-    color: "#64748b",
-    marginBottom: 8,
+    color: "#6B6560",
+    marginBottom: 10,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   badge: {
-    backgroundColor: "#eff6ff",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
     alignSelf: "flex-start",
   },
   badgeText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
-    color: "#1e40af",
     textTransform: "capitalize",
   },
   qualityBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
     alignSelf: "flex-start",
   },
   qualityText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
-    color: "#6366f1",
+    color: "#2D2A26",
     textTransform: "capitalize",
   },
   value: {
     fontSize: 15,
-    color: "#334155",
-    lineHeight: 20,
+    color: "#2D2A26",
+    lineHeight: 22,
   },
   notes: {
-    fontSize: 14,
-    color: "#475569",
-    lineHeight: 20,
+    fontSize: 15,
+    color: "#6B6560",
+    lineHeight: 22,
   },
   chipsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: 10,
   },
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: "#f1f5f9",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    gap: 6,
+    gap: 8,
   },
   chipActive: {
-    backgroundColor: "#3b82f6",
-    borderColor: "#3b82f6",
+    borderWidth: 1,
   },
   chipText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#475569",
   },
   chipTextActive: {
     color: "#ffffff",
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 14,
-    color: "#0f172a",
+    borderColor: "rgba(107, 122, 107, 0.3)",
+    borderRadius: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: "#2D2A26",
   },
   footer: {
-    padding: 16,
+    padding: 20,
     paddingTop: 0,
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: "rgba(139, 154, 125, 0.15)",
   },
   deleteButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    paddingVertical: 12,
-    backgroundColor: "#fef2f2",
-    borderRadius: 12,
+    gap: 10,
+    paddingVertical: 14,
+    backgroundColor: "rgba(193, 122, 92, 0.1)",
+    borderRadius: 16,
   },
   deleteButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#ef4444",
+    color: "#C17A5C",
   },
 });

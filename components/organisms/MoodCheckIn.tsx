@@ -18,6 +18,23 @@ import {
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
+// Celestial Nurture Design System - Earth Tones
+const COLORS = {
+  cream: "#FAF7F2",
+  terracotta: "#D4A574",
+  sage: "#8B9A7D",
+  moss: "#6B7A6B",
+  gold: "#C9A227",
+  clay: "#C17A5C",
+  warmDark: "#2D2A26",
+  warmGray: "#6B6560",
+  stone: "#8B8680",
+  sand: "#E8E0D5",
+  warmLight: "#F5F0E8",
+  white: "#FFFFFF",
+  error: "#C75B5B",
+};
+
 type MoodType = "great" | "good" | "okay" | "low" | "struggling";
 type EnergyType = "high" | "medium" | "low";
 
@@ -46,11 +63,16 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
     emoji: string;
     color: string;
   }[] = [
-    { value: "great", label: "Great", emoji: "😊", color: "#10b981" },
-    { value: "good", label: "Good", emoji: "🙂", color: "#6ee7b7" },
-    { value: "okay", label: "Okay", emoji: "😐", color: "#fcd34d" },
-    { value: "low", label: "Low", emoji: "😔", color: "#fb923c" },
-    { value: "struggling", label: "Struggling", emoji: "😢", color: "#f87171" },
+    { value: "great", label: "Great", emoji: "😊", color: COLORS.sage },
+    { value: "good", label: "Good", emoji: "🙂", color: "#9CB89A" },
+    { value: "okay", label: "Okay", emoji: "😐", color: COLORS.gold },
+    { value: "low", label: "Low", emoji: "😔", color: COLORS.clay },
+    {
+      value: "struggling",
+      label: "Struggling",
+      emoji: "😢",
+      color: COLORS.terracotta,
+    },
   ];
 
   const energyLevels: { value: EnergyType; label: string; icon: string }[] = [
@@ -138,7 +160,7 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
       <Text style={styles.title}>How are you feeling?</Text>
 
       <View style={styles.affirmationBox}>
-        <Ionicons name="heart" size={20} color="#f472b6" />
+        <Ionicons name="heart" size={20} color={COLORS.terracotta} />
         <Text style={styles.affirmationText}>{randomAffirmation}</Text>
       </View>
 
@@ -150,7 +172,10 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
               key={m.value}
               style={[
                 styles.moodButton,
-                mood === m.value && { backgroundColor: m.color },
+                mood === m.value && {
+                  backgroundColor: m.color,
+                  borderColor: m.color,
+                },
                 touched.mood &&
                   hasFieldError(validateMood({ mood: m.value }), "mood") &&
                   styles.moodButtonError,
@@ -185,7 +210,7 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
         <Ionicons
           name={showDetails ? "chevron-up" : "chevron-down"}
           size={20}
-          color="#6366f1"
+          color={COLORS.terracotta}
         />
       </TouchableOpacity>
 
@@ -206,7 +231,7 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
                   <Ionicons
                     name={e.icon as keyof typeof Ionicons.glyphMap}
                     size={20}
-                    color={energy === e.value ? "#fff" : "#6366f1"}
+                    color={energy === e.value ? COLORS.white : COLORS.gold}
                   />
                   <Text
                     style={[
@@ -281,6 +306,7 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
               multiline
               numberOfLines={3}
               textAlignVertical="top"
+              placeholderTextColor={COLORS.stone}
             />
             {touched.notes && validationErrors.notes && (
               <Text style={styles.errorText}>{validationErrors.notes}</Text>
@@ -308,39 +334,42 @@ export function MoodCheckIn({ babyId, onSuccess }: MoodCheckInProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.cream,
   },
   content: {
-    padding: 16,
+    padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    fontWeight: "700",
+    color: COLORS.warmDark,
     marginBottom: 16,
   },
   affirmationBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fce7f3",
+    backgroundColor: COLORS.warmLight,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 24,
     gap: 12,
+    borderWidth: 1,
+    borderColor: COLORS.sand,
   },
   affirmationText: {
     flex: 1,
     fontSize: 14,
-    color: "#be185d",
+    color: COLORS.warmGray,
     fontStyle: "italic",
+    lineHeight: 20,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
+    color: COLORS.warmGray,
     marginBottom: 12,
   },
   moodGrid: {
@@ -351,11 +380,11 @@ const styles = StyleSheet.create({
   moodButton: {
     width: "30%",
     padding: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
   },
   emoji: {
     fontSize: 32,
@@ -364,18 +393,18 @@ const styles = StyleSheet.create({
   moodLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#374151",
+    color: COLORS.warmDark,
   },
   moodLabelActive: {
-    color: "#fff",
+    color: COLORS.white,
   },
   moodButtonError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
     borderWidth: 3,
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.error,
     marginTop: 6,
     marginLeft: 4,
   },
@@ -383,20 +412,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    padding: 14,
+    backgroundColor: COLORS.white,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
-    marginBottom: 20,
+    borderColor: COLORS.sand,
+    marginBottom: 24,
   },
   detailsToggleText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#6366f1",
+    color: COLORS.terracotta,
   },
   detailsSection: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   energyContainer: {
     flexDirection: "row",
@@ -408,23 +437,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 12,
-    backgroundColor: "#ffffff",
-    borderRadius: 8,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
     gap: 8,
   },
   energyButtonActive: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.gold,
+    borderColor: COLORS.gold,
   },
   energyLabel: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
+    color: COLORS.warmDark,
   },
   energyLabelActive: {
-    color: "#fff",
+    color: COLORS.white,
   },
   yesNoContainer: {
     flexDirection: "row",
@@ -433,51 +462,57 @@ const styles = StyleSheet.create({
   yesNoButton: {
     flex: 1,
     padding: 12,
-    backgroundColor: "#ffffff",
-    borderRadius: 8,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
   },
   yesNoButtonActive: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   yesNoText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
+    color: COLORS.warmDark,
   },
   yesNoTextActive: {
-    color: "#fff",
+    color: COLORS.white,
   },
   input: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
+    color: COLORS.warmDark,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   notesInput: {
     minHeight: 80,
     textAlignVertical: "top",
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     marginTop: 8,
+    shadowColor: COLORS.terracotta,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   submitButtonDisabled: {
     opacity: 0.5,
   },
   submitButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: "600",
   },

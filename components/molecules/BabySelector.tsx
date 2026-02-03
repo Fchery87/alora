@@ -26,6 +26,10 @@ export function BabySelector({ onPress }: BabySelectorProps) {
     .toUpperCase()
     .slice(0, 2);
 
+  const CLAY = "#C17A5C";
+  const warmCream = "#FAF6F1";
+  const warmGray = "#6B6560";
+
   return (
     <TouchableOpacity
       style={styles.container}
@@ -51,7 +55,7 @@ export function BabySelector({ onPress }: BabySelectorProps) {
       <Ionicons
         name="chevron-down"
         size={20}
-        color="#64748b"
+        color={warmGray}
         style={styles.chevron}
       />
     </TouchableOpacity>
@@ -62,17 +66,22 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f8fafc",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 8,
+    backgroundColor: "#FFFBF7", // warm cream
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 24,
+    gap: 10,
+    shadowColor: "#8B7355",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
   },
   avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#e0e7ff",
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(193, 122, 92, 0.15)",
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
@@ -84,7 +93,7 @@ const styles = StyleSheet.create({
   initials: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#4f46e5",
+    color: "#C17A5C",
   },
   info: {
     flex: 1,
@@ -93,11 +102,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#0f172a",
+    color: "#2D2A26",
   },
   age: {
     fontSize: 12,
-    color: "#64748b",
+    color: "#6B6560",
   },
   chevron: {
     marginLeft: 4,

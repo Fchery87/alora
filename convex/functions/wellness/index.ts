@@ -1,6 +1,6 @@
 import { mutation, query } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireMutationUserId, requireUserId } from "../../lib/users";
+import { requireUserId } from "../../lib/users";
 
 export const createMood = mutation({
   args: {
@@ -38,7 +38,7 @@ export const listMood = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const userId = await requireMutationUserId(ctx);
+    const userId = await requireUserId(ctx);
 
     let moodCheckIns = await ctx.db
       .query("moodCheckIns")

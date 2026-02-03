@@ -4,6 +4,15 @@ import { Header } from "@/components/layout/Header";
 import { SOUNDS, SOUND_CATEGORIES, getSoundsByCategory } from "@/lib/sounds";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
+import {
+  TYPOGRAPHY,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  COLORS,
+  RADIUS,
+  GLASS,
+} from "@/lib/theme";
 
 type CategoryId = (typeof SOUND_CATEGORIES)[number]["id"];
 
@@ -28,7 +37,7 @@ export default function SoundsScreen() {
       <Header title="Soothing Sounds" showBackButton={false} />
 
       <View style={styles.infoBanner}>
-        <Ionicons name="information-circle" size={20} color="#6366f1" />
+        <Ionicons name="information-circle" size={20} color={COLORS.sage} />
         <Text style={styles.infoText}>
           Help your baby sleep with calming sounds. Keep volume low.
         </Text>
@@ -52,7 +61,7 @@ export default function SoundsScreen() {
             <Ionicons
               name={cat.icon as any}
               size={16}
-              color={category === cat.id ? "#fff" : "#64748b"}
+              color={category === cat.id ? "#fff" : TEXT.secondary}
             />
             <Text
               style={[
@@ -86,7 +95,7 @@ export default function SoundsScreen() {
                 <Ionicons
                   name={playing === sound.id ? "pause" : "play"}
                   size={32}
-                  color={playing === sound.id ? "#fff" : "#6366f1"}
+                  color={playing === sound.id ? "#fff" : COLORS.terracotta}
                 />
               </View>
               <Text style={styles.soundName}>{sound.name}</Text>
@@ -99,9 +108,23 @@ export default function SoundsScreen() {
                   transition={{ stiffness: 200, damping: 20 }}
                   style={styles.playingIndicator}
                 >
-                  <View style={styles.waveBar} />
-                  <View style={[styles.waveBar, styles.waveBarDelay1]} />
-                  <View style={[styles.waveBar, styles.waveBarDelay2]} />
+                  <View
+                    style={[styles.waveBar, { backgroundColor: COLORS.sage }]}
+                  />
+                  <View
+                    style={[
+                      styles.waveBar,
+                      styles.waveBarDelay1,
+                      { backgroundColor: COLORS.terracotta },
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.waveBar,
+                      styles.waveBarDelay2,
+                      { backgroundColor: COLORS.gold },
+                    ]}
+                  />
                 </MotiView>
               )}
             </Pressable>
@@ -145,13 +168,16 @@ export default function SoundsScreen() {
 
         {showVolumeSlider && playing && (
           <View style={styles.volumeSlider}>
-            <Ionicons name="volume-low" size={20} color="#6366f1" />
+            <Ionicons name="volume-low" size={20} color={COLORS.sage} />
             <View style={styles.sliderTrack}>
               <View
-                style={[styles.sliderProgress, { width: `${volume * 100}%` }]}
+                style={[
+                  styles.sliderProgress,
+                  { width: `${volume * 100}%`, backgroundColor: COLORS.sage },
+                ]}
               />
             </View>
-            <Ionicons name="volume-high" size={20} color="#6366f1" />
+            <Ionicons name="volume-high" size={20} color={COLORS.sage} />
           </View>
         )}
       </ScrollView>
@@ -162,27 +188,30 @@ export default function SoundsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   infoBanner: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f0f9ff",
+    backgroundColor: `${COLORS.sage}15`,
     marginHorizontal: 16,
     marginTop: 8,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: RADIUS.lg,
     gap: 8,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   infoText: {
     flex: 1,
     fontSize: 13,
-    color: "#0369a1",
+    fontFamily: "DMSans",
+    color: COLORS.sage,
   },
   categoryRow: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.card,
     borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
+    borderBottomColor: GLASS.light.border,
   },
   categoryContent: {
     paddingHorizontal: 16,
@@ -196,16 +225,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: BACKGROUND.primary,
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   categoryChipActive: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   categoryText: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#64748b",
+    fontFamily: "DMSansMedium",
+    color: TEXT.secondary,
   },
   categoryTextActive: {
     color: "#fff",
@@ -221,44 +253,41 @@ const styles = StyleSheet.create({
   },
   soundCard: {
     width: "47%",
-    backgroundColor: "#fff",
-    borderRadius: 20,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 24,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    ...SHADOWS.sm,
     borderWidth: 2,
     borderColor: "transparent",
   },
   soundCardActive: {
-    borderColor: "#6366f1",
-    backgroundColor: "#f5f3ff",
+    borderColor: COLORS.terracotta,
+    backgroundColor: `${COLORS.terracotta}08`,
   },
   soundIcon: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: `${COLORS.terracotta}15`,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
   },
   soundIconActive: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
   },
   soundName: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontFamily: "DMSansMedium",
+    color: TEXT.primary,
     textAlign: "center",
     marginBottom: 4,
   },
   soundDesc: {
     fontSize: 12,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     textAlign: "center",
   },
   playingIndicator: {
@@ -272,7 +301,7 @@ const styles = StyleSheet.create({
   waveBar: {
     width: 4,
     height: 12,
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     borderRadius: 2,
   },
   waveBarDelay1: {
@@ -284,24 +313,26 @@ const styles = StyleSheet.create({
   playerBar: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#6366f1",
-    borderRadius: 16,
+    backgroundColor: COLORS.sage,
+    borderRadius: RADIUS.xl,
     padding: 16,
     marginTop: 16,
     gap: 12,
+    ...SHADOWS.md,
   },
   playerInfo: {
     flex: 1,
   },
   playerLabel: {
     fontSize: 11,
+    fontFamily: "DMSans",
     color: "rgba(255,255,255,0.7)",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   playerSound: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "CrimsonProMedium",
     color: "#fff",
   },
   volumeButton: {
@@ -323,21 +354,24 @@ const styles = StyleSheet.create({
   volumeSlider: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 16,
     marginTop: 12,
     gap: 12,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   sliderTrack: {
     flex: 1,
     height: 6,
-    backgroundColor: "#e2e8f0",
+    backgroundColor: GLASS.light.border,
     borderRadius: 3,
     overflow: "hidden",
   },
   sliderProgress: {
     height: "100%",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.sage,
   },
 });

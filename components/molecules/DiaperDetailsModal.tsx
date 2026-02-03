@@ -29,6 +29,17 @@ interface DiaperDetailsModalProps {
 const DIAPER_TYPES = ["wet", "solid", "both", "mixed"];
 const DIAPER_COLORS = ["yellow", "orange", "green", "brown", "red"];
 
+const DIAPER_COLORS_MAP: Record<string, string> = {
+  yellow: "#E4B453",
+  orange: "#D4874C",
+  green: "#8B9A7D",
+  brown: "#7A5A3F",
+  red: "#C17A5C",
+};
+
+const SAGE = "#8B9A7D";
+const CLAY = "#C17A5C";
+
 export function DiaperDetailsModal({
   visible,
   diaper,
@@ -95,20 +106,16 @@ export function DiaperDetailsModal({
             {/* Header */}
             <View style={styles.header}>
               <TouchableOpacity onPress={onClose}>
-                <Ionicons name="close-outline" size={24} color="#6366f1" />
+                <Ionicons name="close-outline" size={24} color={SAGE} />
               </TouchableOpacity>
               <Text style={styles.headerTitle}>Diaper Details</Text>
               {isEditing ? (
                 <TouchableOpacity onPress={handleSave}>
-                  <Ionicons
-                    name="checkmark-outline"
-                    size={24}
-                    color="#22c55e"
-                  />
+                  <Ionicons name="checkmark-outline" size={24} color={SAGE} />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <Ionicons name="create-outline" size={24} color="#6366f1" />
+                  <Ionicons name="create-outline" size={24} color={SAGE} />
                 </TouchableOpacity>
               )}
             </View>
@@ -118,29 +125,36 @@ export function DiaperDetailsModal({
               <>
                 <View style={styles.section}>
                   <Text style={styles.label}>Type</Text>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{diaper.type}</Text>
+                  <View
+                    style={[styles.badge, { backgroundColor: `${SAGE}20` }]}
+                  >
+                    <Text style={[styles.badgeText, { color: SAGE }]}>
+                      {diaper.type}
+                    </Text>
                   </View>
                 </View>
 
                 {diaper.color && (
                   <View style={styles.section}>
                     <Text style={styles.label}>Color</Text>
-                    <View
-                      style={[
-                        styles.colorDot,
-                        (styles as any)[
-                          `colorSwatch_${DIAPER_COLORS.includes(diaper.color) ? diaper.color : "default"}`
-                        ],
-                      ]}
-                    />
-                    <Text style={styles.value}>{diaper.color}</Text>
+                    <View style={styles.colorContainer}>
+                      <View
+                        style={[
+                          styles.colorDot,
+                          {
+                            backgroundColor:
+                              DIAPER_COLORS_MAP[diaper.color] || SAGE,
+                          },
+                        ]}
+                      />
+                      <Text style={styles.colorText}>{diaper.color}</Text>
+                    </View>
                   </View>
                 )}
 
                 <View style={styles.section}>
                   <Text style={styles.label}>Time</Text>
-                  <Text style={styles.value}>
+                  <Text style={styles.timeValue}>
                     {formatDateTime(diaper.timestamp)}
                   </Text>
                 </View>
@@ -162,7 +176,14 @@ export function DiaperDetailsModal({
                         key={type}
                         style={[
                           styles.chip,
-                          editedType === type && styles.chipActive,
+                          editedType === type && [
+                            styles.chipActive,
+                            { backgroundColor: SAGE, borderColor: SAGE },
+                          ],
+                          editedType !== type && {
+                            backgroundColor: "rgba(139, 154, 125, 0.1)",
+                            borderColor: "rgba(139, 154, 125, 0.3)",
+                          },
                         ]}
                         onPress={() => setEditedType(type)}
                       >
@@ -170,6 +191,7 @@ export function DiaperDetailsModal({
                           style={[
                             styles.chipText,
                             editedType === type && styles.chipTextActive,
+                            editedType !== type && { color: SAGE },
                           ]}
                         >
                           {type}
@@ -187,20 +209,28 @@ export function DiaperDetailsModal({
                         key={color}
                         style={[
                           styles.chip,
-                          editedColor === color && styles.chipActive,
+                          editedColor === color && [
+                            styles.chipActive,
+                            { backgroundColor: SAGE, borderColor: SAGE },
+                          ],
+                          editedColor !== color && {
+                            backgroundColor: "rgba(139, 154, 125, 0.1)",
+                            borderColor: "rgba(139, 154, 125, 0.3)",
+                          },
                         ]}
                         onPress={() => setEditedColor(color)}
                       >
                         <View
                           style={[
                             styles.colorDotSmall,
-                            (styles as any)[`colorSwatch_${color}`],
+                            { backgroundColor: DIAPER_COLORS_MAP[color] },
                           ]}
                         />
                         <Text
                           style={[
                             styles.chipText,
                             editedColor === color && styles.chipTextActive,
+                            editedColor !== color && { color: SAGE },
                           ]}
                         >
                           {color}
@@ -217,6 +247,7 @@ export function DiaperDetailsModal({
                     value={editedNotes}
                     onChangeText={setEditedNotes}
                     placeholder="Add notes..."
+                    placeholderTextColor="#9B8B7A"
                     multiline
                     numberOfLines={4}
                   />
@@ -235,7 +266,7 @@ export function DiaperDetailsModal({
                   onClose();
                 }}
               >
-                <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                <Ionicons name="trash-outline" size={20} color={CLAY} />
                 <Text style={styles.deleteButtonText}>Delete</Text>
               </TouchableOpacity>
             )}
@@ -249,146 +280,141 @@ export function DiaperDetailsModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(45, 42, 38, 0.5)",
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: "#ffffff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: "#FFFBF7", // warm cream
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     maxHeight: "80%",
   },
   content: {
-    padding: 20,
+    padding: 24,
     paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#2D2A26",
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
-    color: "#64748b",
-    marginBottom: 8,
+    color: "#6B6560",
+    marginBottom: 10,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   badge: {
-    backgroundColor: "#eff6ff",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
     alignSelf: "flex-start",
   },
   badgeText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "600",
-    color: "#1e40af",
     textTransform: "capitalize",
   },
-  value: {
-    fontSize: 15,
-    color: "#334155",
-    lineHeight: 20,
-  },
-  notes: {
-    fontSize: 14,
-    color: "#475569",
-    lineHeight: 20,
+  colorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    backgroundColor: "rgba(139, 154, 125, 0.1)",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignSelf: "flex-start",
   },
   colorDot: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  colorText: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#2D2A26",
+    textTransform: "capitalize",
+  },
+  timeValue: {
+    fontSize: 15,
+    color: "#2D2A26",
+    lineHeight: 22,
+  },
+  notes: {
+    fontSize: 15,
+    color: "#6B6560",
+    lineHeight: 22,
   },
   chipsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: 10,
   },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: "#f1f5f9",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    gap: 8,
   },
   chipActive: {
-    backgroundColor: "#3b82f6",
-    borderColor: "#3b82f6",
+    borderWidth: 1,
   },
   chipText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#475569",
+    textTransform: "capitalize",
   },
   chipTextActive: {
     color: "#ffffff",
   },
   colorDotSmall: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 6,
-  },
-  colorSwatch_default: {
-    backgroundColor: "#6366f1",
-  },
-  colorSwatch_yellow: {
-    backgroundColor: "#fbbf24",
-  },
-  colorSwatch_orange: {
-    backgroundColor: "#f97316",
-  },
-  colorSwatch_green: {
-    backgroundColor: "#22c55e",
-  },
-  colorSwatch_brown: {
-    backgroundColor: "#a52a2a",
-  },
-  colorSwatch_red: {
-    backgroundColor: "#ef4444",
+    width: 14,
+    height: 14,
+    borderRadius: 7,
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 14,
-    color: "#0f172a",
+    borderColor: "rgba(139, 154, 125, 0.3)",
+    borderRadius: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: "#2D2A26",
   },
   footer: {
-    padding: 16,
+    padding: 20,
     paddingTop: 0,
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: "rgba(139, 154, 125, 0.15)",
   },
   deleteButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    paddingVertical: 12,
-    backgroundColor: "#fef2f2",
-    borderRadius: 12,
+    gap: 10,
+    paddingVertical: 14,
+    backgroundColor: "rgba(193, 122, 92, 0.1)",
+    borderRadius: 16,
   },
   deleteButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#ef4444",
+    color: "#C17A5C",
   },
 });

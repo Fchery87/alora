@@ -9,6 +9,15 @@ import {
 import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  TYPOGRAPHY,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  COLORS,
+  RADIUS,
+  GLASS,
+} from "@/lib/theme";
 
 type FontSize = "small" | "medium" | "large" | "extraLarge";
 
@@ -35,7 +44,14 @@ export default function AppearanceScreen() {
 
           <View style={styles.row}>
             <View style={styles.rowContent}>
-              <Ionicons name="moon" size={22} color="#6366f1" />
+              <View
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: `${COLORS.stone}15` },
+                ]}
+              >
+                <Ionicons name="moon" size={22} color={COLORS.stone} />
+              </View>
               <View style={styles.textContent}>
                 <Text style={styles.label}>Dark Mode</Text>
                 <Text style={styles.sublabel}>Use dark theme</Text>
@@ -44,7 +60,7 @@ export default function AppearanceScreen() {
             <Switch
               value={darkMode}
               onValueChange={setDarkMode}
-              trackColor={{ false: "#e2e8f0", true: "#6366f1" }}
+              trackColor={{ false: "#E8DED1", true: COLORS.sage }}
               thumbColor="#fff"
             />
           </View>
@@ -90,7 +106,18 @@ export default function AppearanceScreen() {
 
           <View style={styles.row}>
             <View style={styles.rowContent}>
-              <Ionicons name="notifications-off" size={22} color="#6366f1" />
+              <View
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: `${COLORS.terracotta}15` },
+                ]}
+              >
+                <Ionicons
+                  name="notifications-off"
+                  size={22}
+                  color={COLORS.terracotta}
+                />
+              </View>
               <View style={styles.textContent}>
                 <Text style={styles.label}>Reduce Motion</Text>
                 <Text style={styles.sublabel}>Minimize animations</Text>
@@ -99,14 +126,21 @@ export default function AppearanceScreen() {
             <Switch
               value={reduceMotion}
               onValueChange={setReduceMotion}
-              trackColor={{ false: "#e2e8f0", true: "#6366f1" }}
+              trackColor={{ false: "#E8DED1", true: COLORS.sage }}
               thumbColor="#fff"
             />
           </View>
 
           <View style={[styles.row, styles.rowBorder]}>
             <View style={styles.rowContent}>
-              <Ionicons name="contrast" size={22} color="#6366f1" />
+              <View
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: `${COLORS.gold}15` },
+                ]}
+              >
+                <Ionicons name="contrast" size={22} color={COLORS.gold} />
+              </View>
               <View style={styles.textContent}>
                 <Text style={styles.label}>High Contrast</Text>
                 <Text style={styles.sublabel}>Increase text visibility</Text>
@@ -115,7 +149,7 @@ export default function AppearanceScreen() {
             <Switch
               value={highContrast}
               onValueChange={setHighContrast}
-              trackColor={{ false: "#e2e8f0", true: "#6366f1" }}
+              trackColor={{ false: "#E8DED1", true: COLORS.sage }}
               thumbColor="#fff"
             />
           </View>
@@ -132,22 +166,25 @@ export default function AppearanceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     flex: 1,
     padding: 16,
   },
   section: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 16,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#64748b",
+    fontFamily: "DMSansMedium",
+    color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 16,
@@ -160,7 +197,7 @@ const styles = StyleSheet.create({
   },
   rowBorder: {
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: GLASS.light.border,
     marginTop: 8,
     paddingTop: 16,
   },
@@ -169,18 +206,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
   },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
   textContent: {
-    marginLeft: 12,
+    marginLeft: 0,
     flex: 1,
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#0f172a",
+    fontFamily: "DMSansMedium",
+    color: TEXT.primary,
   },
   sublabel: {
     fontSize: 13,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     marginTop: 2,
   },
   fontSizeGrid: {
@@ -191,17 +237,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 12,
-    borderRadius: 12,
-    backgroundColor: "#f8fafc",
+    borderRadius: RADIUS.md,
+    backgroundColor: BACKGROUND.primary,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: GLASS.light.border,
   },
   fontSizeOptionActive: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.sage,
+    borderColor: COLORS.sage,
   },
   fontSizeText: {
-    color: "#64748b",
+    color: TEXT.secondary,
+    fontFamily: "CrimsonProMedium",
     fontWeight: "600",
   },
   fontSizeTextActive: {
@@ -209,21 +256,23 @@ const styles = StyleSheet.create({
   },
   fontSizeLabel: {
     fontSize: 10,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.tertiary,
     marginTop: 4,
   },
   fontSizeLabelActive: {
     color: "#fff",
   },
   saveButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: RADIUS.md,
     alignItems: "center",
+    ...SHADOWS.sm,
   },
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "DMSansMedium",
   },
 });

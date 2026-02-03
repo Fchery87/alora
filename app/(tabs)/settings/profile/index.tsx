@@ -10,6 +10,15 @@ import { Header } from "@/components/layout/Header";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import {
+  TYPOGRAPHY,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  COLORS,
+  RADIUS,
+  GLASS,
+} from "@/lib/theme";
 
 export default function ProfileScreen() {
   const { user } = useUser();
@@ -37,7 +46,7 @@ export default function ProfileScreen() {
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Full Name</Text>
             <View style={styles.inputContainer}>
-              <Ionicons name="person" size={20} color="#64748b" />
+              <Ionicons name="person" size={20} color={COLORS.terracotta} />
               <Text style={styles.readonlyValue}>{user?.fullName || "—"}</Text>
             </View>
           </View>
@@ -45,7 +54,7 @@ export default function ProfileScreen() {
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Email</Text>
             <View style={styles.inputContainer}>
-              <Ionicons name="mail" size={20} color="#64748b" />
+              <Ionicons name="mail" size={20} color={COLORS.sage} />
               <Text style={styles.readonlyValue}>
                 {user?.primaryEmailAddress?.emailAddress || "—"}
               </Text>
@@ -55,7 +64,7 @@ export default function ProfileScreen() {
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Phone Number</Text>
             <View style={styles.inputContainer}>
-              <Ionicons name="call" size={20} color="#64748b" />
+              <Ionicons name="call" size={20} color={COLORS.gold} />
               <Text style={styles.readonlyValue}>
                 {user?.primaryPhoneNumber?.phoneNumber || "—"}
               </Text>
@@ -68,15 +77,20 @@ export default function ProfileScreen() {
 
           <Pressable style={styles.accountRow}>
             <View style={styles.accountInfo}>
-              <View style={[styles.accountIcon, styles.accountIconClerk]}>
-                <Ionicons name="people" size={20} color="#3b82f1" />
+              <View
+                style={[
+                  styles.accountIcon,
+                  { backgroundColor: `${COLORS.sage}15` },
+                ]}
+              >
+                <Ionicons name="people" size={20} color={COLORS.sage} />
               </View>
               <View>
                 <Text style={styles.accountName}>Clerk Account</Text>
                 <Text style={styles.accountEmail}>Signed in</Text>
               </View>
             </View>
-            <Ionicons name="checkmark-circle" size={24} color="#22c55e" />
+            <Ionicons name="checkmark-circle" size={24} color={COLORS.sage} />
           </Pressable>
         </View>
 
@@ -90,7 +104,7 @@ export default function ProfileScreen() {
               router.replace("/(auth)/login");
             }}
           >
-            <Ionicons name="log-out" size={20} color="#ef4444" />
+            <Ionicons name="log-out" size={20} color={COLORS.clay} />
             <Text style={styles.dangerButtonText}>Sign Out</Text>
           </Pressable>
         </View>
@@ -102,7 +116,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     flex: 1,
@@ -119,6 +133,8 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    borderWidth: 3,
+    borderColor: GLASS.light.border,
   },
   cameraButton: {
     position: "absolute",
@@ -127,27 +143,32 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 3,
-    borderColor: "#fff",
+    borderColor: BACKGROUND.card,
+    ...SHADOWS.sm,
   },
   avatarLabel: {
     fontSize: 14,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     marginTop: 8,
   },
   section: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 16,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#64748b",
+    fontFamily: "DMSansMedium",
+    color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 16,
@@ -157,22 +178,25 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#475569",
+    fontFamily: "DMSansMedium",
+    color: TEXT.secondary,
     marginBottom: 8,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
+    backgroundColor: BACKGROUND.primary,
+    borderRadius: RADIUS.md,
     padding: 12,
     gap: 12,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   readonlyValue: {
     flex: 1,
     fontSize: 16,
-    color: "#0f172a",
+    fontFamily: "DMSans",
+    color: TEXT.primary,
   },
   accountRow: {
     flexDirection: "row",
@@ -192,30 +216,30 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  accountIconClerk: {
-    backgroundColor: "#3b82f120",
-  },
   accountName: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#0f172a",
+    fontFamily: "DMSansMedium",
+    color: TEXT.primary,
   },
   accountEmail: {
     fontSize: 13,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
   },
   dangerButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fef2f2",
+    backgroundColor: `${COLORS.clay}10`,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: RADIUS.md,
     gap: 8,
+    borderWidth: 1,
+    borderColor: `${COLORS.clay}30`,
   },
   dangerButtonText: {
-    color: "#ef4444",
+    color: COLORS.clay,
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "DMSansMedium",
   },
 });

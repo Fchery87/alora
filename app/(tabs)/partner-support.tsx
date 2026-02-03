@@ -21,6 +21,15 @@ import {
   usePartnerNudgeActions,
   usePartnerNudgeState,
 } from "@/stores/partnerNudgeStore";
+import {
+  TYPOGRAPHY,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  COLORS,
+  RADIUS,
+  GLASS,
+} from "@/lib/theme";
 
 export default function PartnerSupportScreen() {
   const [reflection, setReflection] = useState("");
@@ -76,15 +85,15 @@ export default function PartnerSupportScreen() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case "checkin":
-        return "#3b82f6";
+        return COLORS.sage;
       case "appreciation":
-        return "#ec4899";
+        return COLORS.clay;
       case "support":
-        return "#22c55e";
+        return COLORS.terracotta;
       case "reflection":
-        return "#f59e0b";
+        return COLORS.gold;
       default:
-        return "#6366f1";
+        return COLORS.stone;
     }
   };
 
@@ -99,7 +108,7 @@ export default function PartnerSupportScreen() {
             <View style={styles.promptCard}>
               <View style={styles.promptHeader}>
                 <View style={[styles.categoryBadge, styles.nudgeBadge]}>
-                  <Ionicons name="people" size={16} color="#22c55e" />
+                  <Ionicons name="people" size={16} color={COLORS.sage} />
                   <Text
                     style={[styles.categoryBadgeText, styles.nudgeBadgeText]}
                   >
@@ -115,15 +124,23 @@ export default function PartnerSupportScreen() {
                   style={[styles.newPromptButton, styles.nudgeActionButton]}
                   onPress={() => dismiss()}
                 >
-                  <Ionicons name="checkmark" size={18} color="#6366f1" />
+                  <Ionicons name="checkmark" size={18} color={COLORS.sage} />
                   <Text style={styles.newPromptText}>Got it</Text>
                 </Pressable>
                 <Pressable
                   style={[styles.newPromptButton, styles.nudgeActionButton]}
                   onPress={() => muteForMs(24 * 60 * 60 * 1000)}
                 >
-                  <Ionicons name="volume-mute" size={18} color="#6366f1" />
-                  <Text style={styles.newPromptText}>Mute 24h</Text>
+                  <Ionicons
+                    name="volume-mute"
+                    size={18}
+                    color={COLORS.terracotta}
+                  />
+                  <Text
+                    style={[styles.newPromptText, { color: COLORS.terracotta }]}
+                  >
+                    Mute 24h
+                  </Text>
                 </Pressable>
               </View>
             </View>
@@ -162,7 +179,7 @@ export default function PartnerSupportScreen() {
                 style={styles.newPromptButton}
                 onPress={handleNewPrompt}
               >
-                <Ionicons name="refresh" size={18} color="#6366f1" />
+                <Ionicons name="refresh" size={18} color={COLORS.terracotta} />
                 <Text style={styles.newPromptText}>New</Text>
               </Pressable>
             </View>
@@ -201,6 +218,7 @@ export default function PartnerSupportScreen() {
                 onChangeText={setReflection}
                 multiline
                 numberOfLines={6}
+                placeholderTextColor={TEXT.tertiary}
               />
 
               <Pressable
@@ -227,7 +245,11 @@ export default function PartnerSupportScreen() {
                   <Text style={styles.questionNumberText}>{index + 1}</Text>
                 </View>
                 <Text style={styles.questionText}>{question}</Text>
-                <Ionicons name="arrow-forward" size={18} color="#6366f1" />
+                <Ionicons
+                  name="arrow-forward"
+                  size={18}
+                  color={COLORS.terracotta}
+                />
               </Pressable>
             ))}
           </View>
@@ -238,23 +260,23 @@ export default function PartnerSupportScreen() {
 
           <View style={styles.tipsList}>
             <View style={styles.tipItem}>
-              <Ionicons name="time" size={20} color="#6366f1" />
+              <Ionicons name="time" size={20} color={COLORS.terracotta} />
               <Text style={styles.tipText}>
                 Choose a calm moment when both are relaxed
               </Text>
             </View>
             <View style={styles.tipItem}>
-              <Ionicons name="ear" size={20} color="#6366f1" />
+              <Ionicons name="ear" size={20} color={COLORS.sage} />
               <Text style={styles.tipText}>Listen more than you speak</Text>
             </View>
             <View style={styles.tipItem}>
-              <Ionicons name="heart" size={20} color="#6366f1" />
+              <Ionicons name="heart" size={20} color={COLORS.clay} />
               <Text style={styles.tipText}>
                 Be kind and patient with each other
               </Text>
             </View>
             <View style={styles.tipItem}>
-              <Ionicons name="happy" size={20} color="#6366f1" />
+              <Ionicons name="happy" size={20} color={COLORS.gold} />
               <Text style={styles.tipText}>
                 Celebrate your wins, no matter how small
               </Text>
@@ -269,7 +291,7 @@ export default function PartnerSupportScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     flex: 1,
@@ -277,8 +299,8 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#64748b",
+    fontFamily: "DMSansMedium",
+    color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 12,
@@ -287,14 +309,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   promptCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   promptHeader: {
     flexDirection: "row",
@@ -312,13 +332,13 @@ const styles = StyleSheet.create({
   },
   categoryBadgeText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontFamily: "DMSansMedium",
   },
   nudgeBadge: {
-    backgroundColor: "#22c55e20",
+    backgroundColor: `${COLORS.sage}20`,
   },
   nudgeBadgeText: {
-    color: "#22c55e",
+    color: COLORS.sage,
   },
   nudgeActionsRow: {
     flexDirection: "row",
@@ -335,18 +355,18 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: `${COLORS.terracotta}15`,
     borderRadius: 16,
   },
   newPromptText: {
     fontSize: 13,
-    fontWeight: "500",
-    color: "#6366f1",
+    fontFamily: "DMSansMedium",
+    color: COLORS.terracotta,
   },
   promptMessage: {
     fontSize: 18,
-    fontWeight: "500",
-    color: "#0f172a",
+    fontFamily: "CrimsonProMedium",
+    color: TEXT.primary,
     lineHeight: 26,
     marginBottom: 20,
   },
@@ -354,37 +374,43 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 14,
-    borderRadius: 12,
+    borderRadius: RADIUS.md,
     gap: 8,
+    ...SHADOWS.sm,
   },
   discussButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "DMSansMedium",
   },
   reflectionSection: {
     marginBottom: 24,
   },
   reflectionCard: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 20,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   reflectionLabel: {
     fontSize: 14,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     marginBottom: 16,
   },
   reflectionInput: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
+    borderColor: GLASS.light.border,
+    borderRadius: RADIUS.md,
     padding: 14,
     fontSize: 16,
-    color: "#0f172a",
+    fontFamily: "DMSans",
+    color: TEXT.primary,
     textAlignVertical: "top",
     minHeight: 120,
   },
@@ -392,11 +418,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.sage,
     padding: 14,
-    borderRadius: 12,
+    borderRadius: RADIUS.md,
     gap: 8,
     marginTop: 16,
+    ...SHADOWS.sm,
   },
   saveButtonDisabled: {
     opacity: 0.5,
@@ -404,7 +431,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "DMSansMedium",
   },
   questionsSection: {
     marginBottom: 24,
@@ -415,37 +442,44 @@ const styles = StyleSheet.create({
   questionCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 12,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.lg,
     padding: 16,
     gap: 12,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   questionNumber: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: `${COLORS.terracotta}15`,
     justifyContent: "center",
     alignItems: "center",
   },
   questionNumberText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#6366f1",
+    fontFamily: "DMSansMedium",
+    color: COLORS.terracotta,
   },
   questionText: {
     flex: 1,
     fontSize: 15,
-    color: "#0f172a",
+    fontFamily: "DMSans",
+    color: TEXT.primary,
   },
   tipsSection: {
     marginBottom: 24,
   },
   tipsList: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 16,
     gap: 16,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   tipItem: {
     flexDirection: "row",
@@ -455,7 +489,8 @@ const styles = StyleSheet.create({
   tipText: {
     flex: 1,
     fontSize: 15,
-    color: "#475569",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     lineHeight: 22,
   },
 });

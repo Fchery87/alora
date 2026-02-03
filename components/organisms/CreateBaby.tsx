@@ -17,6 +17,23 @@ import { validateBaby, type BabyFormData } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
+// Celestial Nurture Design System - Earth Tones
+const COLORS = {
+  cream: "#FAF7F2",
+  terracotta: "#D4A574",
+  sage: "#8B9A7D",
+  moss: "#6B7A6B",
+  gold: "#C9A227",
+  clay: "#C17A5C",
+  warmDark: "#2D2A26",
+  warmGray: "#6B6560",
+  stone: "#8B8680",
+  sand: "#E8E0D5",
+  warmLight: "#F5F0E8",
+  white: "#FFFFFF",
+  error: "#C75B5B",
+};
+
 interface CreateBabyProps {
   visible: boolean;
   onClose: () => void;
@@ -133,18 +150,18 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
     icon: string;
     color: string;
   }[] = [
-    { value: "male", label: "Boy", icon: "male-outline", color: "#3b82f6" },
+    { value: "male", label: "Boy", icon: "male-outline", color: COLORS.sage },
     {
       value: "female",
       label: "Girl",
       icon: "female-outline",
-      color: "#ec4899",
+      color: COLORS.terracotta,
     },
     {
       value: "other",
       label: "Other",
       icon: "help-circle-outline",
-      color: "#8b5cf6",
+      color: COLORS.gold,
     },
   ];
 
@@ -155,7 +172,7 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
           <View style={styles.header}>
             <Text style={styles.title}>Add New Baby</Text>
             <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color="#0f172a" />
+              <Ionicons name="close" size={24} color={COLORS.warmDark} />
             </TouchableOpacity>
           </View>
 
@@ -166,7 +183,11 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
                 {photoUrl ? (
                   <Image source={{ uri: photoUrl }} style={styles.photoImage} />
                 ) : (
-                  <Ionicons name="camera-outline" size={32} color="#94a3b8" />
+                  <Ionicons
+                    name="camera-outline"
+                    size={32}
+                    color={COLORS.stone}
+                  />
                 )}
               </View>
               <TouchableOpacity style={styles.photoButton}>
@@ -196,7 +217,7 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
                   if (touched.name) validate();
                 }}
                 onBlur={() => handleBlur("name")}
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={COLORS.stone}
               />
               {touched.name && validationErrors.name && (
                 <Text style={styles.errorText}>{validationErrors.name}</Text>
@@ -222,7 +243,7 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
                   if (touched.birthDate) validate();
                 }}
                 onBlur={() => handleBlur("birthDate")}
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={COLORS.stone}
               />
               {touched.birthDate && validationErrors.birthDate && (
                 <Text style={styles.errorText}>
@@ -256,7 +277,9 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
                     <Ionicons
                       name={option.icon as keyof typeof Ionicons.glyphMap}
                       size={32}
-                      color={gender === option.value ? option.color : "#94a3b8"}
+                      color={
+                        gender === option.value ? option.color : COLORS.stone
+                      }
                     />
                     <Text
                       style={[
@@ -297,13 +320,13 @@ export function CreateBaby({ visible, onClose, onSuccess }: CreateBabyProps) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(45, 42, 38, 0.5)",
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: COLORS.cream,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
     maxHeight: "90%",
     paddingBottom: 34,
   },
@@ -313,12 +336,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: COLORS.sand,
   },
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#0f172a",
+    color: COLORS.warmDark,
   },
   form: {
     padding: 20,
@@ -331,9 +354,9 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.sand,
     borderWidth: 2,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
@@ -344,38 +367,38 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   photoButton: {
-    backgroundColor: "#f1f5f9",
+    backgroundColor: COLORS.sand,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   photoButtonText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#64748b",
+    color: COLORS.warmGray,
   },
   photoHint: {
     fontSize: 12,
-    color: "#94a3b8",
-    marginTop: 4,
+    color: COLORS.stone,
+    marginTop: 6,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
+    color: COLORS.warmGray,
+    marginBottom: 10,
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
-    color: "#0f172a",
+    borderColor: COLORS.sand,
+    color: COLORS.warmDark,
   },
   genderGrid: {
     flexDirection: "row",
@@ -385,44 +408,49 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#f8fafc",
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 14,
     borderWidth: 2,
-    borderColor: "transparent",
+    borderColor: COLORS.sand,
   },
   genderCardSelected: {
-    backgroundColor: "#eef2ff",
+    backgroundColor: COLORS.warmLight,
   },
   genderCardError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   genderLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#94a3b8",
+    color: COLORS.stone,
     marginTop: 8,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.error,
     marginTop: 6,
     marginLeft: 4,
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     marginTop: 8,
+    shadowColor: COLORS.terracotta,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   submitButtonDisabled: {
     opacity: 0.5,
   },
   submitButtonText: {
-    color: "#fff",
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: "600",
   },

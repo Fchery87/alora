@@ -16,9 +16,9 @@ interface SleepCardProps {
 }
 
 const SLEEP_COLORS: Record<string, string> = {
-  nap: "#a78bfa",
-  night: "#1e293b",
-  day: "#fbbf24",
+  nap: "#6B7A6B", // moss
+  night: "#2D2A26", // warm-dark
+  day: "#D4A574", // terracotta
 };
 
 const SLEEP_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -28,15 +28,22 @@ const SLEEP_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 const QUALITY_COLORS: Record<string, string> = {
-  awake: "#94a3b8",
-  drowsy: "#fbbf24",
-  sleeping: "#3b82f6",
-  deep: "#1e40af",
+  awake: "#9B8B7A",
+  drowsy: "#C9A227", // gold
+  sleeping: "#6B7A6B", // moss
+  deep: "#5D4E37", // deep earth
+};
+
+const QUALITY_BG_COLORS: Record<string, string> = {
+  awake: "rgba(155, 139, 122, 0.15)",
+  drowsy: "rgba(201, 162, 39, 0.15)",
+  sleeping: "rgba(107, 122, 107, 0.15)",
+  deep: "rgba(93, 78, 55, 0.15)",
 };
 
 export function SleepCard({ sleep, onPress }: SleepCardProps) {
   const testId = sleep.id ? sleep.id.replace(/^sleep-/, "") : "unknown";
-  const color = SLEEP_COLORS[sleep.type] || "#6366f1";
+  const color = SLEEP_COLORS[sleep.type] || "#6B7A6B";
   const icon = SLEEP_ICONS[sleep.type] || "bed-outline";
 
   const formatDuration = (duration: number | undefined) => {
@@ -64,6 +71,11 @@ export function SleepCard({ sleep, onPress }: SleepCardProps) {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  const qualityColor = sleep.quality ? QUALITY_COLORS[sleep.quality] : null;
+  const qualityBgColor = sleep.quality
+    ? QUALITY_BG_COLORS[sleep.quality]
+    : null;
+
   return (
     <TouchableOpacity
       testID={`sleep-card-${testId}`}
@@ -87,8 +99,19 @@ export function SleepCard({ sleep, onPress }: SleepCardProps) {
         )}
 
         {sleep.quality && (
-          <View style={[styles.qualityBadge, { backgroundColor: `${QUALITY_COLORS[sleep.quality]}20` }]}>
-            <Text style={styles.qualityText}>{sleep.quality}</Text>
+          <View
+            style={[
+              styles.qualityBadge,
+              {
+                backgroundColor: qualityBgColor || "rgba(107, 122, 107, 0.15)",
+              },
+            ]}
+          >
+            <Text
+              style={[styles.qualityText, { color: qualityColor || "#6B7A6B" }]}
+            >
+              {sleep.quality}
+            </Text>
           </View>
         )}
       </View>
@@ -104,62 +127,62 @@ export function SleepCard({ sleep, onPress }: SleepCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 12,
-    gap: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    backgroundColor: "#FFFBF7", // warm cream
+    borderRadius: 16,
+    padding: 16,
+    gap: 10,
+    shadowColor: "#8B7355",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
   iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   title: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#0f172a",
+    color: "#2D2A26", // warm-dark
     textTransform: "capitalize",
     flex: 1,
   },
   duration: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#64748b",
+    color: "#6B6560", // warm-gray
   },
   details: {
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
+    alignItems: "center",
   },
   time: {
     fontSize: 13,
-    color: "#64748b",
+    color: "#6B6560",
   },
   qualityBadge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 8,
   },
   qualityText: {
     fontSize: 11,
-    fontWeight: "500",
-    color: "#6366f1",
+    fontWeight: "600",
     textTransform: "capitalize",
   },
   notes: {
     fontSize: 13,
-    color: "#64748b",
+    color: "#6B6560",
     lineHeight: 18,
   },
 });

@@ -17,6 +17,23 @@ import {
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
+// Celestial Nurture Design System - Earth Tones
+const COLORS = {
+  cream: "#FAF7F2",
+  terracotta: "#D4A574",
+  sage: "#8B9A7D",
+  moss: "#6B7A6B",
+  gold: "#C9A227",
+  clay: "#C17A5C",
+  warmDark: "#2D2A26",
+  warmGray: "#6B6560",
+  stone: "#8B8680",
+  sand: "#E8E0D5",
+  warmLight: "#F5F0E8",
+  white: "#FFFFFF",
+  error: "#C75B5B",
+};
+
 type SleepType = "nap" | "night" | "day";
 
 interface SleepTrackerProps {
@@ -229,7 +246,7 @@ export function SleepTracker({
               <Ionicons
                 name={sleepType.icon as keyof typeof Ionicons.glyphMap}
                 size={24}
-                color={type === sleepType.value ? "#fff" : "#6366f1"}
+                color={type === sleepType.value ? COLORS.white : COLORS.moss}
               />
               <Text
                 style={[
@@ -258,7 +275,7 @@ export function SleepTracker({
                 style={styles.timerButton}
                 onPress={handleStartTimer}
               >
-                <Ionicons name="play" size={20} color="#fff" />
+                <Ionicons name="play" size={20} color={COLORS.white} />
                 <Text style={styles.timerButtonText}>Start</Text>
               </TouchableOpacity>
             ) : isTimerMode ? (
@@ -266,7 +283,7 @@ export function SleepTracker({
                 style={styles.timerButton}
                 onPress={handleStopTimer}
               >
-                <Ionicons name="square" size={20} color="#fff" />
+                <Ionicons name="square" size={20} color={COLORS.white} />
                 <Text style={styles.timerButtonText}>Stop</Text>
               </TouchableOpacity>
             ) : null}
@@ -310,25 +327,25 @@ export function SleepTracker({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.cream,
   },
   content: {
-    padding: 16,
+    padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    fontWeight: "700",
+    color: COLORS.warmDark,
     marginBottom: 24,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
+    color: COLORS.warmGray,
+    marginBottom: 10,
   },
   typeContainer: {
     flexDirection: "row",
@@ -337,45 +354,53 @@ const styles = StyleSheet.create({
   typeButton: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
+    shadowColor: COLORS.warmDark,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   typeButtonActive: {
-    borderColor: "#6366f1",
-    backgroundColor: "#6366f1",
+    borderColor: COLORS.moss,
+    backgroundColor: COLORS.moss,
   },
   typeButtonError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   typeText: {
     marginTop: 8,
     fontSize: 12,
     fontWeight: "600",
-    color: "#6366f1",
+    color: COLORS.moss,
   },
   typeTextActive: {
-    color: "#ffffff",
+    color: COLORS.white,
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.error,
     marginTop: 6,
     marginLeft: 4,
   },
   timerContainer: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
     padding: 24,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.sand,
   },
   timerText: {
     fontSize: 48,
-    fontWeight: "bold",
-    color: "#0f172a",
+    fontWeight: "700",
+    color: COLORS.warmDark,
     marginBottom: 16,
+    fontVariant: ["tabular-nums"],
   },
   timerButtons: {
     flexDirection: "row",
@@ -384,40 +409,51 @@ const styles = StyleSheet.create({
   timerButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.moss,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 12,
     gap: 8,
+    shadowColor: COLORS.moss,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   timerButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: "600",
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.moss,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     marginTop: 8,
+    shadowColor: COLORS.moss,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   submitButtonDisabled: {
     opacity: 0.5,
   },
   submitButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: "600",
   },
   cancelButton: {
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     marginTop: 8,
   },
   cancelButtonText: {
-    color: "#6b7280",
+    color: COLORS.warmGray,
     fontSize: 16,
+    fontWeight: "500",
   },
 });

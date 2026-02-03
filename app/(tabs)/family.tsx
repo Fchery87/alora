@@ -3,10 +3,18 @@ import { Header } from "@/components/layout/Header";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
+import {
+  TYPOGRAPHY,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  COLORS,
+  RADIUS,
+  GLASS,
+} from "@/lib/theme";
 
 export default function FamilyScreen() {
   const { isSignedIn } = useAuth();
-  // auth bypass removed
 
   if (!isSignedIn) {
     return <Redirect href="/(auth)/login" />;
@@ -38,27 +46,31 @@ export default function FamilyScreen() {
           {familyMembers.map((member) => (
             <View key={member.id} style={styles.memberCard}>
               <View style={styles.avatar}>
-                <Ionicons name="person" size={24} color="#6366f1" />
+                <Ionicons name="person" size={24} color={COLORS.terracotta} />
                 {member.isOnline && <View style={styles.onlineIndicator} />}
               </View>
               <View style={styles.memberInfo}>
                 <Text style={styles.memberName}>{member.name}</Text>
                 <Text style={styles.memberRole}>{member.role}</Text>
               </View>
-              <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={TEXT.tertiary}
+              />
             </View>
           ))}
         </View>
 
         <TouchableOpacity style={styles.inviteButton}>
-          <Ionicons name="person-add" size={20} color="#6366f1" />
+          <Ionicons name="person-add" size={20} color={COLORS.terracotta} />
           <Text style={styles.inviteButtonText}>Invite Family Member</Text>
         </TouchableOpacity>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Connected Caregivers</Text>
           <View style={styles.emptyCaregivers}>
-            <Ionicons name="people-outline" size={48} color="#d1d5db" />
+            <Ionicons name="people-outline" size={48} color={TEXT.tertiary} />
             <Text style={styles.emptyText}>No additional caregivers</Text>
             <Text style={styles.emptySubtext}>
               Invite grandparents, sitters, or other helpers
@@ -69,14 +81,18 @@ export default function FamilyScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Settings</Text>
           <TouchableOpacity style={styles.settingItem}>
-            <Ionicons name="settings-outline" size={20} color="#374151" />
+            <Ionicons name="settings-outline" size={20} color={TEXT.primary} />
             <Text style={styles.settingText}>Family Settings</Text>
-            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+            <Ionicons name="chevron-forward" size={20} color={TEXT.tertiary} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.settingItem}>
-            <Ionicons name="notifications-outline" size={20} color="#374151" />
+            <Ionicons
+              name="notifications-outline"
+              size={20}
+              color={TEXT.primary}
+            />
             <Text style={styles.settingText}>Notifications</Text>
-            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+            <Ionicons name="chevron-forward" size={20} color={TEXT.tertiary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -90,31 +106,33 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
     padding: 16,
   },
   section: {
     marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#0f172a",
+    ...TYPOGRAPHY.headings.h4,
+    color: TEXT.primary,
     marginBottom: 12,
   },
   memberCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.lg,
     padding: 16,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   avatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: `${COLORS.terracotta}15`,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -127,71 +145,80 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: "#10b981",
+    backgroundColor: COLORS.sage,
     borderWidth: 2,
-    borderColor: "#ffffff",
+    borderColor: BACKGROUND.card,
   },
   memberInfo: {
     flex: 1,
   },
   memberName: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontFamily: "DMSansMedium",
+    color: TEXT.primary,
   },
   memberRole: {
     fontSize: 14,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     marginTop: 2,
   },
   inviteButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.lg,
     padding: 16,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: "#6366f1",
+    borderColor: COLORS.terracotta,
     borderStyle: "dashed",
     gap: 8,
   },
   inviteButtonText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#6366f1",
+    fontFamily: "DMSansMedium",
+    color: COLORS.terracotta,
   },
   emptyCaregivers: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 32,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   emptyText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#374151",
+    fontFamily: "CrimsonProMedium",
+    color: TEXT.secondary,
     marginTop: 12,
   },
   emptySubtext: {
     fontSize: 14,
-    color: "#9ca3af",
+    fontFamily: "DMSans",
+    color: TEXT.tertiary,
     marginTop: 4,
     textAlign: "center",
   },
   settingItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.lg,
     padding: 16,
     marginBottom: 8,
     gap: 12,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   settingText: {
     flex: 1,
     fontSize: 16,
-    color: "#374151",
+    fontFamily: "DMSans",
+    color: TEXT.primary,
   },
 });

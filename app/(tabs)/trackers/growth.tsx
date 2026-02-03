@@ -13,6 +13,18 @@ import { FadeContainer } from "@/components/atoms/MotiContainers";
 import { useSelectedBabyId } from "@/stores/babyStore";
 import { BabySelectorModal } from "@/components/organisms";
 
+// Celestial Nurture Design System Colors
+const COLORS = {
+  background: "#FAF7F2",
+  primary: "#D4A574", // Terracotta
+  secondary: "#8B9A7D", // Sage
+  accent: "#C9A227", // Gold
+  textPrimary: "#2D2A26",
+  textSecondary: "#6B6560",
+  clay: "#B8956A",
+  moss: "#7A8B6E",
+};
+
 export default function GrowthScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"log" | "history">("log");
@@ -108,7 +120,7 @@ export default function GrowthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.background,
   },
   content: {
     padding: 16,
@@ -124,78 +136,87 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#0f172a",
+    fontSize: 32,
+    fontFamily: "CrimsonPro-SemiBold",
+    color: COLORS.textPrimary,
   },
   tabContainer: {
     marginBottom: 24,
   },
   segmentedControl: {
     flexDirection: "row",
-    backgroundColor: "#e5e7eb",
-    borderRadius: 8,
+    backgroundColor: "rgba(139, 154, 125, 0.2)",
+    borderRadius: 14,
     padding: 4,
   },
   segmentItem: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 12,
     alignItems: "center",
-    borderRadius: 6,
+    borderRadius: 10,
   },
   segmentItemActive: {
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   segmentText: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#6b7280",
+    fontFamily: "DMSans-Medium",
+    color: COLORS.textSecondary,
   },
   segmentTextActive: {
-    color: "#0f172a",
+    color: COLORS.textPrimary,
+    fontFamily: "DMSans-SemiBold",
   },
   chartSection: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(212, 165, 116, 0.2)",
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontSize: 20,
+    fontFamily: "CrimsonPro-SemiBold",
+    color: COLORS.textPrimary,
     marginBottom: 16,
   },
   chartPlaceholder: {
-    color: "#6b7280",
+    color: COLORS.textSecondary,
     textAlign: "center",
     marginTop: 32,
     fontSize: 14,
+    fontFamily: "DMSans-Regular",
   },
   emptyState: {
     alignItems: "center",
     paddingVertical: 48,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontSize: 22,
+    fontFamily: "CrimsonPro-SemiBold",
+    color: COLORS.textPrimary,
     marginTop: 16,
   },
   emptyButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.primary,
     paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: 14,
+    borderRadius: 14,
     marginTop: 16,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   emptyButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "DMSans-SemiBold",
   },
 });

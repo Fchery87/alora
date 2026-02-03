@@ -14,11 +14,11 @@ interface DiaperCardProps {
 }
 
 const DIAPER_COLORS: Record<string, string> = {
-  yellow: "#fbbf24",
-  orange: "#f97316",
-  green: "#22c55e",
-  brown: "#a52a2a",
-  red: "#ef4444",
+  yellow: "#E4B453",
+  orange: "#D4874C",
+  green: "#8B9A7D", // sage
+  brown: "#7A5A3F",
+  red: "#C17A5C", // clay
 };
 
 const DIAPER_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -30,8 +30,9 @@ const DIAPER_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 
 export function DiaperCard({ diaper, onPress }: DiaperCardProps) {
   const testId = diaper.id ? diaper.id.replace(/^diaper-/, "") : "unknown";
-  const color = diaper.color ? DIAPER_COLORS[diaper.color] : "#6366f1";
-  const icon = DIAPER_ICONS[diaper.type] || "list-outline";
+  const diaperColor = diaper.color ? DIAPER_COLORS[diaper.color] : "#8B9A7D"; // sage as default
+  const icon = DIAPER_ICONS[diaper.type] || "water-outline";
+  const sage = "#8B9A7D";
 
   const formatTime = (timestamp: string | number | undefined) => {
     if (!timestamp) return "";
@@ -54,8 +55,8 @@ export function DiaperCard({ diaper, onPress }: DiaperCardProps) {
       disabled={!onPress}
     >
       <View style={styles.header}>
-        <View style={[styles.iconContainer, { backgroundColor: `${color}20` }]}>
-          <Ionicons name={icon} size={20} color={color} />
+        <View style={[styles.iconContainer, { backgroundColor: `${sage}20` }]}>
+          <Ionicons name={icon} size={20} color={sage} />
         </View>
         <Text style={styles.title}>{diaper.type}</Text>
         {diaper.timestamp && (
@@ -65,6 +66,7 @@ export function DiaperCard({ diaper, onPress }: DiaperCardProps) {
 
       {diaper.color && (
         <View style={styles.colorBadge}>
+          <View style={[styles.colorDot, { backgroundColor: diaperColor }]} />
           <Text style={styles.colorText}>{diaper.color}</Text>
         </View>
       )}
@@ -80,55 +82,63 @@ export function DiaperCard({ diaper, onPress }: DiaperCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 12,
-    gap: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    backgroundColor: "#FFFBF7", // warm cream
+    borderRadius: 16,
+    padding: 16,
+    gap: 10,
+    shadowColor: "#8B7355",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
   iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   title: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#0f172a",
+    color: "#2D2A26", // warm-dark
     textTransform: "capitalize",
     flex: 1,
   },
   time: {
     fontSize: 12,
-    color: "#64748b",
+    color: "#6B6560",
   },
   colorBadge: {
-    backgroundColor: "#f1f5f9",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "rgba(139, 154, 125, 0.12)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
     alignSelf: "flex-start",
   },
+  colorDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
   colorText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "500",
-    color: "#6366f1",
+    color: "#6B7A5F",
     textTransform: "capitalize",
   },
   notes: {
     fontSize: 13,
-    color: "#64748b",
+    color: "#6B6560",
     lineHeight: 18,
   },
 });

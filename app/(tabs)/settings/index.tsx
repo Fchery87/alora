@@ -11,6 +11,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState, Dispatch, SetStateAction } from "react";
 import { useRouter } from "expo-router";
 import { useDataExport } from "@/hooks/useDataExport";
+import {
+  TYPOGRAPHY,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  COLORS,
+  RADIUS,
+  GLASS,
+} from "@/lib/theme";
 
 interface SettingsItemPress {
   icon: string;
@@ -133,9 +142,31 @@ export default function SettingsScreen() {
     },
   ];
 
+  const getIconColor = (sectionTitle: string, itemLabel: string) => {
+    if (sectionTitle === "Account") {
+      if (itemLabel === "Profile") return COLORS.terracotta;
+      if (itemLabel === "Notifications") return COLORS.gold;
+      if (itemLabel === "Appearance") return COLORS.sage;
+      if (itemLabel === "Privacy & Security") return COLORS.clay;
+    }
+    if (sectionTitle === "Preferences") {
+      return COLORS.sage;
+    }
+    if (sectionTitle === "Data") {
+      return COLORS.gold;
+    }
+    if (sectionTitle === "Support") {
+      return COLORS.stone;
+    }
+    return COLORS.terracotta;
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Settings</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Settings</Text>
+        <Text style={styles.subtitle}>Manage your account and preferences</Text>
+      </View>
 
       {settingsSections.map((section, sectionIndex) => (
         <View key={sectionIndex} style={styles.section}>
@@ -154,24 +185,37 @@ export default function SettingsScreen() {
                 }
               >
                 <View style={styles.itemLeft}>
-                  <Ionicons
-                    name={item.icon as keyof typeof Ionicons.glyphMap}
-                    size={22}
-                    color="#6366f1"
-                  />
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      {
+                        backgroundColor: `${getIconColor(section.title, item.label)}15`,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name={item.icon as keyof typeof Ionicons.glyphMap}
+                      size={22}
+                      color={getIconColor(section.title, item.label)}
+                    />
+                  </View>
                   <Text style={styles.itemLabel}>{item.label}</Text>
                 </View>
                 {item.hasSwitch ? (
                   <Switch
                     value={item.value}
                     onValueChange={item.onValueChange}
-                    trackColor={{ false: "#e5e7eb", true: "#6366f1" }}
+                    trackColor={{ false: "#E8DED1", true: COLORS.sage }}
                     thumbColor="#fff"
                   />
                 ) : item.label === "Export Data" && isLoading ? (
-                  <ActivityIndicator size="small" color="#6366f1" />
+                  <ActivityIndicator size="small" color={COLORS.gold} />
                 ) : (
-                  <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                  <Ionicons
+                    name="chevron-forward"
+                    size={20}
+                    color={TEXT.tertiary}
+                  />
                 )}
               </TouchableOpacity>
             ))}
@@ -180,7 +224,7 @@ export default function SettingsScreen() {
       ))}
 
       <TouchableOpacity style={styles.logoutButton}>
-        <Ionicons name="log-out-outline" size={22} color="#ef4444" />
+        <Ionicons name="log-out-outline" size={22} color={COLORS.clay} />
         <Text style={styles.logoutText}>Sign Out</Text>
       </TouchableOpacity>
 
@@ -192,34 +236,45 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     padding: 16,
     paddingBottom: 100,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#0f172a",
+  header: {
     marginBottom: 24,
+    marginTop: 60,
+  },
+  title: {
+    ...TYPOGRAPHY.headings.h1,
+    color: TEXT.primary,
+  },
+  subtitle: {
+    fontSize: 14,
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
+    marginTop: 4,
   },
   section: {
     marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: "600",
-    color: "#6b7280",
+    fontFamily: "DMSansMedium",
+    color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 8,
     marginLeft: 4,
   },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     overflow: "hidden",
+    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   item: {
     flexDirection: "row",
@@ -229,36 +284,47 @@ const styles = StyleSheet.create({
   },
   itemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: "#f1f5f9",
+    borderBottomColor: GLASS.light.border,
   },
   itemLeft: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
   },
+  iconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   itemLabel: {
     fontSize: 16,
-    color: "#0f172a",
+    fontFamily: "DMSans",
+    color: TEXT.primary,
   },
   logoutButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#fef2f2",
-    borderRadius: 12,
+    backgroundColor: `${COLORS.clay}10`,
+    borderRadius: RADIUS.lg,
     gap: 8,
     marginTop: 8,
+    borderWidth: 1,
+    borderColor: `${COLORS.clay}30`,
   },
   logoutText: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#ef4444",
+    fontFamily: "DMSansMedium",
+    color: COLORS.clay,
   },
   version: {
     textAlign: "center",
     fontSize: 13,
-    color: "#9ca3af",
+    fontFamily: "DMSans",
+    color: TEXT.tertiary,
     marginTop: 24,
   },
 });

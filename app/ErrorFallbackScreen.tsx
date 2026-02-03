@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-export function ErrorFallbackScreen() {
+export default function ErrorFallbackScreen() {
   const router = useRouter();
 
   return (

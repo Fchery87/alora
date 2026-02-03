@@ -2,11 +2,11 @@ import React from "react";
 import { View, StyleSheet, ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { GRADIENTS, SHADOWS, RADIUS } from "@/lib/theme";
+import { GRADIENTS, SHADOWS, RADIUS, GLASS, BACKGROUND } from "@/lib/theme";
 
 interface GlassCardProps {
   children: React.ReactNode;
-  variant?: "default" | "primary" | "secondary" | "accent" | "calm";
+  variant?: "default" | "primary" | "secondary" | "accent" | "calm" | "warm";
   size?: "sm" | "md" | "lg";
   style?: ViewStyle;
   animated?: boolean;
@@ -31,8 +31,10 @@ export function GlassCard({
         return [GRADIENTS.accent.start, GRADIENTS.accent.end];
       case "calm":
         return [GRADIENTS.calm.start, GRADIENTS.calm.end];
+      case "warm":
+        return ["#D4A574", "#E8DED1"];
       default:
-        return ["#ffffff", "#f8fafc"];
+        return [BACKGROUND.card, BACKGROUND.secondary];
     }
   }, [variant]);
 
@@ -67,7 +69,7 @@ export function GlassCard({
           style={[
             styles.card,
             sizeStyles,
-            variant !== "default" ? styles.gradientCard : styles.whiteCard,
+            variant !== "default" ? styles.gradientCard : styles.creamCard,
           ]}
         >
           {variant !== "default" && (
@@ -82,7 +84,7 @@ export function GlassCard({
           <View
             style={[
               styles.glassOverlay,
-              variant === "default" ? styles.whiteGlass : styles.tintedGlass,
+              variant === "default" ? styles.creamGlass : styles.tintedGlass,
             ]}
           >
             {children}
@@ -93,7 +95,7 @@ export function GlassCard({
           style={[
             styles.card,
             sizeStyles,
-            variant !== "default" ? styles.gradientCard : styles.whiteCard,
+            variant !== "default" ? styles.gradientCard : styles.creamCard,
           ]}
         >
           {variant !== "default" && (
@@ -108,7 +110,7 @@ export function GlassCard({
           <View
             style={[
               styles.glassOverlay,
-              variant === "default" ? styles.whiteGlass : styles.tintedGlass,
+              variant === "default" ? styles.creamGlass : styles.tintedGlass,
             ]}
           >
             {children}
@@ -131,20 +133,20 @@ const styles = StyleSheet.create({
   gradientCard: {
     backgroundColor: "transparent",
   },
-  whiteCard: {
-    backgroundColor: "#ffffff",
+  creamCard: {
+    backgroundColor: BACKGROUND.card,
   },
   glassOverlay: {
     flex: 1,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.5)",
+    borderColor: GLASS.light.border,
   },
-  whiteGlass: {
-    backgroundColor: "rgba(255, 255, 255, 0.75)",
+  creamGlass: {
+    backgroundColor: GLASS.light.background,
   },
   tintedGlass: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "rgba(250, 247, 242, 0.85)",
   },
   absoluteFill: {
     position: "absolute" as "absolute",

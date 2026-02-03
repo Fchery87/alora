@@ -28,7 +28,20 @@ interface JournalDetailsModalProps {
   onEdit?: (id: string, updates: Partial<JournalEntry>) => void;
 }
 
-const JOURNAL_TAGS = ["Grateful", "Hard Day", "Funny Moment", "Tired", "Anxious", "Accomplished", "Loved"];
+const JOURNAL_TAGS = [
+  "Grateful",
+  "Hard Day",
+  "Funny Moment",
+  "Tired",
+  "Anxious",
+  "Accomplished",
+  "Loved",
+];
+
+const CLAY = "#C17A5C";
+const GOLD = "#C9A227";
+const SAGE = "#8B9A7D";
+const MOSS = "#6B7A6B";
 
 export function JournalDetailsModal({
   visible,
@@ -108,16 +121,16 @@ export function JournalDetailsModal({
             {/* Header */}
             <View style={styles.header}>
               <TouchableOpacity onPress={onClose}>
-                <Ionicons name="close-outline" size={24} color="#6366f1" />
+                <Ionicons name="close-outline" size={24} color={CLAY} />
               </TouchableOpacity>
               <Text style={styles.headerTitle}>Journal Entry</Text>
               {isEditing ? (
                 <TouchableOpacity onPress={handleSave}>
-                  <Ionicons name="checkmark-outline" size={24} color="#22c55e" />
+                  <Ionicons name="checkmark-outline" size={24} color={SAGE} />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <Ionicons name="create-outline" size={24} color="#6366f1" />
+                  <Ionicons name="create-outline" size={24} color={CLAY} />
                 </TouchableOpacity>
               )}
             </View>
@@ -134,21 +147,23 @@ export function JournalDetailsModal({
 
                 {entry.isWin && (
                   <View style={styles.winBadge}>
-                    <Ionicons name="trophy" size={16} color="#f59e0b" />
+                    <Ionicons name="trophy" size={16} color={GOLD} />
                     <Text style={styles.winText}>Win!</Text>
                   </View>
                 )}
 
                 {entry.isPrivate && (
                   <View style={styles.privateBadge}>
-                    <Ionicons name="lock-closed" size={14} color="#64748b" />
+                    <Ionicons name="lock-closed" size={14} color="#6B6560" />
                     <Text style={styles.privateText}>Private</Text>
                   </View>
                 )}
 
                 <View style={styles.section}>
                   <Text style={styles.label}>Date</Text>
-                  <Text style={styles.value}>{formatDateTime(entry.createdAt)}</Text>
+                  <Text style={styles.value}>
+                    {formatDateTime(entry.createdAt)}
+                  </Text>
                 </View>
 
                 <View style={styles.section}>
@@ -161,8 +176,19 @@ export function JournalDetailsModal({
                     <Text style={styles.label}>Tags</Text>
                     <View style={styles.tagsContainer}>
                       {entry.tags.map((tag) => (
-                        <View key={tag} style={styles.tag}>
-                          <Text style={styles.tagText}>{tag}</Text>
+                        <View
+                          key={tag}
+                          style={[
+                            styles.tag,
+                            {
+                              backgroundColor: `${SAGE}20`,
+                              borderColor: `${SAGE}40`,
+                            },
+                          ]}
+                        >
+                          <Text style={[styles.tagText, { color: MOSS }]}>
+                            {tag}
+                          </Text>
                         </View>
                       ))}
                     </View>
@@ -178,6 +204,7 @@ export function JournalDetailsModal({
                     value={editedTitle}
                     onChangeText={setEditedTitle}
                     placeholder="Give your entry a title..."
+                    placeholderTextColor="#9B8B7A"
                   />
                 </View>
 
@@ -188,6 +215,7 @@ export function JournalDetailsModal({
                     value={editedContent}
                     onChangeText={setEditedContent}
                     placeholder="Write about your day..."
+                    placeholderTextColor="#9B8B7A"
                     multiline
                     numberOfLines={8}
                   />
@@ -201,7 +229,14 @@ export function JournalDetailsModal({
                         key={tag}
                         style={[
                           styles.tag,
-                          editedTags.includes(tag) && styles.tagActive,
+                          editedTags.includes(tag) && [
+                            styles.tagActive,
+                            { backgroundColor: SAGE, borderColor: SAGE },
+                          ],
+                          !editedTags.includes(tag) && {
+                            backgroundColor: "rgba(139, 154, 125, 0.1)",
+                            borderColor: "rgba(139, 154, 125, 0.3)",
+                          },
                         ]}
                         onPress={() => toggleTag(tag)}
                       >
@@ -209,6 +244,7 @@ export function JournalDetailsModal({
                           style={[
                             styles.tagText,
                             editedTags.includes(tag) && styles.tagTextActive,
+                            !editedTags.includes(tag) && { color: MOSS },
                           ]}
                         >
                           {tag}
@@ -221,7 +257,10 @@ export function JournalDetailsModal({
                 <View style={styles.section}>
                   <View style={styles.switchContainer}>
                     <TouchableOpacity
-                      style={[styles.switch, editedIsPrivate && styles.switchActive]}
+                      style={[
+                        styles.switch,
+                        editedIsPrivate && { backgroundColor: SAGE },
+                      ]}
                       onPress={() => setEditedIsPrivate(!editedIsPrivate)}
                     >
                       {editedIsPrivate && (
@@ -245,7 +284,7 @@ export function JournalDetailsModal({
                   onClose();
                 }}
               >
-                <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                <Ionicons name="trash-outline" size={20} color={CLAY} />
                 <Text style={styles.deleteButtonText}>Delete</Text>
               </TouchableOpacity>
             )}
@@ -259,165 +298,160 @@ export function JournalDetailsModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(45, 42, 38, 0.5)",
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: "#ffffff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: "#FFFBF7", // warm cream
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     maxHeight: "85%",
   },
   content: {
-    padding: 20,
+    padding: 24,
     paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#2D2A26", // warm-dark
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
-    color: "#64748b",
-    marginBottom: 8,
+    color: "#6B6560", // warm-gray
+    marginBottom: 10,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#2D2A26",
     lineHeight: 28,
   },
   value: {
     fontSize: 15,
-    color: "#334155",
-    lineHeight: 20,
+    color: "#6B6560",
+    lineHeight: 22,
   },
   entryContent: {
     fontSize: 15,
-    color: "#334155",
-    lineHeight: 22,
+    color: "#2D2A26",
+    lineHeight: 24,
   },
   winBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-    backgroundColor: "#fef3c7",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    gap: 8,
+    backgroundColor: "rgba(201, 162, 39, 0.15)",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: 20,
     alignSelf: "flex-start",
-    marginBottom: 12,
+    marginBottom: 16,
   },
   winText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#b45309",
+    color: "#A08020",
   },
   privateBadge: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
-    backgroundColor: "#f1f5f9",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    gap: 6,
+    backgroundColor: "rgba(107, 101, 96, 0.12)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 12,
     alignSelf: "flex-start",
+    marginBottom: 16,
   },
   privateText: {
     fontSize: 12,
     fontWeight: "500",
-    color: "#64748b",
+    color: "#6B6560",
   },
   tagsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: 10,
   },
   tag: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: "#f1f5f9",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
   },
   tagActive: {
-    backgroundColor: "#3b82f6",
-    borderColor: "#3b82f6",
+    borderWidth: 1,
   },
   tagText: {
     fontSize: 13,
     fontWeight: "500",
-    color: "#475569",
   },
   tagTextActive: {
     color: "#ffffff",
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderColor: "rgba(139, 154, 125, 0.3)",
+    borderRadius: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     fontSize: 15,
-    color: "#0f172a",
+    color: "#2D2A26",
   },
   textArea: {
-    height: 120,
+    height: 140,
     textAlignVertical: "top",
   },
   switchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 14,
   },
   switch: {
-    width: 48,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "#e2e8f0",
+    width: 52,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "rgba(107, 101, 96, 0.2)",
     justifyContent: "center",
     alignItems: "center",
   },
-  switchActive: {
-    backgroundColor: "#3b82f6",
-  },
   switchLabel: {
     fontSize: 15,
-    color: "#334155",
+    color: "#2D2A26",
+    fontWeight: "500",
   },
   footer: {
-    padding: 16,
+    padding: 20,
     paddingTop: 0,
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: "rgba(139, 154, 125, 0.15)",
   },
   deleteButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    paddingVertical: 12,
-    backgroundColor: "#fef2f2",
-    borderRadius: 12,
+    gap: 10,
+    paddingVertical: 14,
+    backgroundColor: "rgba(193, 122, 92, 0.1)",
+    borderRadius: 16,
   },
   deleteButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#ef4444",
+    color: "#C17A5C",
   },
 });

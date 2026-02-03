@@ -14,6 +14,23 @@ import { validateJournal, type JournalFormData } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
+// Celestial Nurture Design System - Earth Tones
+const COLORS = {
+  cream: "#FAF7F2",
+  terracotta: "#D4A574",
+  sage: "#8B9A7D",
+  moss: "#6B7A6B",
+  gold: "#C9A227",
+  clay: "#C17A5C",
+  warmDark: "#2D2A26",
+  warmGray: "#6B6560",
+  stone: "#8B8680",
+  sand: "#E8E0D5",
+  warmLight: "#F5F0E8",
+  white: "#FFFFFF",
+  error: "#C75B5B",
+};
+
 interface JournalEntryFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -147,7 +164,7 @@ export function JournalEntryForm({
             if (touched.title) validate();
           }}
           onBlur={() => handleBlur("title")}
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={COLORS.stone}
         />
         {touched.title && validationErrors.title && (
           <Text style={styles.errorText}>{validationErrors.title}</Text>
@@ -181,7 +198,7 @@ export function JournalEntryForm({
           multiline
           numberOfLines={6}
           textAlignVertical="top"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={COLORS.stone}
         />
         {touched.content && validationErrors.content && (
           <Text style={styles.errorText}>{validationErrors.content}</Text>
@@ -222,7 +239,7 @@ export function JournalEntryForm({
             <Ionicons
               name="heart"
               size={20}
-              color={isGratitude ? "#fff" : "#f472b6"}
+              color={isGratitude ? COLORS.white : COLORS.terracotta}
             />
             <Text
               style={[
@@ -241,7 +258,7 @@ export function JournalEntryForm({
             <Ionicons
               name="trophy"
               size={20}
-              color={isWin ? "#fff" : "#fbbf24"}
+              color={isWin ? COLORS.white : COLORS.gold}
             />
             <Text style={[styles.toggleText, isWin && styles.toggleTextActive]}>
               Win
@@ -277,50 +294,51 @@ export function JournalEntryForm({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.cream,
   },
   content: {
-    padding: 16,
+    padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    fontWeight: "700",
+    color: COLORS.warmDark,
     marginBottom: 24,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
+    color: COLORS.warmGray,
+    marginBottom: 10,
   },
   wordCountRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   charCount: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: COLORS.stone,
   },
   input: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
+    color: COLORS.warmDark,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.error,
     marginTop: 6,
     marginLeft: 4,
   },
@@ -333,25 +351,25 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tag: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: COLORS.white,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
   },
   tagActive: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   tagText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "500",
-    color: "#6366f1",
+    color: COLORS.warmGray,
     textTransform: "lowercase",
   },
   tagTextActive: {
-    color: "#ffffff",
+    color: COLORS.white,
   },
   togglesContainer: {
     flexDirection: "row",
@@ -363,23 +381,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 12,
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.white,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
     gap: 8,
   },
   toggleActive: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   toggleText: {
     fontSize: 14,
-    fontWeight: "500",
-    color: "#374151",
+    fontWeight: "600",
+    color: COLORS.warmDark,
   },
   toggleTextActive: {
-    color: "#ffffff",
+    color: COLORS.white,
   },
   buttonRow: {
     flexDirection: "row",
@@ -389,28 +407,33 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
   },
   cancelButtonText: {
-    color: "#374151",
+    color: COLORS.warmGray,
     fontSize: 16,
     fontWeight: "600",
   },
   submitButton: {
     flex: 2,
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
+    shadowColor: COLORS.terracotta,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   submitButtonDisabled: {
     opacity: 0.5,
   },
   submitButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: "600",
   },

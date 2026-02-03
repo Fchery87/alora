@@ -16,6 +16,7 @@ interface ButtonProps {
   size?: "sm" | "md" | "lg";
   className?: string;
   disabled?: boolean;
+  style?: any;
 }
 
 export function Button({
@@ -25,6 +26,7 @@ export function Button({
   size = "md",
   className = "",
   disabled = false,
+  style,
 }: ButtonProps) {
   const containerClasses = useMemo(() => {
     let classes = "rounded-xl flex-row items-center justify-center";
@@ -34,16 +36,17 @@ export function Button({
     if (size === "md") classes += " px-6 py-3";
     if (size === "lg") classes += " px-8 py-4";
 
-    // Variant
+    // Variant - Celestial Nurture design system
     if (variant === "primary")
-      classes += " bg-banana-500 border border-banana-600";
+      classes += " bg-terracotta-500 border border-terracotta-600";
     if (variant === "secondary")
-      classes += " bg-nano-800 border border-nano-700";
+      classes += " bg-sage-500 border border-sage-600";
     if (variant === "outline")
-      classes += " bg-transparent border-2 border-banana-500";
+      classes += " bg-transparent border-2 border-terracotta-500";
     if (variant === "ghost") classes += " bg-transparent";
     if (variant === "glass")
-      classes += " bg-white/10 border border-white/20 backdrop-blur-md";
+      classes +=
+        " bg-cream-50/70 border border-terracotta-200 backdrop-blur-md";
 
     if (disabled) classes += " opacity-50";
 
@@ -51,19 +54,19 @@ export function Button({
   }, [variant, size, disabled]);
 
   const textClasses = useMemo(() => {
-    let classes = "font-bold text-center";
+    let classes = "font-semibold text-center";
 
     // Size text
     if (size === "sm") classes += " text-sm";
     if (size === "md") classes += " text-base";
     if (size === "lg") classes += " text-lg";
 
-    // Variant text color
-    if (variant === "primary") classes += " text-nano-950"; // Black text on yellow
-    if (variant === "secondary") classes += " text-banana-500";
-    if (variant === "outline") classes += " text-banana-500";
-    if (variant === "ghost") classes += " text-nano-text dark:text-gray-200";
-    if (variant === "glass") classes += " text-white";
+    // Variant text color - Celestial Nurture design system
+    if (variant === "primary") classes += " text-white";
+    if (variant === "secondary") classes += " text-white";
+    if (variant === "outline") classes += " text-terracotta-500";
+    if (variant === "ghost") classes += " text-warm-dark";
+    if (variant === "glass") classes += " text-warm-dark";
 
     return classes;
   }, [variant, size]);
@@ -79,6 +82,7 @@ export function Button({
         };
       }}
       className={`${containerClasses} ${className}`}
+      style={style}
     >
       <Text className={textClasses}>{children}</Text>
     </StyledMotiPressable>

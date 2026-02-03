@@ -24,6 +24,8 @@ import {
   useCreateMedication,
   useActiveMedications as useActiveMedicationsQuery,
 } from "@/hooks/queries/useMedications";
+import { OrganicBackground } from "@/components/atoms/OrganicBackground";
+import { COLORS } from "@/lib/theme";
 
 export default function CalendarScreen() {
   const { isSignedIn, orgId, isLoaded } = useAuth();
@@ -32,7 +34,6 @@ export default function CalendarScreen() {
   const clerkOrganizationId = orgId ?? undefined;
   const appointments = useAppointments(clerkOrganizationId, babyId);
   const medications = useActiveMedicationsQuery(clerkOrganizationId, babyId);
-  // auth bypass removed
   const createAppointment = useCreateAppointment();
   const createMedication = useCreateMedication();
 
@@ -104,78 +105,85 @@ export default function CalendarScreen() {
   };
 
   return (
-    <View style={styles.screen}>
-      <Header title="Calendar" showBackButton={false} />
-      {isLoaded && !orgId ? (
-        <View style={styles.notice}>
-          <Text style={styles.noticeText}>
-            Please select a family to view calendar items.
-          </Text>
-        </View>
-      ) : orgId && (appointments === undefined || medications === undefined) ? (
-        <View style={styles.loading}>
-          <ActivityIndicator size="large" color="#6366f1" />
-          <Text style={styles.loadingText}>Loading calendar…</Text>
-        </View>
-      ) : (
-        <CalendarView
-          appointments={normalizeAppointments(appointments)}
-          medications={normalizeMedications(medications)}
-          onAddAppointment={() => {
-            setFormError(null);
-            setShowAppointmentModal(true);
-          }}
-          onAddMedication={() => {
-            setFormError(null);
-            setShowMedicationModal(true);
-          }}
-        />
-      )}
+    <OrganicBackground>
+      <View style={styles.screen}>
+        <Header title="Calendar" showBackButton={false} />
+        {isLoaded && !orgId ? (
+          <View style={styles.notice}>
+            <Text style={styles.noticeText}>
+              Please select a family to view calendar items.
+            </Text>
+          </View>
+        ) : orgId &&
+          (appointments === undefined || medications === undefined) ? (
+          <View style={styles.loading}>
+            <ActivityIndicator size="large" color={COLORS.terracotta} />
+            <Text style={styles.loadingText}>Loading calendar…</Text>
+          </View>
+        ) : (
+          <CalendarView
+            appointments={normalizeAppointments(appointments)}
+            medications={normalizeMedications(medications)}
+            onAddAppointment={() => {
+              setFormError(null);
+              setShowAppointmentModal(true);
+            }}
+            onAddMedication={() => {
+              setFormError(null);
+              setShowMedicationModal(true);
+            }}
+          />
+        )}
 
-      <Modal
-        visible={showAppointmentModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={closeModals}
-      >
-        <View style={styles.modal}>
-          {formError ? <Text style={styles.formError}>{formError}</Text> : null}
-          {isSaving ? (
-            <View style={styles.saving}>
-              <ActivityIndicator size="large" color="#6366f1" />
-              <Text style={styles.loadingText}>Saving…</Text>
-            </View>
-          ) : (
-            <AppointmentForm
-              onSubmit={handleCreateAppointment}
-              onCancel={closeModals}
-            />
-          )}
-        </View>
-      </Modal>
+        <Modal
+          visible={showAppointmentModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={closeModals}
+        >
+          <View style={styles.modal}>
+            {formError ? (
+              <Text style={styles.formError}>{formError}</Text>
+            ) : null}
+            {isSaving ? (
+              <View style={styles.saving}>
+                <ActivityIndicator size="large" color={COLORS.terracotta} />
+                <Text style={styles.loadingText}>Saving…</Text>
+              </View>
+            ) : (
+              <AppointmentForm
+                onSubmit={handleCreateAppointment}
+                onCancel={closeModals}
+              />
+            )}
+          </View>
+        </Modal>
 
-      <Modal
-        visible={showMedicationModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={closeModals}
-      >
-        <View style={styles.modal}>
-          {formError ? <Text style={styles.formError}>{formError}</Text> : null}
-          {isSaving ? (
-            <View style={styles.saving}>
-              <ActivityIndicator size="large" color="#6366f1" />
-              <Text style={styles.loadingText}>Saving…</Text>
-            </View>
-          ) : (
-            <MedicationForm
-              onSubmit={handleCreateMedication}
-              onCancel={closeModals}
-            />
-          )}
-        </View>
-      </Modal>
-    </View>
+        <Modal
+          visible={showMedicationModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={closeModals}
+        >
+          <View style={styles.modal}>
+            {formError ? (
+              <Text style={styles.formError}>{formError}</Text>
+            ) : null}
+            {isSaving ? (
+              <View style={styles.saving}>
+                <ActivityIndicator size="large" color={COLORS.terracotta} />
+                <Text style={styles.loadingText}>Saving…</Text>
+              </View>
+            ) : (
+              <MedicationForm
+                onSubmit={handleCreateMedication}
+                onCancel={closeModals}
+              />
+            )}
+          </View>
+        </Modal>
+      </View>
+    </OrganicBackground>
   );
 }
 
@@ -187,7 +195,9 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   noticeText: {
-    color: "#6b7280",
+    color: COLORS.warmDark,
+    fontSize: 14,
+    fontFamily: "DMSans",
   },
   loading: {
     padding: 16,
@@ -196,16 +206,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   loadingText: {
-    color: "#6b7280",
+    color: COLORS.warmDark,
     marginTop: 12,
+    fontSize: 14,
+    fontFamily: "DMSans",
   },
   modal: {
     flex: 1,
     padding: 16,
+    backgroundColor: COLORS.cream,
   },
   formError: {
-    color: "#ef4444",
+    color: COLORS.danger,
     marginBottom: 12,
+    fontSize: 14,
+    fontFamily: "DMSans",
   },
   saving: {
     paddingVertical: 24,

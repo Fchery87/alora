@@ -15,6 +15,13 @@ interface TrackerCardProps {
   onDelete?: () => void;
 }
 
+const TYPE_COLORS: Record<string, string> = {
+  feed: "#D4A574", // terracotta
+  diaper: "#8B9A7D", // sage
+  sleep: "#6B7A6B", // moss
+  health: "#C17A5C", // clay
+};
+
 export function TrackerCard({ entry, onPress, onDelete }: TrackerCardProps) {
   const getIconName = (): keyof typeof Ionicons.glyphMap => {
     switch (entry.type) {
@@ -51,29 +58,32 @@ export function TrackerCard({ entry, onPress, onDelete }: TrackerCardProps) {
     });
   };
 
+  const iconColor = TYPE_COLORS[entry.type] || "#C17A5C"; // clay as default
+  const iconBgColor = `${iconColor}20`;
+
   return (
     <TouchableOpacity
       style={styles.container}
       onPress={onPress}
       testID={`tracker-card-${entry.id}`}
     >
-      <View style={styles.iconContainer}>
+      <View style={[styles.iconContainer, { backgroundColor: iconBgColor }]}>
         <Ionicons
           name={entry.icon || getIconName()}
           size={24}
-          color="#6366f1"
+          color={iconColor}
         />
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.type}>{entry.type}</Text>
+        <Text style={[styles.type, { color: iconColor }]}>{entry.type}</Text>
         <Text style={styles.summary}>{entry.summary}</Text>
         <Text style={styles.timestamp}>{formatTime(entry.timestamp)}</Text>
       </View>
 
       {onDelete && (
         <TouchableOpacity style={styles.deleteButton} onPress={onDelete}>
-          <Ionicons name="trash-outline" size={20} color="#ef4444" />
+          <Ionicons name="trash-outline" size={20} color="#C17A5C" />
         </TouchableOpacity>
       )}
     </TouchableOpacity>
@@ -85,20 +95,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: "#FFFBF7", // warm cream tint
+    borderRadius: 16,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowColor: "#8B7355",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
   iconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#f3f4f6",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -109,18 +118,18 @@ const styles = StyleSheet.create({
   type: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#6366f1",
     textTransform: "capitalize",
     marginBottom: 2,
   },
   summary: {
     fontSize: 16,
-    color: "#0f172a",
+    color: "#2D2A26", // warm-dark
     marginBottom: 4,
+    fontWeight: "500",
   },
   timestamp: {
     fontSize: 12,
-    color: "#64748b",
+    color: "#6B6560", // warm-gray
   },
   deleteButton: {
     padding: 8,

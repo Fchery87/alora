@@ -3,15 +3,28 @@ import { tokenCache } from "./token-cache";
 import Constants from "expo-constants";
 import { StyleSheet, Text, View } from "react-native";
 
+// Try multiple sources for the publishable key
 const publishableKey =
   (Constants.expoConfig?.extra?.clerkPublishableKey as string | undefined) ||
-  process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ||
+  "";
+
+console.log(
+  "[Clerk] Publishable key available:",
+  publishableKey ? "Yes" : "No"
+);
+console.log(
+  "[Clerk] Key starts with:",
+  publishableKey ? publishableKey.substring(0, 10) + "..." : "N/A"
+);
 
 const isValidKey = Boolean(
   publishableKey &&
-    /^pk_(test|live)_[A-Za-z0-9]+$/.test(publishableKey) &&
-    !publishableKey.endsWith("_xxxx")
+  /^pk_(test|live)_[A-Za-z0-9]+$/.test(publishableKey) &&
+  !publishableKey.endsWith("_xxxx")
 );
+
+console.log("[Clerk] Key is valid:", isValidKey);
 
 export function ClerkProviderWrapper({
   children,

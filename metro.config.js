@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 // Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require("expo/metro-config");
+const path = require("path");
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname, {
@@ -10,6 +11,12 @@ const config = getDefaultConfig(__dirname, {
 
 // Configure resolver for web compatibility
 config.resolver.sourceExts = [...config.resolver.sourceExts, "mjs", "cjs"];
+
+// Avoid ESM/CJS interop issues for `nanoid/non-secure` (used by expo-router + react-navigation).
+config.resolver.extraNodeModules = {
+  ...(config.resolver.extraNodeModules ?? {}),
+  "nanoid/non-secure": path.resolve(__dirname, "lib/shims/nanoid-non-secure.ts"),
+};
 
 // Disable experimental import support to avoid module issues
 config.transformer.getTransformOptions = async () => ({

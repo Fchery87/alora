@@ -6,7 +6,7 @@ import {
   mutation,
 } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireMutationUserId, requireOrganizationId } from "../../lib/users";
+import { requireOrganizationId, requireUserId } from "../../lib/users";
 
 const PROMPT_VERSION = "v1";
 const DEFAULT_MODEL = "gemini-1.5-flash";
@@ -88,7 +88,7 @@ async function geminiGenerateText(params: {
 export const getAiInsightSettings = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await requireMutationUserId(ctx);
+    const userId = await requireUserId(ctx);
     const orgId = await requireOrganizationId(ctx);
 
     const existing = await ctx.db

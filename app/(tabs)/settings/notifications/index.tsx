@@ -9,6 +9,15 @@ import {
 import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  TYPOGRAPHY,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  COLORS,
+  RADIUS,
+  GLASS,
+} from "@/lib/theme";
 
 export default function NotificationsScreen() {
   const [pushEnabled, setPushEnabled] = useState(true);
@@ -27,6 +36,11 @@ export default function NotificationsScreen() {
     { value: 1440, label: "1 day" },
   ];
 
+  const getIconColor = (index: number) => {
+    const colors = [COLORS.terracotta, COLORS.sage, COLORS.gold, COLORS.clay];
+    return colors[index % colors.length];
+  };
+
   return (
     <View style={styles.container}>
       <Header title="Notifications" showBackButton />
@@ -37,7 +51,18 @@ export default function NotificationsScreen() {
 
           <View style={styles.row}>
             <View style={styles.rowContent}>
-              <Ionicons name="notifications" size={22} color="#6366f1" />
+              <View
+                style={[
+                  styles.iconContainer,
+                  { backgroundColor: `${COLORS.terracotta}15` },
+                ]}
+              >
+                <Ionicons
+                  name="notifications"
+                  size={22}
+                  color={COLORS.terracotta}
+                />
+              </View>
               <View style={styles.textContent}>
                 <Text style={styles.label}>Enable Notifications</Text>
                 <Text style={styles.sublabel}>Receive push notifications</Text>
@@ -46,7 +71,7 @@ export default function NotificationsScreen() {
             <Switch
               value={pushEnabled}
               onValueChange={setPushEnabled}
-              trackColor={{ false: "#e2e8f0", true: "#6366f1" }}
+              trackColor={{ false: "#E8DED1", true: COLORS.sage }}
               thumbColor="#fff"
             />
           </View>
@@ -59,7 +84,14 @@ export default function NotificationsScreen() {
 
               <View style={styles.row}>
                 <View style={styles.rowContent}>
-                  <Ionicons name="calendar" size={22} color="#3b82f6" />
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      { backgroundColor: `${COLORS.sage}15` },
+                    ]}
+                  >
+                    <Ionicons name="calendar" size={22} color={COLORS.sage} />
+                  </View>
                   <View style={styles.textContent}>
                     <Text style={styles.label}>Appointment Reminders</Text>
                     <Text style={styles.sublabel}>Never miss a visit</Text>
@@ -68,7 +100,7 @@ export default function NotificationsScreen() {
                 <Switch
                   value={appointmentReminders}
                   onValueChange={setAppointmentReminders}
-                  trackColor={{ false: "#e2e8f0", true: "#3b82f6" }}
+                  trackColor={{ false: "#E8DED1", true: COLORS.sage }}
                   thumbColor="#fff"
                 />
               </View>
@@ -104,7 +136,14 @@ export default function NotificationsScreen() {
 
               <View style={[styles.row, styles.rowBorder]}>
                 <View style={styles.rowContent}>
-                  <Ionicons name="medical" size={22} color="#22c55e" />
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      { backgroundColor: `${COLORS.gold}15` },
+                    ]}
+                  >
+                    <Ionicons name="medical" size={22} color={COLORS.gold} />
+                  </View>
                   <View style={styles.textContent}>
                     <Text style={styles.label}>Medication Reminders</Text>
                     <Text style={styles.sublabel}>
@@ -115,14 +154,21 @@ export default function NotificationsScreen() {
                 <Switch
                   value={medicationReminders}
                   onValueChange={setMedicationReminders}
-                  trackColor={{ false: "#e2e8f0", true: "#22c55e" }}
+                  trackColor={{ false: "#E8DED1", true: COLORS.sage }}
                   thumbColor="#fff"
                 />
               </View>
 
               <View style={[styles.row, styles.rowBorder]}>
                 <View style={styles.rowContent}>
-                  <Ionicons name="heart" size={22} color="#ec4899" />
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      { backgroundColor: `${COLORS.clay}15` },
+                    ]}
+                  >
+                    <Ionicons name="heart" size={22} color={COLORS.clay} />
+                  </View>
                   <View style={styles.textContent}>
                     <Text style={styles.label}>Self-Care Nudges</Text>
                     <Text style={styles.sublabel}>
@@ -133,7 +179,7 @@ export default function NotificationsScreen() {
                 <Switch
                   value={selfCareReminders}
                   onValueChange={setSelfCareReminders}
-                  trackColor={{ false: "#e2e8f0", true: "#ec4899" }}
+                  trackColor={{ false: "#E8DED1", true: COLORS.sage }}
                   thumbColor="#fff"
                 />
               </View>
@@ -144,7 +190,14 @@ export default function NotificationsScreen() {
 
               <View style={styles.row}>
                 <View style={styles.rowContent}>
-                  <Ionicons name="moon" size={22} color="#8b5cf6" />
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      { backgroundColor: `${COLORS.stone}15` },
+                    ]}
+                  >
+                    <Ionicons name="moon" size={22} color={COLORS.stone} />
+                  </View>
                   <View style={styles.textContent}>
                     <Text style={styles.label}>Quiet Hours</Text>
                     <Text style={styles.sublabel}>
@@ -155,7 +208,7 @@ export default function NotificationsScreen() {
                 <Switch
                   value={quietHoursEnabled}
                   onValueChange={setQuietHoursEnabled}
-                  trackColor={{ false: "#e2e8f0", true: "#8b5cf6" }}
+                  trackColor={{ false: "#E8DED1", true: COLORS.sage }}
                   thumbColor="#fff"
                 />
               </View>
@@ -165,14 +218,14 @@ export default function NotificationsScreen() {
                   <View style={styles.timeInputGroup}>
                     <Text style={styles.timeLabel}>From</Text>
                     <View style={styles.timeInput}>
-                      <Ionicons name="time" size={18} color="#64748b" />
+                      <Ionicons name="time" size={18} color={TEXT.tertiary} />
                       <Text style={styles.timeValue}>{quietHoursStart}</Text>
                     </View>
                   </View>
                   <View style={styles.timeInputGroup}>
                     <Text style={styles.timeLabel}>To</Text>
                     <View style={styles.timeInput}>
-                      <Ionicons name="time" size={18} color="#64748b" />
+                      <Ionicons name="time" size={18} color={TEXT.tertiary} />
                       <Text style={styles.timeValue}>{quietHoursEnd}</Text>
                     </View>
                   </View>
@@ -193,22 +246,25 @@ export default function NotificationsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     flex: 1,
     padding: 16,
   },
   section: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 16,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
+    ...SHADOWS.sm,
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#64748b",
+    fontFamily: "DMSansMedium",
+    color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 16,
@@ -221,7 +277,7 @@ const styles = StyleSheet.create({
   },
   rowBorder: {
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: GLASS.light.border,
     marginTop: 8,
     paddingTop: 16,
   },
@@ -230,82 +286,101 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
   },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
   textContent: {
-    marginLeft: 12,
+    marginLeft: 0,
     flex: 1,
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#0f172a",
+    fontFamily: "DMSansMedium",
+    color: TEXT.primary,
   },
   sublabel: {
     fontSize: 13,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     marginTop: 2,
   },
   subRow: {
-    marginLeft: 34,
+    marginLeft: 52,
     marginTop: 8,
   },
   subLabel: {
     fontSize: 13,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     marginBottom: 8,
   },
   chip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: BACKGROUND.primary,
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   chipActive: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.sage,
+    borderColor: COLORS.sage,
   },
   chipText: {
     fontSize: 14,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
   },
   chipTextActive: {
     color: "#fff",
-    fontWeight: "500",
+    fontFamily: "DMSansMedium",
   },
   timeRow: {
     flexDirection: "row",
     gap: 16,
     marginTop: 12,
-    marginLeft: 34,
+    marginLeft: 52,
   },
   timeInputGroup: {
     flex: 1,
   },
   timeLabel: {
     fontSize: 12,
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
     marginBottom: 6,
   },
   timeInput: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f8fafc",
-    borderRadius: 8,
+    backgroundColor: BACKGROUND.primary,
+    borderRadius: RADIUS.md,
     padding: 12,
     gap: 8,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   timeValue: {
     fontSize: 16,
-    color: "#0f172a",
+    fontFamily: "DMSans",
+    color: TEXT.primary,
   },
   saveButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: RADIUS.md,
     alignItems: "center",
+    ...SHADOWS.sm,
   },
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "DMSansMedium",
   },
 });

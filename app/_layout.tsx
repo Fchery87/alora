@@ -5,10 +5,16 @@ import "../global.css";
 import { Stack } from "expo-router";
 import {
   useFonts,
-  Outfit_400Regular,
-  Outfit_500Medium,
-  Outfit_700Bold,
-} from "@expo-google-fonts/outfit";
+  CrimsonPro_400Regular,
+  CrimsonPro_500Medium,
+  CrimsonPro_700Bold,
+} from "@expo-google-fonts/crimson-pro";
+import {
+  useFonts as useDMFonts,
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_700Bold,
+} from "@expo-google-fonts/dm-sans";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
@@ -28,7 +34,7 @@ SplashScreen.preventAutoHideAsync();
 function LoadingScreen() {
   return (
     <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#6366f1" />
+      <ActivityIndicator size="large" color="#D4A574" />
       <Text style={styles.loadingText}>Loading Alora...</Text>
     </View>
   );
@@ -45,37 +51,49 @@ function FontErrorScreen({ error }: { error: Error }) {
 }
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    Outfit: Outfit_400Regular,
-    OutfitMedium: Outfit_500Medium,
-    OutfitBold: Outfit_700Bold,
+  const [loadedHeading, errorHeading] = useFonts({
+    CrimsonPro: CrimsonPro_400Regular,
+    CrimsonProMedium: CrimsonPro_500Medium,
+    CrimsonProBold: CrimsonPro_700Bold,
+  });
+
+  const [loadedBody, errorBody] = useDMFonts({
+    DMSans: DMSans_400Regular,
+    DMSansMedium: DMSans_500Medium,
+    DMSansBold: DMSans_700Bold,
   });
   const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     // Debug logging
-    console.log("[RootLayout] Fonts loaded:", loaded);
-    console.log("[RootLayout] Fonts error:", error);
+    console.log("[RootLayout] Heading fonts loaded:", loadedHeading);
+    console.log("[RootLayout] Body fonts loaded:", loadedBody);
+    console.log("[RootLayout] Fonts error:", errorHeading || errorBody);
 
-    if (loaded || error) {
+    if ((loadedHeading && loadedBody) || errorHeading || errorBody) {
       console.log("[RootLayout] Hiding splash screen");
       SplashScreen.hideAsync();
       // Give a small delay to ensure smooth transition
       const timer = setTimeout(() => setShowLoading(false), 100);
       return () => clearTimeout(timer);
     }
-  }, [loaded, error]);
+  }, [loadedHeading, loadedBody, errorHeading, errorBody]);
 
   // Show loading screen while fonts are loading
-  if (showLoading && !loaded && !error) {
+  if (
+    showLoading &&
+    !(loadedHeading && loadedBody) &&
+    !(errorHeading || errorBody)
+  ) {
     console.log("[RootLayout] Showing loading screen");
     return <LoadingScreen />;
   }
 
   // Show error screen if fonts failed to load
-  if (error) {
-    console.error("[RootLayout] Font loading error:", error);
-    return <FontErrorScreen error={error} />;
+  const fontError = errorHeading || errorBody;
+  if (fontError) {
+    console.error("[RootLayout] Font loading error:", fontError);
+    return <FontErrorScreen error={fontError} />;
   }
 
   console.log("[RootLayout] Rendering app");
@@ -99,29 +117,31 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#0f172a",
+    backgroundColor: "#FAF7F2",
   },
   loadingText: {
     marginTop: 20,
     fontSize: 16,
-    color: "#94a3b8",
+    fontFamily: "DMSans",
+    color: "#8B9A7D",
   },
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#0f172a",
+    backgroundColor: "#FAF7F2",
     padding: 20,
   },
   errorTitle: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#f87171",
+    fontFamily: "CrimsonProBold",
+    color: "#D4A574",
     marginBottom: 10,
   },
   errorMessage: {
     fontSize: 14,
-    color: "#94a3b8",
+    fontFamily: "DMSans",
+    color: "#2D2A26",
     textAlign: "center",
   },
 });

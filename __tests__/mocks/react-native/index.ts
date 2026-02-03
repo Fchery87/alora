@@ -55,3 +55,7 @@ export const DeviceEventEmitter = {
   addListener: vi.fn(),
   removeListener: vi.fn(),
 };
+
+export const AppState = {
+  addEventListener: vi.fn(() => ({ remove: vi.fn() })),
+};

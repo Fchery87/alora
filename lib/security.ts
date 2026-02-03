@@ -7,6 +7,9 @@ const ENCRYPTION_KEY = "alora-encryption-key";
 
 export class SecurityManager {
   private static lockTimer: ReturnType<typeof setInterval> | null = null;
+  private static appStateSubscription:
+    | { remove: () => void }
+    | null = null;
 
   static async clearOnLogout(): Promise<void> {
     await SessionLockManager.lock();
@@ -39,15 +42,33 @@ export class SecurityManager {
       }
     }, 60000);
 
-    AppState.addEventListener("change", (state: AppStateStatus) => {
-      if (state === "active") {
-        lastActiveTime = Date.now();
+    if (this.appStateSubscription) {
+      this.appStateSubscription.remove();
+    }
+
+    this.appStateSubscription = AppState.addEventListener(
+      "change",
+      (state: AppStateStatus) => {
+        if (state === "active") {
+          lastActiveTime = Date.now();
+        }
       }
-    });
+    );
   }
 
   private static lockApp(): void {
     SessionLockManager.lock();
+  }
+
+  static teardownAutoLock(): void {
+    if (this.lockTimer) {
+      clearInterval(this.lockTimer);
+      this.lockTimer = null;
+    }
+    if (this.appStateSubscription) {
+      this.appStateSubscription.remove();
+      this.appStateSubscription = null;
+    }
   }
 
   static async verifyEncryptionKey(): Promise<boolean> {

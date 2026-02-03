@@ -38,6 +38,7 @@ export const listAppointments = query({
     babyId: v.optional(v.id("babies")),
     startDate: v.optional(v.string()),
     endDate: v.optional(v.string()),
+    limit: v.optional(v.number()),
   },
   handler: listAppointmentsHandler,
 });
@@ -52,23 +53,24 @@ export async function listAppointmentsHandler(ctx: any, args: any) {
     );
   }
 
-  let appointments = (await ctx.db
+  let appointmentQuery = ctx.db
     .query("appointments" as any)
-    .withIndex("by_family" as any, (q: any) =>
-      q.eq("clerkOrganizationId", userOrgId)
-    )
-    .collect()) as Appointment[];
+    .withIndex("by_family_and_date" as any, (q: any) => {
+      let chain = q.eq("clerkOrganizationId", userOrgId);
+      if (args.startDate) chain = chain.gte("date", args.startDate);
+      if (args.endDate) chain = chain.lte("date", args.endDate);
+      return chain;
+    });
 
   if (args.babyId) {
-    appointments = appointments.filter((a: any) => a.babyId === args.babyId);
+    appointmentQuery = appointmentQuery.filter((q: any) =>
+      q.eq(q.field("babyId"), args.babyId)
+    );
   }
-  if (args.startDate) {
-    appointments = appointments.filter((a: any) => a.date >= args.startDate);
-  }
-  if (args.endDate) {
-    appointments = appointments.filter((a: any) => a.date <= args.endDate);
-  }
-  return appointments.sort((a: any, b: any) => a.date.localeCompare(b.date));
+
+  return (await appointmentQuery
+    .order("asc")
+    .take(args.limit ?? 100)) as Appointment[];
 }
 
 export const getAppointment = query({
@@ -203,19 +205,38 @@ export const updateAppointment = mutation({
     reminderMinutesBefore: v.optional(v.number()),
     isCompleted: v.optional(v.boolean()),
   },
-  handler: async (ctx, args) => {
-    const userOrgId = await requireOrganizationId(ctx);
-
-    const { appointmentId } = args;
-    const existing = (await ctx.db.get(appointmentId)) as Appointment | null;
-    if (!existing) throw new Error("Appointment not found");
-
-    // Verify user's org matches appointment's org (HIPAA compliance)
-    if (userOrgId !== existing.clerkOrganizationId) {
-      throw new Error("Not authorized to update this appointment");
-    }
-  },
+  handler: updateAppointmentHandler,
 });
+
+export async function updateAppointmentHandler(ctx: any, args: any) {
+  const userOrgId = await requireOrganizationId(ctx);
+
+  const { appointmentId } = args;
+  const existing = (await ctx.db.get(appointmentId)) as Appointment | null;
+  if (!existing) throw new Error("Appointment not found");
+
+  // Verify user's org matches appointment's org (HIPAA compliance)
+  if (userOrgId !== existing.clerkOrganizationId) {
+    throw new Error("Not authorized to update this appointment");
+  }
+
+  const updates: Record<string, unknown> = {};
+  if (args.title !== undefined) updates.title = sanitizeTitle(args.title);
+  if (args.date !== undefined) updates.date = args.date;
+  if (args.time !== undefined) updates.time = args.time;
+  if (args.location !== undefined)
+    updates.location = sanitizeLocation(args.location);
+  if (args.notes !== undefined) updates.notes = sanitizeNotes(args.notes);
+  if (args.reminderMinutesBefore !== undefined)
+    updates.reminderMinutesBefore = args.reminderMinutesBefore;
+  if (args.isCompleted !== undefined) updates.isCompleted = args.isCompleted;
+
+  if (Object.keys(updates).length > 0) {
+    await ctx.db.patch(appointmentId, updates);
+  }
+
+  return appointmentId;
+}
 
 export const deleteAppointment = mutation({
   args: { appointmentId: v.id("appointments") },

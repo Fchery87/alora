@@ -24,6 +24,16 @@ import { api } from "@/convex/_generated/api";
 import { usePushSync } from "@/hooks/usePushSync";
 import { RESOURCES } from "@/lib/resources";
 import { recommendResources } from "@/lib/smart-resources";
+import {
+  GRADIENTS,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  COLORS,
+  RADIUS,
+  GLASS,
+  TYPOGRAPHY,
+} from "@/lib/theme";
 
 type DateRange = "7d" | "30d" | "90d" | "all";
 
@@ -120,24 +130,24 @@ export default function WellnessScreen() {
       id: "check-in",
       title: "Check-In",
       icon: "heart" as const,
-      color: "#f472b6",
-      bgColor: "#fce7f3",
+      color: COLORS.terracotta,
+      bgColor: `${COLORS.terracotta}20`,
       route: "/(tabs)/trackers/mood" as any,
     },
     {
       id: "journal",
       title: "Journal",
       icon: "book" as const,
-      color: "#a78bfa",
-      bgColor: "#ede9fe",
+      color: COLORS.gold,
+      bgColor: `${COLORS.gold}20`,
       route: "/(tabs)/calendar",
     },
     {
       id: "breathe",
       title: "Breathe",
       icon: "moon" as const,
-      color: "#67e8f9",
-      bgColor: "#ecfeff",
+      color: COLORS.sage,
+      bgColor: `${COLORS.sage}20`,
       route: "/",
     },
   ];
@@ -146,8 +156,15 @@ export default function WellnessScreen() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Wellness</Text>
-        <TouchableOpacity onPress={resetDailyCards}>
-          <Ionicons name="refresh-outline" size={24} color="#64748b" />
+        <TouchableOpacity
+          onPress={resetDailyCards}
+          style={styles.refreshButton}
+        >
+          <Ionicons
+            name="refresh-outline"
+            size={22}
+            color={COLORS.terracotta}
+          />
         </TouchableOpacity>
       </View>
 
@@ -159,14 +176,14 @@ export default function WellnessScreen() {
         style={styles.affirmationSection}
       >
         <LinearGradient
-          colors={["#dbeafe", "#fce7f3", "#ede9fe"]}
+          colors={[GRADIENTS.calm.start, GRADIENTS.calm.end]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.affirmationCard}
         >
           <View style={styles.affirmationHeader}>
             <View style={styles.affirmationBadge}>
-              <Ionicons name="sparkles" size={16} color="#f59e0b" />
+              <Ionicons name="sparkles" size={16} color={COLORS.gold} />
               <Text style={styles.affirmationBadgeText}>Today's Insight</Text>
             </View>
             <View style={styles.aiToggleRow}>
@@ -174,6 +191,8 @@ export default function WellnessScreen() {
               <Switch
                 value={aiEnabled}
                 onValueChange={(v) => void setEnabled({ enabled: v })}
+                trackColor={{ false: "#E8DED1", true: COLORS.sage }}
+                thumbColor="#fff"
               />
             </View>
             <TouchableOpacity
@@ -188,7 +207,9 @@ export default function WellnessScreen() {
                 }
                 size={22}
                 color={
-                  savedInsights.has(dailyInsight.id) ? "#ec4899" : "#9ca3af"
+                  savedInsights.has(dailyInsight.id)
+                    ? COLORS.terracotta
+                    : TEXT.tertiary
                 }
               />
             </TouchableOpacity>
@@ -206,6 +227,8 @@ export default function WellnessScreen() {
               <Switch
                 value={pushEnabled}
                 onValueChange={(v) => void setPushEnabled({ enabled: v })}
+                trackColor={{ false: "#E8DED1", true: COLORS.sage }}
+                thumbColor="#fff"
               />
             </View>
             {pushEnabled ? (
@@ -226,7 +249,7 @@ export default function WellnessScreen() {
 
           <View style={styles.affirmationMeta}>
             <View style={styles.affirmationMetaItem}>
-              <Ionicons name="heart-outline" size={14} color="#9ca3af" />
+              <Ionicons name="heart-outline" size={14} color={TEXT.tertiary} />
               <Text style={styles.affirmationMetaText}>
                 {dailyInsight.title}
               </Text>
@@ -252,15 +275,20 @@ export default function WellnessScreen() {
         style={styles.affirmationSection}
       >
         <LinearGradient
-          colors={["#fef3c7", "#fce7f3", "#ede9fe"]}
+          colors={[COLORS.gold, COLORS.terracotta]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.affirmationCard}
+          style={[styles.affirmationCard, styles.affirmationCardSecondary]}
         >
           <View style={styles.affirmationHeader}>
             <View style={styles.affirmationBadge}>
-              <Ionicons name="sparkles" size={16} color="#f59e0b" />
-              <Text style={styles.affirmationBadgeText}>
+              <Ionicons name="sparkles" size={16} color={BACKGROUND.primary} />
+              <Text
+                style={[
+                  styles.affirmationBadgeText,
+                  styles.affirmationBadgeTextLight,
+                ]}
+              >
                 Today's Affirmation
               </Text>
             </View>
@@ -277,25 +305,36 @@ export default function WellnessScreen() {
                 size={22}
                 color={
                   savedAffirmations.has(dailyAffirmation.id)
-                    ? "#ec4899"
-                    : "#9ca3af"
+                    ? BACKGROUND.primary
+                    : `${BACKGROUND.primary}99`
                 }
               />
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.affirmationMessage}>
+          <Text
+            style={[styles.affirmationMessage, styles.affirmationMessageLight]}
+          >
             {dailyAffirmation.message}
           </Text>
 
           <View style={styles.affirmationMeta}>
             <View style={styles.affirmationMetaItem}>
-              <Ionicons name="heart-outline" size={14} color="#9ca3af" />
-              <Text style={styles.affirmationMetaText}>
+              <Ionicons
+                name="heart-outline"
+                size={14}
+                color={`${BACKGROUND.primary}99`}
+              />
+              <Text
+                style={[
+                  styles.affirmationMetaText,
+                  styles.affirmationMetaTextLight,
+                ]}
+              >
                 {dailyAffirmation.theme}
               </Text>
             </View>
-            <Text style={styles.affirmationDate}>
+            <Text style={[styles.affirmationDate, styles.affirmationDateLight]}>
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long",
                 month: "long",
@@ -365,7 +404,7 @@ export default function WellnessScreen() {
           />
         ) : (
           <View style={styles.emptyChartState}>
-            <Ionicons name="heart-outline" size={48} color="#d1d5db" />
+            <Ionicons name="heart-outline" size={48} color={TEXT.tertiary} />
             <Text style={styles.emptyChartTitle}>No mood data yet</Text>
             <Text style={styles.emptyChartSubtitle}>
               Start tracking to see your wellness patterns
@@ -397,7 +436,7 @@ export default function WellnessScreen() {
           {smartResources.map((rec) => (
             <View key={rec.resource.id} style={styles.nudgeCard}>
               <View style={[styles.nudgeIcon, styles.resourceNudgeIcon]}>
-                <Ionicons name="book" size={24} color="#6366f1" />
+                <Ionicons name="book" size={24} color={COLORS.sage} />
               </View>
               <View style={styles.nudgeContent}>
                 <Text style={styles.nudgeCategory}>{rec.resource.title}</Text>
@@ -424,7 +463,7 @@ export default function WellnessScreen() {
 
         <TouchableOpacity style={styles.nudgeCard} activeOpacity={0.7}>
           <View style={[styles.nudgeIcon, styles.mindfulnessNudgeIcon]}>
-            <Ionicons name="leaf" size={24} color="#0891b2" />
+            <Ionicons name="leaf" size={24} color={COLORS.sage} />
           </View>
           <View style={styles.nudgeContent}>
             <Text style={styles.nudgeCategory}>Mindfulness</Text>
@@ -434,7 +473,7 @@ export default function WellnessScreen() {
             <Ionicons
               name="checkmark-circle-outline"
               size={24}
-              color="#d1d5db"
+              color={TEXT.tertiary}
             />
           </TouchableOpacity>
         </TouchableOpacity>
@@ -498,7 +537,7 @@ export default function WellnessScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fafafa",
+    backgroundColor: BACKGROUND.primary,
   },
   header: {
     flexDirection: "row",
@@ -509,10 +548,16 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: "#0f172a",
-    letterSpacing: -0.5,
+    ...TYPOGRAPHY.headings.h1,
+    color: TEXT.primary,
+  },
+  refreshButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: `${COLORS.terracotta}15`,
+    alignItems: "center",
+    justifyContent: "center",
   },
   // Affirmation Section
   affirmationSection: {
@@ -520,13 +565,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   affirmationCard: {
-    borderRadius: 24,
+    borderRadius: RADIUS.xl,
     padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 4,
+    ...SHADOWS.md,
+  },
+  affirmationCardSecondary: {
+    // Secondary gradient styling handled by parent
   },
   affirmationHeader: {
     flexDirection: "row",
@@ -537,7 +581,7 @@ const styles = StyleSheet.create({
   affirmationBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(245, 158, 11, 0.1)",
+    backgroundColor: `${COLORS.gold}25`,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
@@ -545,10 +589,13 @@ const styles = StyleSheet.create({
   },
   affirmationBadgeText: {
     fontSize: 12,
-    fontWeight: "600",
-    color: "#d97706",
+    fontFamily: "DMSansMedium",
+    color: COLORS.gold,
     letterSpacing: 0.5,
     textTransform: "uppercase",
+  },
+  affirmationBadgeTextLight: {
+    color: BACKGROUND.primary,
   },
   aiToggleRow: {
     flexDirection: "row",
@@ -557,7 +604,8 @@ const styles = StyleSheet.create({
   },
   aiToggleLabel: {
     fontSize: 12,
-    color: "#6b7280",
+    color: TEXT.secondary,
+    fontFamily: "DMSans",
   },
   pushSection: {
     marginTop: 14,
@@ -569,37 +617,42 @@ const styles = StyleSheet.create({
   },
   pushLabel: {
     fontSize: 12,
-    color: "#6b7280",
+    color: TEXT.secondary,
+    fontFamily: "DMSans",
   },
   testPushButton: {
     marginTop: 10,
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.primary,
     borderRadius: 12,
     paddingVertical: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: GLASS.light.border,
   },
   testPushButtonText: {
     fontSize: 13,
-    fontWeight: "600",
-    color: "#374151",
+    fontFamily: "DMSansMedium",
+    color: TEXT.primary,
   },
   pushErrorText: {
     marginTop: 8,
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.danger,
+    fontFamily: "DMSans",
   },
   saveButton: {
     padding: 4,
   },
   affirmationMessage: {
     fontSize: 22,
-    fontWeight: "600",
-    color: "#1e293b",
+    fontFamily: "CrimsonProMedium",
+    color: TEXT.primary,
     lineHeight: 32,
     marginBottom: 20,
     fontStyle: "italic",
+  },
+  affirmationMessageLight: {
+    color: BACKGROUND.primary,
   },
   affirmationMeta: {
     flexDirection: "row",
@@ -613,13 +666,20 @@ const styles = StyleSheet.create({
   },
   affirmationMetaText: {
     fontSize: 13,
-    fontWeight: "500",
-    color: "#6b7280",
+    fontFamily: "DMSansMedium",
+    color: TEXT.secondary,
     textTransform: "capitalize",
+  },
+  affirmationMetaTextLight: {
+    color: `${BACKGROUND.primary}CC`,
   },
   affirmationDate: {
     fontSize: 12,
-    color: "#9ca3af",
+    fontFamily: "DMSans",
+    color: TEXT.tertiary,
+  },
+  affirmationDateLight: {
+    color: `${BACKGROUND.primary}99`,
   },
   // Check-In Button
   checkInButton: {
@@ -629,14 +689,10 @@ const styles = StyleSheet.create({
   checkInButtonContent: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.sage,
     borderRadius: 20,
     padding: 20,
-    shadowColor: "#6366f1",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 4,
+    ...SHADOWS.md,
   },
   checkInIcon: {
     width: 48,
@@ -652,12 +708,13 @@ const styles = StyleSheet.create({
   },
   checkInTitle: {
     fontSize: 18,
-    fontWeight: "700",
+    fontFamily: "CrimsonProMedium",
     color: "#ffffff",
     marginBottom: 4,
   },
   checkInSubtitle: {
     fontSize: 13,
+    fontFamily: "DMSans",
     color: "rgba(255, 255, 255, 0.85)",
   },
   // Sections
@@ -672,70 +729,72 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#0f172a",
-    letterSpacing: -0.3,
+    ...TYPOGRAPHY.headings.h3,
+    color: TEXT.primary,
   },
   sectionAction: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#6366f1",
+    fontFamily: "DMSansMedium",
+    color: COLORS.terracotta,
   },
   // Chart
   chartPlaceholder: {
-    backgroundColor: "#ffffff",
-    borderRadius: 20,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 40,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   loadingText: {
     fontSize: 14,
-    color: "#9ca3af",
+    color: TEXT.tertiary,
+    fontFamily: "DMSans",
   },
   emptyChartState: {
-    backgroundColor: "#ffffff",
-    borderRadius: 20,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.xl,
     padding: 40,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   emptyChartTitle: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#64748b",
+    fontFamily: "CrimsonProMedium",
+    color: TEXT.secondary,
     marginTop: 16,
   },
   emptyChartSubtitle: {
     fontSize: 13,
-    color: "#94a3b8",
+    fontFamily: "DMSans",
+    color: TEXT.tertiary,
     marginTop: 4,
     textAlign: "center",
     marginBottom: 20,
   },
   emptyChartButton: {
-    backgroundColor: "#f1f5f9",
+    backgroundColor: `${COLORS.terracotta}15`,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 12,
   },
   emptyChartButtonText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
+    fontFamily: "DMSansMedium",
+    color: COLORS.terracotta,
   },
   // Nudges
   nudgeCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.lg,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   nudgeIcon: {
     width: 48,
@@ -746,26 +805,26 @@ const styles = StyleSheet.create({
     marginRight: 14,
   },
   resourceNudgeIcon: {
-    backgroundColor: "#eef2ff",
+    backgroundColor: `${COLORS.sage}15`,
   },
   mindfulnessNudgeIcon: {
-    backgroundColor: "#ecfeff",
+    backgroundColor: `${COLORS.sage}15`,
   },
   nudgeContent: {
     flex: 1,
   },
   nudgeCategory: {
     fontSize: 11,
-    fontWeight: "600",
-    color: "#0891b2",
+    fontFamily: "DMSansMedium",
+    color: COLORS.sage,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 4,
   },
   nudgeMessage: {
     fontSize: 15,
-    fontWeight: "500",
-    color: "#1e293b",
+    fontFamily: "DMSans",
+    color: TEXT.primary,
     lineHeight: 22,
   },
   nudgeAction: {
@@ -774,14 +833,12 @@ const styles = StyleSheet.create({
   nudgeStats: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.lg,
     padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   nudgeStat: {
     alignItems: "center",
@@ -789,18 +846,18 @@ const styles = StyleSheet.create({
   },
   nudgeStatValue: {
     fontSize: 24,
-    fontWeight: "700",
-    color: "#0f172a",
+    fontFamily: "CrimsonProBold",
+    color: TEXT.primary,
     marginBottom: 4,
   },
   nudgeStatLabel: {
     fontSize: 12,
-    fontWeight: "500",
-    color: "#64748b",
+    fontFamily: "DMSans",
+    color: TEXT.secondary,
   },
   nudgeStatDivider: {
     width: 1,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: GLASS.light.border,
   },
   // Quick Actions
   quickActionsSection: {
@@ -813,15 +870,13 @@ const styles = StyleSheet.create({
   },
   quickActionButton: {
     width: "31%",
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
+    backgroundColor: BACKGROUND.card,
+    borderRadius: RADIUS.lg,
     padding: 16,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: GLASS.light.border,
   },
   quickActionIcon: {
     width: 52,
@@ -833,8 +888,8 @@ const styles = StyleSheet.create({
   },
   quickActionTitle: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#374151",
+    fontFamily: "DMSansMedium",
+    color: TEXT.primary,
   },
   // Bottom Padding
   bottomPadding: {

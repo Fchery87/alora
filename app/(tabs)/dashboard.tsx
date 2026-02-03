@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { Dashboard } from "@/components/organisms/Dashboard";
 import { ActivityFeed } from "@/components/organisms/ActivityFeed";
 import { useSelectedBabyId } from "@/stores/babyStore";
+import { BACKGROUND, TEXT } from "@/lib/theme";
 
 export default function DashboardScreen() {
   const babyId = useSelectedBabyId();
@@ -19,7 +20,10 @@ export default function DashboardScreen() {
         />
       ) : (
         <View style={styles.emptyState}>
-          <Text>No baby selected - Select a baby to view your dashboard</Text>
+          <Text style={styles.emptyText}>No baby selected</Text>
+          <Text style={styles.emptySubtext}>
+            Select a baby to view your dashboard
+          </Text>
         </View>
       )}
     </View>
@@ -29,10 +33,22 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    backgroundColor: BACKGROUND.primary,
   },
   emptyState: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: BACKGROUND.primary,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: TEXT.primary,
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: TEXT.secondary,
   },
 });

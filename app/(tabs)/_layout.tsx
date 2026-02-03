@@ -1,108 +1,130 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { View, StyleSheet } from "react-native";
+import { MotiView } from "moti";
 import { ProtectedRoute } from "@/components/atoms/ProtectedRoute";
+
+// Custom animated tab icon component
+function AnimatedTabIcon({
+  name,
+  color,
+  size,
+  focused,
+}: {
+  name: keyof typeof Ionicons.glyphMap;
+  color: string;
+  size: number;
+  focused: boolean;
+}) {
+  return (
+    <MotiView
+      animate={{
+        scale: focused ? 1.1 : 1,
+        translateY: focused ? -4 : 0,
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 20,
+      }}
+    >
+      <View
+        style={[styles.iconContainer, focused && styles.iconContainerFocused]}
+      >
+        <Ionicons name={name} size={size} color={color} />
+      </View>
+    </MotiView>
+  );
+}
 
 export default function TabsLayout() {
   return (
     <ProtectedRoute requireOrganization>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#FFE135", // Banana Yellow
-          tabBarInactiveTintColor: "#888888",
-          tabBarStyle: {
-            backgroundColor: "#0A0A0A", // Nano Black
-            borderTopColor: "#333333",
-          },
+          tabBarActiveTintColor: "#D4A574", // Terracotta
+          tabBarInactiveTintColor: "#8B8B8B",
+          tabBarStyle: styles.tabBar,
+          tabBarLabelStyle: styles.tabLabel,
           headerShown: false,
         }}
       >
+        {/* Home - Dashboard */}
         <Tabs.Screen
           name="dashboard"
           options={{
             title: "Home",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home" size={size} color={color} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <AnimatedTabIcon
+                name="home"
+                size={size}
+                color={color}
+                focused={focused}
+              />
             ),
           }}
         />
+
+        {/* Track - All tracking features */}
         <Tabs.Screen
           name="trackers"
           options={{
-            title: "Trackers",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="create" size={size} color={color} />
+            title: "Track",
+            tabBarIcon: ({ color, size, focused }) => (
+              <AnimatedTabIcon
+                name="pulse"
+                size={size}
+                color={color}
+                focused={focused}
+              />
             ),
           }}
         />
+
+        {/* Calendar */}
         <Tabs.Screen
           name="calendar"
           options={{
             title: "Calendar",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="calendar" size={size} color={color} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <AnimatedTabIcon
+                name="calendar"
+                size={size}
+                color={color}
+                focused={focused}
+              />
             ),
           }}
         />
+
+        {/* Explore - Resources, Wellness, Sounds, Partner, Family */}
         <Tabs.Screen
           name="resources"
           options={{
-            title: "Learn",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="book" size={size} color={color} />
+            title: "Explore",
+            tabBarIcon: ({ color, size, focused }) => (
+              <AnimatedTabIcon
+                name="compass"
+                size={size}
+                color={color}
+                focused={focused}
+              />
             ),
           }}
         />
-        <Tabs.Screen
-          name="sounds"
-          options={{
-            title: "Sounds",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="musical-note" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="partner-support"
-          options={{
-            title: "Partner",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="people" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="family"
-          options={{
-            title: "Family",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="people-circle" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="wellness"
-          options={{
-            title: "Wellness",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="heart" size={size} color={color} />
-            ),
-          }}
-        />
+
+        {/* Profile - Profile & Settings combined */}
         <Tabs.Screen
           name="profile"
           options={{
             title: "Profile",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="person" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="settings"
-          options={{
-            title: "Settings",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings" size={size} color={color} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <AnimatedTabIcon
+                name="person-circle"
+                size={size}
+                color={color}
+                focused={focused}
+              />
             ),
           }}
         />
@@ -110,3 +132,30 @@ export default function TabsLayout() {
     </ProtectedRoute>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: "#FAF7F2", // Warm cream
+    borderTopWidth: 0,
+    elevation: 0,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    height: 80,
+    paddingBottom: 20,
+    paddingTop: 10,
+  },
+  tabLabel: {
+    fontFamily: "DMSans_500Medium",
+    fontSize: 11,
+    marginTop: 4,
+  },
+  iconContainer: {
+    padding: 8,
+    borderRadius: 16,
+  },
+  iconContainerFocused: {
+    backgroundColor: "rgba(212, 165, 116, 0.15)",
+  },
+});

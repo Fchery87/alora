@@ -18,6 +18,23 @@ import {
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
+// Celestial Nurture Design System - Earth Tones
+const COLORS = {
+  cream: "#FAF7F2",
+  terracotta: "#D4A574",
+  sage: "#8B9A7D",
+  moss: "#6B7A6B",
+  gold: "#C9A227",
+  clay: "#C17A5C",
+  warmDark: "#2D2A26",
+  warmGray: "#6B6560",
+  stone: "#8B8680",
+  sand: "#E8E0D5",
+  warmLight: "#F5F0E8",
+  white: "#FFFFFF",
+  error: "#C75B5B",
+};
+
 type FeedType = "breast" | "formula" | "solid";
 
 interface FeedFormProps {
@@ -163,7 +180,9 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
               <Ionicons
                 name={feedType.icon as keyof typeof Ionicons.glyphMap}
                 size={24}
-                color={type === feedType.value ? "#fff" : "#6366f1"}
+                color={
+                  type === feedType.value ? COLORS.white : COLORS.terracotta
+                }
               />
               <Text
                 style={[
@@ -238,6 +257,7 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
           keyboardType="number-pad"
           returnKeyType="done"
           onSubmitEditing={handleSubmit}
+          placeholderTextColor={COLORS.stone}
         />
         {touched.duration && validationErrors.duration && (
           <Text style={styles.errorText}>{validationErrors.duration}</Text>
@@ -255,6 +275,7 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
           multiline
           numberOfLines={3}
           textAlignVertical="top"
+          placeholderTextColor={COLORS.stone}
         />
       </View>
 
@@ -278,25 +299,25 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.cream,
   },
   content: {
-    padding: 16,
+    padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    fontWeight: "700",
+    color: COLORS.warmDark,
     marginBottom: 24,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
+    color: COLORS.warmGray,
+    marginBottom: 10,
   },
   typeContainer: {
     flexDirection: "row",
@@ -305,27 +326,32 @@ const styles = StyleSheet.create({
   typeButton: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
+    shadowColor: COLORS.warmDark,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   typeButtonActive: {
-    borderColor: "#6366f1",
-    backgroundColor: "#6366f1",
+    borderColor: COLORS.terracotta,
+    backgroundColor: COLORS.terracotta,
   },
   typeButtonError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   typeText: {
     marginTop: 8,
     fontSize: 12,
     fontWeight: "600",
-    color: "#6366f1",
+    color: COLORS.terracotta,
   },
   typeTextActive: {
-    color: "#ffffff",
+    color: COLORS.white,
   },
   sideContainer: {
     flexDirection: "row",
@@ -334,41 +360,42 @@ const styles = StyleSheet.create({
   sideButton: {
     flex: 1,
     padding: 12,
-    backgroundColor: "#ffffff",
-    borderRadius: 8,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
   },
   sideButtonActive: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   sideButtonError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   sideText: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#374151",
+    color: COLORS.warmDark,
   },
   sideTextActive: {
-    color: "#ffffff",
+    color: COLORS.white,
   },
   input: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
+    color: COLORS.warmDark,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.error,
     marginTop: 6,
     marginLeft: 4,
   },
@@ -377,17 +404,22 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     marginTop: 8,
+    shadowColor: COLORS.terracotta,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   submitButtonDisabled: {
     opacity: 0.5,
   },
   submitButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: "600",
   },

@@ -18,6 +18,23 @@ import {
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
 
+// Celestial Nurture Design System - Earth Tones
+const COLORS = {
+  cream: "#FAF7F2",
+  terracotta: "#D4A574",
+  sage: "#8B9A7D",
+  moss: "#6B7A6B",
+  gold: "#C9A227",
+  clay: "#C17A5C",
+  warmDark: "#2D2A26",
+  warmGray: "#6B6560",
+  stone: "#8B8680",
+  sand: "#E8E0D5",
+  warmLight: "#F5F0E8",
+  white: "#FFFFFF",
+  error: "#C75B5B",
+};
+
 type DiaperType = "wet" | "solid" | "mixed";
 type DiaperColor = "yellow" | "orange" | "green" | "brown" | "red" | null;
 
@@ -163,7 +180,7 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
               <Ionicons
                 name={diaperType.icon as keyof typeof Ionicons.glyphMap}
                 size={24}
-                color={type === diaperType.value ? "#fff" : "#6366f1"}
+                color={type === diaperType.value ? COLORS.white : COLORS.sage}
               />
               <Text
                 style={[
@@ -191,7 +208,7 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
           <Ionicons
             name={showColorPicker ? "chevron-up" : "chevron-down"}
             size={20}
-            color="#6366f1"
+            color={COLORS.sage}
           />
         </TouchableOpacity>
 
@@ -236,6 +253,7 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
           multiline
           numberOfLines={3}
           textAlignVertical="top"
+          placeholderTextColor={COLORS.stone}
         />
       </View>
 
@@ -259,25 +277,25 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: COLORS.cream,
   },
   content: {
-    padding: 16,
+    padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    fontWeight: "700",
+    color: COLORS.warmDark,
     marginBottom: 24,
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
-    marginBottom: 8,
+    color: COLORS.warmGray,
+    marginBottom: 10,
   },
   typeContainer: {
     flexDirection: "row",
@@ -286,31 +304,36 @@ const styles = StyleSheet.create({
   typeButton: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    borderRadius: 14,
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
+    shadowColor: COLORS.warmDark,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   typeButtonActive: {
-    borderColor: "#6366f1",
-    backgroundColor: "#6366f1",
+    borderColor: COLORS.sage,
+    backgroundColor: COLORS.sage,
   },
   typeButtonError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.error,
   },
   typeText: {
     marginTop: 8,
     fontSize: 12,
     fontWeight: "600",
-    color: "#6366f1",
+    color: COLORS.sage,
   },
   typeTextActive: {
-    color: "#ffffff",
+    color: COLORS.white,
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.error,
     marginTop: 6,
     marginLeft: 4,
   },
@@ -318,11 +341,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
-    backgroundColor: "#ffffff",
+    padding: 14,
+    backgroundColor: COLORS.white,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
   },
   colorContainer: {
     flexDirection: "row",
@@ -337,49 +360,55 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
   },
   colorButtonActive: {
-    borderColor: "#0f172a",
+    borderColor: COLORS.warmDark,
   },
   colorLabel: {
     fontSize: 10,
     fontWeight: "600",
-    color: "#111827",
+    color: COLORS.warmDark,
   },
   colorText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#374151",
+    color: COLORS.warmGray,
   },
   colorTextActive: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: COLORS.warmDark,
+    fontWeight: "700",
   },
   input: {
-    backgroundColor: "#ffffff",
+    backgroundColor: COLORS.white,
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: COLORS.sand,
+    color: COLORS.warmDark,
   },
   notesInput: {
     minHeight: 80,
     textAlignVertical: "top",
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.sage,
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: "center",
     marginTop: 8,
+    shadowColor: COLORS.sage,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 2,
   },
   submitButtonDisabled: {
-    opacity: 0.7,
+    opacity: 0.5,
   },
   submitButtonText: {
-    color: "#ffffff",
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: "600",
   },

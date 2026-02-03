@@ -4,7 +4,14 @@ import { View, StyleSheet, Pressable, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
-import { GRADIENTS, SHADOWS, COLORS } from "@/lib/theme";
+import {
+  GRADIENTS,
+  SHADOWS,
+  TEXT,
+  BACKGROUND,
+  GLASS,
+  COLORS,
+} from "@/lib/theme";
 import { softSpring, iconTap } from "@/lib/animations";
 
 interface TabItem {
@@ -29,35 +36,35 @@ const TABS: TabItem[] = [
     id: "dashboard",
     label: "Home",
     icon: "home",
-    color: "#6366f1",
+    color: COLORS.terracotta,
     gradient: GRADIENTS.primary,
   },
   {
     id: "trackers",
     label: "Trackers",
     icon: "stats-chart",
-    color: "#22c55e",
+    color: COLORS.sage,
     gradient: GRADIENTS.secondary,
   },
   {
     id: "wellness",
     label: "Wellness",
     icon: "heart",
-    color: "#f43f5e",
+    color: COLORS.clay,
     gradient: GRADIENTS.accent,
   },
   {
     id: "journal",
     label: "Journal",
     icon: "book",
-    color: "#8b5cf6",
+    color: COLORS.gold,
     gradient: GRADIENTS.calm,
   },
   {
     id: "calendar",
     label: "Calendar",
     icon: "calendar",
-    color: "#f59e0b",
+    color: COLORS.stone,
     gradient: GRADIENTS.sunset,
   },
 ];
@@ -75,7 +82,7 @@ export function ModernTabBar({ state, navigation }: ModernTabBarProps) {
       {/* Glass background */}
       <View style={styles.glassContainer}>
         <LinearGradient
-          colors={["rgba(255, 255, 255, 0.9)", "rgba(248, 250, 252, 0.95)"]}
+          colors={[GLASS.light.background, "rgba(250, 247, 242, 0.98)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
@@ -132,7 +139,7 @@ export function ModernTabBar({ state, navigation }: ModernTabBarProps) {
                     <Ionicons
                       name={tab.icon as any}
                       size={22}
-                      color={COLORS.slate[400]}
+                      color={TEXT.tertiary}
                     />
                   )}
                 </View>
@@ -172,7 +179,7 @@ const styles = StyleSheet.create({
   glassContainer: {
     ...SHADOWS.xl,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.5)",
+    borderTopColor: GLASS.light.border,
     overflow: "hidden",
     paddingBottom: 8,
     paddingTop: 8,
@@ -219,49 +226,50 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 11,
+    fontFamily: "DMSans",
     fontWeight: "500",
     marginTop: 2,
     textTransform: "capitalize",
   },
   tabLabelInactive: {
-    color: COLORS.slate[400],
+    color: TEXT.tertiary,
   },
   tabLabelActive: {
     fontWeight: "600",
   },
   tabLabel_dashboard: {
-    color: "#6366f1",
+    color: COLORS.terracotta,
   },
   tabLabel_trackers: {
-    color: "#22c55e",
+    color: COLORS.sage,
   },
   tabLabel_wellness: {
-    color: "#f43f5e",
+    color: COLORS.clay,
   },
   tabLabel_journal: {
-    color: "#8b5cf6",
+    color: COLORS.gold,
   },
   tabLabel_calendar: {
-    color: "#f59e0b",
+    color: COLORS.stone,
   },
   activeGlow_dashboard: {
-    backgroundColor: "#6366f120",
+    backgroundColor: `${COLORS.terracotta}25`,
   },
   activeGlow_trackers: {
-    backgroundColor: "#22c55e20",
+    backgroundColor: `${COLORS.sage}25`,
   },
   activeGlow_wellness: {
-    backgroundColor: "#f43f5e20",
+    backgroundColor: `${COLORS.clay}25`,
   },
   activeGlow_journal: {
-    backgroundColor: "#8b5cf620",
+    backgroundColor: `${COLORS.gold}25`,
   },
   activeGlow_calendar: {
-    backgroundColor: "#f59e0b20",
+    backgroundColor: `${COLORS.stone}25`,
   },
   safeArea: {
     height: 34,
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    backgroundColor: BACKGROUND.primary,
   },
   absoluteFill: {
     position: "absolute",

@@ -27,6 +27,11 @@ module.exports = async function (env, argv) {
   config.resolve.alias = {
     ...config.resolve.alias,
     "react-native$": "react-native-web",
+    // Avoid ESM/CJS interop issues for `nanoid/non-secure` (used by expo-router + react-navigation on web).
+    "nanoid/non-secure": path.resolve(
+      __dirname,
+      "lib/shims/nanoid-non-secure.ts"
+    ),
     "@": path.resolve(__dirname), // eslint-disable-line no-undef
   };
 
