@@ -8,11 +8,14 @@ const config = getDefaultConfig(__dirname, {
   isCSSEnabled: true,
 });
 
-// Enable experimental import support for proper module handling
+// Configure resolver for web compatibility
+config.resolver.sourceExts = [...config.resolver.sourceExts, "mjs", "cjs"];
+
+// Disable experimental import support to avoid module issues
 config.transformer.getTransformOptions = async () => ({
   transform: {
-    experimentalImportSupport: true,
-    inlineRequires: true,
+    experimentalImportSupport: false,
+    inlineRequires: false,
   },
 });
 
