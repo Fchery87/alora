@@ -1,8 +1,6 @@
 module.exports = function (api) {
-  api.cache(true);
-
-  // Detect if we're building for web
-  const isWeb = api.caller((caller) => caller && caller.name === "web");
+  // Use permanent cache for stability
+  api.cache.forever();
 
   return {
     presets: [
@@ -10,8 +8,8 @@ module.exports = function (api) {
       "nativewind/babel",
     ],
     plugins: [
-      // Only include reanimated plugin for native builds, not web
-      !isWeb && "react-native-reanimated/plugin",
-    ].filter(Boolean),
+      // Reanimated plugin - will be handled by its own config
+      "react-native-reanimated/plugin",
+    ],
   };
 };
