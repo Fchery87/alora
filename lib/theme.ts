@@ -287,3 +287,132 @@ export const Z_INDEX = {
   keyboardAvoiding: 90,
   safeArea: 999,
 } as const;
+
+// =======================
+// DARK MODE SHADOWS
+// =======================
+
+export const DARK_SHADOWS = {
+  sm: {
+    shadowColor: "rgba(0, 0, 0, 0.3)",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  md: {
+    shadowColor: "rgba(0, 0, 0, 0.4)",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  lg: {
+    shadowColor: "rgba(0, 0, 0, 0.5)",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 1,
+    shadowRadius: 24,
+    elevation: 8,
+  },
+  xl: {
+    shadowColor: "rgba(0, 0, 0, 0.6)",
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 1,
+    shadowRadius: 32,
+    elevation: 12,
+  },
+  glow: {
+    shadowColor: "rgba(212, 165, 116, 0.2)",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 20,
+    elevation: 6,
+  },
+} as const;
+
+// =======================
+// COMPLETE THEME OBJECTS
+// =======================
+
+export type ThemeMode = "light" | "dark" | "auto";
+
+export interface Theme {
+  mode: "light" | "dark";
+  gradients: typeof GRADIENTS;
+  glass: typeof GLASS.light | typeof GLASS.dark;
+  shadows: typeof SHADOWS | typeof DARK_SHADOWS;
+  background: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    card: string;
+    overlay: string;
+  };
+  text: {
+    primary: string;
+    secondary: string;
+    tertiary: string;
+    inverse: string;
+    primaryInverse: string;
+  };
+  colors: typeof COLORS;
+  spacing: typeof SPACING;
+  radius: typeof RADIUS;
+  typography: typeof TYPOGRAPHY;
+  animation: typeof ANIMATION;
+  zIndex: typeof Z_INDEX;
+}
+
+export const lightTheme: Theme = {
+  mode: "light",
+  gradients: GRADIENTS,
+  glass: GLASS.light,
+  shadows: SHADOWS,
+  background: {
+    primary: BACKGROUND.primary,
+    secondary: BACKGROUND.secondary,
+    tertiary: BACKGROUND.tertiary,
+    card: BACKGROUND.card,
+    overlay: BACKGROUND.overlay,
+  },
+  text: {
+    primary: TEXT.primary,
+    secondary: TEXT.secondary,
+    tertiary: TEXT.tertiary,
+    inverse: TEXT.inverse,
+    primaryInverse: TEXT.primaryInverse,
+  },
+  colors: COLORS,
+  spacing: SPACING,
+  radius: RADIUS,
+  typography: TYPOGRAPHY,
+  animation: ANIMATION,
+  zIndex: Z_INDEX,
+};
+
+export const darkTheme: Theme = {
+  mode: "dark",
+  gradients: GRADIENTS,
+  glass: GLASS.dark,
+  shadows: DARK_SHADOWS,
+  background: {
+    primary: BACKGROUND.primaryDark,
+    secondary: BACKGROUND.secondaryDark,
+    tertiary: BACKGROUND.tertiaryDark,
+    card: BACKGROUND.cardDark,
+    overlay: "rgba(0, 0, 0, 0.7)",
+  },
+  text: {
+    primary: TEXT.primaryDark,
+    secondary: TEXT.secondaryDark,
+    tertiary: TEXT.tertiaryDark,
+    inverse: TEXT.primary,
+    primaryInverse: TEXT.primary,
+  },
+  colors: COLORS,
+  spacing: SPACING,
+  radius: RADIUS,
+  typography: TYPOGRAPHY,
+  animation: ANIMATION,
+  zIndex: Z_INDEX,
+};

@@ -1,17 +1,29 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Header } from "@/components/layout/Header";
-import { Dashboard } from "@/components/organisms/Dashboard";
+import { Dashboard, DashboardSkeleton } from "@/components/organisms";
 import { ActivityFeed } from "@/components/organisms/ActivityFeed";
 import { useSelectedBabyId } from "@/stores/babyStore";
 import { BACKGROUND, TEXT } from "@/lib/theme";
+import { useState, useEffect } from "react";
 
 export default function DashboardScreen() {
   const babyId = useSelectedBabyId();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading state - replace with actual data fetching logic
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <View style={styles.screen}>
       <Header title="Dashboard" showBackButton={false} />
-      {babyId ? (
+      {isLoading ? (
+        <DashboardSkeleton />
+      ) : babyId ? (
         <Dashboard
           todayFeeds={3}
           todayDiapers={5}

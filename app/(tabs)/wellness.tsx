@@ -140,7 +140,7 @@ export default function WellnessScreen() {
       icon: "book" as const,
       color: COLORS.gold,
       bgColor: `${COLORS.gold}20`,
-      route: "/(tabs)/calendar",
+      route: "/(tabs)/journal",
     },
     {
       id: "breathe",

@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Text,
   View,
   Pressable,
-  TextInput,
   ScrollView,
   ActivityIndicator,
   StyleSheet,
@@ -14,6 +12,9 @@ import { useOrganizationList, useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { getClerkJwtTemplateCandidates } from "@/lib/clerk-jwt-template";
+
 import {
   getOnboardingRedirectHref,
   shouldAutoSelectSingleOrganization,
@@ -21,22 +22,22 @@ import {
 } from "@/lib/onboarding";
 
 import { CreateBaby } from "@/components/organisms";
-
-// Celestial Nurture Design System Colors
-const COLORS = {
-  background: "#FAF7F2",
-  primary: "#D4A574", // Terracotta
-  secondary: "#8B9A7D", // Sage
-  accent: "#C9A227", // Gold
-  textPrimary: "#2D2A26",
-  textSecondary: "#6B6560",
-  cream: "#FAF7F2",
-  clay: "#B8956A",
-  moss: "#7A8B6E",
-};
+import { AloraLogo } from "@/components/atoms/AloraLogo";
+import { GlassCard } from "@/components/atoms/GlassCard";
+import { GradientButton } from "@/components/atoms/GradientButton";
+import { Input } from "@/components/atoms/Input";
+import { Text } from "@/components/ui/Text";
+import { COLORS, SHADOWS, BACKGROUND, GLASS } from "@/lib/theme";
 
 export default function OnboardingScreen() {
-  const { isSignedIn, orgId, getToken, isLoaded: isAuthLoaded } = useAuth();
+  const {
+    isSignedIn,
+    orgId,
+    getToken,
+    isLoaded: isAuthLoaded,
+  } = useAuth({
+    treatPendingAsSignedOut: false,
+  });
   const { isLoaded, createOrganization, setActive, userMemberships } =
     useOrganizationList({ userMemberships: true });
   const [showCreateBaby, setShowCreateBaby] = useState(false);
@@ -65,7 +66,10 @@ export default function OnboardingScreen() {
       }
       try {
         await setActive({ organization: organizationId });
-        await getToken({ template: "convex", skipCache: true });
+        for (const template of getClerkJwtTemplateCandidates()) {
+          const token = await getToken({ template, skipCache: true });
+          if (token) break;
+        }
         setOrgActivationComplete(true);
       } catch (err: any) {
         setError(
@@ -165,13 +169,39 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+    <View style={{ flex: 1, backgroundColor: BACKGROUND.primary }}>
       {/* Subtle gradient overlay */}
-      <View
-        style={[
-          StyleSheet.absoluteFill,
-          { backgroundColor: COLORS.background },
-        ]}
+      <LinearGradient
+        colors={[BACKGROUND.primary, BACKGROUND.secondary, BACKGROUND.primary]}
+        locations={[0, 0.5, 1]}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Decorative Celestial Elements */}
+      <MotiView
+        from={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.06, scale: 1 }}
+        transition={{
+          type: "timing",
+          duration: 5000,
+          loop: true,
+          repeatReverse: true,
+        }}
+        className="absolute top-[-150px] right-[-100px] w-[500px] h-[500px] rounded-full"
+        style={{ backgroundColor: COLORS.gold }}
+      />
+      <MotiView
+        from={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 0.08, scale: 1 }}
+        transition={{
+          type: "timing",
+          duration: 6000,
+          loop: true,
+          delay: 2000,
+          repeatReverse: true,
+        }}
+        className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] rounded-full"
+        style={{ backgroundColor: COLORS.terracotta }}
       />
 
       <MotiView
@@ -187,22 +217,24 @@ export default function OnboardingScreen() {
           transition={{ duration: 800, delay: 200 }}
           style={styles.welcomeContainer}
         >
-          <View style={styles.iconCircle}>
-            <Ionicons name="heart-outline" size={48} color={COLORS.primary} />
-          </View>
-          <Text style={styles.welcomeText}>Welcome to Alora</Text>
+          <AloraLogo size={80} showText={false} />
+          <Text style={styles.welcomeText} variant="body" color="secondary">
+            Welcome to Alora
+          </Text>
         </MotiView>
 
-        <Text style={styles.title}>Set up your family</Text>
-        <Text style={styles.subtitle}>
+        <Text variant="h2" color="primary" style={styles.title}>
+          Set up your family
+        </Text>
+        <Text variant="body" color="secondary" style={styles.subtitle}>
           Create a warm space to track your little one's precious moments
         </Text>
 
-        <View style={styles.card}>
+        <GlassCard variant="default" size="lg" style={styles.card}>
           {!isLoaded ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={COLORS.primary} />
-              <Text style={styles.loadingText}>
+              <ActivityIndicator size="large" color={COLORS.terracotta} />
+              <Text style={styles.loadingText} color="secondary">
                 Loading your family space...
               </Text>
             </View>
@@ -213,71 +245,88 @@ export default function OnboardingScreen() {
             >
               {userMemberships.data?.length ? (
                 <>
-                  <Text style={styles.sectionTitle}>Your families</Text>
-                  {userMemberships.data.map((membership) => (
-                    <Pressable
+                  <Text style={styles.sectionTitle} color="secondary">
+                    Your families
+                  </Text>
+                  {userMemberships.data.map((membership, index) => (
+                    <MotiView
                       key={membership.id}
-                      onPress={() =>
-                        handleSelectOrganization(membership.organization.id)
-                      }
-                      disabled={Boolean(selectingOrgId) || creating}
-                      style={[
-                        styles.orgButton,
-                        selectingOrgId === membership.organization.id &&
-                          styles.orgButtonActive,
-                        Boolean(selectingOrgId) &&
-                          selectingOrgId !== membership.organization.id &&
-                          styles.orgButtonDisabled,
-                      ]}
+                      from={{ opacity: 0, translateX: -20 }}
+                      animate={{ opacity: 1, translateX: 0 }}
+                      transition={{ delay: index * 100 }}
                     >
-                      <View style={styles.orgButtonContent}>
-                        <Ionicons
-                          name="people-outline"
-                          size={20}
-                          color={
-                            selectingOrgId === membership.organization.id
-                              ? COLORS.primary
-                              : COLORS.textSecondary
-                          }
-                        />
-                        <Text
-                          style={[
-                            styles.orgName,
-                            selectingOrgId === membership.organization.id &&
-                              styles.orgNameActive,
-                          ]}
-                        >
-                          {membership.organization.name}
-                        </Text>
-                      </View>
-                      <Ionicons
-                        name="chevron-forward"
-                        size={20}
-                        color={COLORS.textSecondary}
-                      />
-                    </Pressable>
+                      <Pressable
+                        onPress={() =>
+                          handleSelectOrganization(membership.organization.id)
+                        }
+                        disabled={Boolean(selectingOrgId) || creating}
+                        style={[
+                          styles.orgButton,
+                          selectingOrgId === membership.organization.id &&
+                            styles.orgButtonActive,
+                          Boolean(selectingOrgId) &&
+                            selectingOrgId !== membership.organization.id &&
+                            styles.orgButtonDisabled,
+                        ]}
+                      >
+                        <View style={styles.orgButtonContent}>
+                          <Ionicons
+                            name="people-outline"
+                            size={20}
+                            color={
+                              selectingOrgId === membership.organization.id
+                                ? COLORS.terracotta
+                                : COLORS.sage
+                            }
+                          />
+                          <Text
+                            style={[
+                              styles.orgName,
+                              selectingOrgId === membership.organization.id &&
+                                styles.orgNameActive,
+                            ]}
+                            color="primary"
+                          >
+                            {membership.organization.name}
+                          </Text>
+                        </View>
+                        {selectingOrgId === membership.organization.id ? (
+                          <ActivityIndicator
+                            size="small"
+                            color={COLORS.terracotta}
+                          />
+                        ) : (
+                          <Ionicons
+                            name="chevron-forward"
+                            size={20}
+                            color={COLORS.sage}
+                          />
+                        )}
+                      </Pressable>
+                    </MotiView>
                   ))}
                 </>
               ) : (
                 <View style={styles.emptyState}>
-                  <Ionicons
-                    name="home-outline"
-                    size={40}
-                    color={COLORS.secondary}
-                  />
-                  <Text style={styles.emptyText}>
+                  <Ionicons name="home-outline" size={40} color={COLORS.sage} />
+                  <Text style={styles.emptyText} color="secondary">
                     You haven't created a family space yet.
                   </Text>
                 </View>
               )}
 
-              <Text style={styles.createTitle}>Create a new family</Text>
-              <TextInput
+              <Text style={styles.createTitle} color="secondary">
+                Create a new family
+              </Text>
+
+              <Input
+                placeholder="Family name (e.g., The Johnsons)"
                 value={orgName}
                 onChangeText={setOrgName}
-                placeholder="Family name (e.g., The Johnsons)"
-                placeholderTextColor={COLORS.textSecondary}
-                style={styles.input}
+                leftIcon={
+                  <Ionicons name="home-outline" size={20} color={COLORS.sage} />
+                }
+                animated={false}
               />
 
               {error ? (
@@ -285,41 +334,30 @@ export default function OnboardingScreen() {
                   <Ionicons
                     name="alert-circle"
                     size={18}
-                    color={COLORS.primary}
+                    color={COLORS.terracotta}
                   />
-                  <Text style={styles.errorText}>{error}</Text>
+                  <Text style={styles.errorText} color="terracotta">
+                    {error}
+                  </Text>
                 </View>
               ) : null}
 
-              <Pressable
+              <GradientButton
+                variant="primary"
                 onPress={handleCreateOrganization}
-                disabled={creating || !isLoaded}
-                style={[
-                  styles.createButton,
-                  creating
-                    ? styles.createButtonDisabled
-                    : styles.createButtonEnabled,
-                ]}
+                loading={creating}
+                disabled={!isLoaded}
+                size="lg"
+                style={styles.createButton}
+                icon={
+                  <Ionicons name="add-circle-outline" size={20} color="#fff" />
+                }
               >
-                {creating ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <>
-                    <Ionicons
-                      name="add-circle-outline"
-                      size={20}
-                      color="#fff"
-                      style={{ marginRight: 8 }}
-                    />
-                    <Text style={styles.createButtonText}>
-                      Create and continue
-                    </Text>
-                  </>
-                )}
-              </Pressable>
+                Create and continue
+              </GradientButton>
             </ScrollView>
           )}
-        </View>
+        </GlassCard>
 
         <CreateBaby
           visible={showCreateBaby}
@@ -342,50 +380,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  iconCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: "rgba(212, 165, 116, 0.15)",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: "rgba(212, 165, 116, 0.3)",
-  },
   welcomeText: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
+    marginTop: 12,
     fontFamily: "DMSans-Regular",
   },
   title: {
-    fontSize: 34,
     fontFamily: "CrimsonPro-SemiBold",
-    color: COLORS.textPrimary,
     marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
     textAlign: "center",
     marginBottom: 32,
-    color: COLORS.textSecondary,
-    fontFamily: "DMSans-Regular",
     maxWidth: 280,
+    fontFamily: "DMSans-Regular",
   },
   card: {
     width: "100%",
     maxWidth: 380,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    borderRadius: 24,
-    padding: 24,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: "rgba(212, 165, 116, 0.2)",
   },
   loadingContainer: {
     alignItems: "center",
@@ -393,7 +405,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    color: COLORS.textSecondary,
     fontFamily: "DMSans-Regular",
     fontSize: 14,
   },
@@ -403,7 +414,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 14,
     fontFamily: "DMSans-SemiBold",
-    color: COLORS.textSecondary,
     marginBottom: 12,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -421,7 +431,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   orgButtonActive: {
-    borderColor: COLORS.primary,
+    borderColor: COLORS.terracotta,
     backgroundColor: "rgba(212, 165, 116, 0.08)",
   },
   orgButtonDisabled: {
@@ -435,10 +445,10 @@ const styles = StyleSheet.create({
   orgName: {
     fontSize: 16,
     fontFamily: "DMSans-SemiBold",
-    color: COLORS.textPrimary,
+    marginLeft: 12,
   },
   orgNameActive: {
-    color: COLORS.primary,
+    color: COLORS.terracotta,
   },
   emptyState: {
     alignItems: "center",
@@ -447,29 +457,16 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 15,
-    color: COLORS.textSecondary,
     fontFamily: "DMSans-Regular",
     textAlign: "center",
   },
   createTitle: {
     fontSize: 14,
     fontFamily: "DMSans-SemiBold",
-    color: COLORS.textSecondary,
     marginTop: 24,
     marginBottom: 12,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-  },
-  input: {
-    borderWidth: 1.5,
-    borderColor: "rgba(212, 165, 116, 0.3)",
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    color: COLORS.textPrimary,
-    fontFamily: "DMSans-Regular",
-    fontSize: 16,
   },
   errorContainer: {
     flexDirection: "row",
@@ -481,33 +478,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   errorText: {
-    color: COLORS.primary,
     fontFamily: "DMSans-Medium",
     fontSize: 14,
     flex: 1,
   },
   createButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRadius: 14,
     marginTop: 8,
-  },
-  createButtonEnabled: {
-    backgroundColor: COLORS.primary,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  createButtonDisabled: {
-    backgroundColor: "rgba(212, 165, 116, 0.5)",
-  },
-  createButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: "DMSans-SemiBold",
+    ...SHADOWS.glow,
   },
 });

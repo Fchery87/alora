@@ -104,7 +104,7 @@ export interface SleepFormData {
   type: "nap" | "night" | "day";
   startTime: Date;
   endTime?: Date | null;
-  duration?: number; // in minutes
+  duration?: number; // in milliseconds
 }
 
 export function validateSleep(data: Partial<SleepFormData>): ValidationResult {
@@ -137,11 +137,11 @@ export function validateSleep(data: Partial<SleepFormData>): ValidationResult {
         field: "duration",
         message: "Duration must be greater than 0",
       });
-    } else if (data.duration > 720) {
+    } else if (data.duration > 12 * 60 * 60 * 1000) {
       // 12 hours max
       errors.push({
         field: "duration",
-        message: "Duration seems too long (max 720 minutes)",
+        message: "Duration seems too long (max 12 hours)",
       });
     }
   }

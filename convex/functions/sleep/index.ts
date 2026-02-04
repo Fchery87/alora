@@ -14,12 +14,13 @@ export const createSleep = mutation({
     startTime: v.number(),
     endTime: v.optional(v.number()),
     duration: v.optional(v.number()),
-    quality: v.union(
-      v.literal("awake"),
-      v.literal("drowsy"),
-      v.literal("sleeping"),
-      v.literal("deep"),
-      v.literal("awake")
+    quality: v.optional(
+      v.union(
+        v.literal("awake"),
+        v.literal("drowsy"),
+        v.literal("sleeping"),
+        v.literal("deep")
+      )
     ),
     notes: v.optional(v.string()),
   },
@@ -82,6 +83,7 @@ export const getSleep = query({
 export const updateSleep = mutation({
   args: {
     id: v.id("sleep"),
+    startTime: v.optional(v.number()),
     type: v.optional(
       v.union(v.literal("nap"), v.literal("night"), v.literal("day"))
     ),
@@ -92,8 +94,7 @@ export const updateSleep = mutation({
         v.literal("awake"),
         v.literal("drowsy"),
         v.literal("sleeping"),
-        v.literal("deep"),
-        v.literal("awake")
+        v.literal("deep")
       )
     ),
     notes: v.optional(v.string()),

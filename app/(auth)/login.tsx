@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
-  TextInput,
   Platform,
   KeyboardAvoidingView,
   ScrollView,
@@ -17,25 +16,15 @@ import { cssInterop } from "react-native-css-interop";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { Logo } from "@/components/Logo";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { AloraLogo } from "@/components/atoms/AloraLogo";
+import { GlassCard } from "@/components/atoms/GlassCard";
+import { GradientButton } from "@/components/atoms/GradientButton";
+import { Input } from "@/components/atoms/Input";
 import { Text } from "@/components/ui/Text";
+import { getInitialHref } from "@/lib/routing";
+import { COLORS, GRADIENTS, SHADOWS, BACKGROUND } from "@/lib/theme";
 
 cssInterop(MotiView, { className: "style" });
-
-// Celestial Nurture Design System Colors
-const COLORS = {
-  background: "#FAF7F2",
-  primary: "#D4A574", // Terracotta
-  secondary: "#8B9A7D", // Sage
-  accent: "#C9A227", // Gold
-  textPrimary: "#2D2A26",
-  textSecondary: "#6B6560",
-  cream: "#FAF7F2",
-  clay: "#B8956A",
-  moss: "#7A8B6E",
-};
 
 // Warm up browser on Android for better UX
 export const useWarmUpBrowser = () => {
@@ -54,7 +43,13 @@ export default function LoginScreen() {
   useWarmUpBrowser();
 
   const { signIn, setActive, isLoaded } = useSignIn();
-  const { isSignedIn, isLoaded: isAuthLoaded } = useAuth();
+  const {
+    isSignedIn,
+    isLoaded: isAuthLoaded,
+    orgId,
+  } = useAuth({
+    treatPendingAsSignedOut: false,
+  });
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const router = useRouter();
 
@@ -64,11 +59,29 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  const postAuthHref = useMemo(
+    () => getInitialHref({ isSignedIn: true, orgId }),
+    [orgId]
+  );
+
+  const redirectAfterAuth = useCallback(() => {
+    router.replace(postAuthHref as any);
+  }, [postAuthHref, router]);
+
+  const hardRedirectAfterAuth = useCallback(() => {
+    if (Platform.OS === "web") {
+      const url = Linking.createURL(postAuthHref);
+      (globalThis as any).location?.assign?.(url);
+      return;
+    }
+    redirectAfterAuth();
+  }, [postAuthHref, redirectAfterAuth]);
+
   useEffect(() => {
     if (isAuthLoaded && isSignedIn) {
-      router.replace("/");
+      redirectAfterAuth();
     }
-  }, [isAuthLoaded, isSignedIn, router]);
+  }, [isAuthLoaded, isSignedIn, redirectAfterAuth]);
 
   const handleLogin = async () => {
     if (!isLoaded || loading) return;
@@ -84,7 +97,6 @@ export default function LoginScreen() {
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
-        router.replace("/");
       } else if (result.status === "needs_first_factor") {
         setError("Please check your email for a verification code.");
       } else if (result.status === "needs_second_factor") {
@@ -98,7 +110,6 @@ export default function LoginScreen() {
       const errorMessage =
         err.errors?.[0]?.message || err.message || "Login failed";
 
-      // Provide more user-friendly error messages
       if (errorMessage.includes("identifier")) {
         setError("Invalid email address.");
       } else if (errorMessage.includes("password")) {
@@ -124,11 +135,7 @@ export default function LoginScreen() {
         return;
       }
       if (isAuthLoaded && isSignedIn) {
-        if (Platform.OS === "web") {
-          (globalThis as any).location?.assign?.(Linking.createURL("/"));
-          return;
-        }
-        router.replace("/");
+        redirectAfterAuth();
         return;
       }
 
@@ -141,7 +148,6 @@ export default function LoginScreen() {
 
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
-        router.replace("/");
       }
     } catch (err: any) {
       console.error("OAuth error:", err);
@@ -154,24 +160,27 @@ export default function LoginScreen() {
         (message.includes("already signed in") ||
           message.toLowerCase().includes("session already exists"))
       ) {
-        if (Platform.OS === "web") {
-          (globalThis as any).location?.assign?.(Linking.createURL("/"));
-          return;
-        }
-        router.replace("/");
+        hardRedirectAfterAuth();
         return;
       }
       setError(message);
     } finally {
       setGoogleLoading(false);
     }
-  }, [googleLoading, isAuthLoaded, isSignedIn, router, startOAuthFlow]);
+  }, [
+    googleLoading,
+    isAuthLoaded,
+    isSignedIn,
+    redirectAfterAuth,
+    hardRedirectAfterAuth,
+    startOAuthFlow,
+  ]);
 
   return (
-    <View className="flex-1" style={{ backgroundColor: COLORS.background }}>
+    <View className="flex-1" style={{ backgroundColor: BACKGROUND.primary }}>
       {/* Subtle Organic Background Pattern */}
       <LinearGradient
-        colors={["#FAF7F2", "#F5F0E8", "#FAF7F2"]}
+        colors={[BACKGROUND.primary, BACKGROUND.secondary, BACKGROUND.primary]}
         locations={[0, 0.5, 1]}
         style={StyleSheet.absoluteFill}
       />
@@ -180,31 +189,27 @@ export default function LoginScreen() {
       <MotiView
         from={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 0.08, scale: 1 }}
-        transition={
-          {
-            type: "timing",
-            duration: 4000,
-            loop: true,
-            repeatReverse: true,
-          } as any
-        }
+        transition={{
+          type: "timing",
+          duration: 4000,
+          loop: true,
+          repeatReverse: true,
+        }}
         className="absolute top-[-150px] right-[-100px] w-[500px] h-[500px] rounded-full"
-        style={{ backgroundColor: COLORS.primary }}
+        style={{ backgroundColor: COLORS.terracotta }}
       />
       <MotiView
         from={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 0.06, scale: 1 }}
-        transition={
-          {
-            type: "timing",
-            duration: 5000,
-            loop: true,
-            delay: 1500,
-            repeatReverse: true,
-          } as any
-        }
+        transition={{
+          type: "timing",
+          duration: 5000,
+          loop: true,
+          delay: 1500,
+          repeatReverse: true,
+        }}
         className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] rounded-full"
-        style={{ backgroundColor: COLORS.secondary }}
+        style={{ backgroundColor: COLORS.sage }}
       />
 
       <KeyboardAvoidingView
@@ -225,7 +230,7 @@ export default function LoginScreen() {
             }}
             className="items-center mb-10"
           >
-            <Logo size={80} showText />
+            <AloraLogo size={100} showText={false} />
           </MotiView>
 
           {/* Login Card */}
@@ -237,35 +242,19 @@ export default function LoginScreen() {
               translateY: { type: "timing", duration: 700, delay: 200 },
             }}
           >
-            <Card
-              variant="default"
-              className="w-full max-w-sm mx-auto p-8 shadow-xl"
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.85)",
-                borderWidth: 1,
-                borderColor: "rgba(212, 165, 116, 0.2)",
-                borderRadius: 24,
-              }}
-            >
+            <GlassCard variant="default" size="lg" style={styles.card}>
               <Text
-                variant="title"
+                variant="h2"
+                color="primary"
                 className="text-center mb-2"
-                style={{
-                  color: COLORS.textPrimary,
-                  fontFamily: "CrimsonPro-SemiBold",
-                  fontSize: 32,
-                }}
+                style={{ fontFamily: "CrimsonPro-SemiBold" }}
               >
                 Welcome Back
               </Text>
               <Text
-                variant="subtitle"
+                variant="body"
+                color="secondary"
                 className="text-center mb-8"
-                style={{
-                  color: COLORS.textSecondary,
-                  fontFamily: "DMSans-Regular",
-                  fontSize: 15,
-                }}
               >
                 Sign in to continue your journey
               </Text>
@@ -275,23 +264,17 @@ export default function LoginScreen() {
                   from={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="flex-row items-center p-4 rounded-xl mb-5 gap-2"
-                  style={{
-                    backgroundColor: "rgba(212, 165, 116, 0.1)",
-                    borderWidth: 1,
-                    borderColor: "rgba(212, 165, 116, 0.3)",
-                  }}
+                  style={styles.errorContainer}
                 >
                   <Ionicons
                     name="alert-circle"
                     size={18}
-                    color={COLORS.primary}
+                    color={COLORS.terracotta}
                   />
                   <Text
                     className="text-sm flex-1"
-                    style={{
-                      color: COLORS.primary,
-                      fontFamily: "DMSans-Medium",
-                    }}
+                    color="terracotta"
+                    style={{ fontFamily: "DMSans-Medium" }}
                   >
                     {error}
                   </Text>
@@ -299,40 +282,21 @@ export default function LoginScreen() {
               ) : null}
 
               {/* Google OAuth Button */}
-              <Button
+              <GradientButton
                 variant="outline"
                 onPress={handleGoogleSignIn}
-                disabled={googleLoading || !isAuthLoaded}
-                className="mb-5 flex-row items-center justify-center gap-2 rounded-xl"
-                style={{
-                  borderWidth: 1.5,
-                  borderColor: "rgba(139, 154, 125, 0.4)",
-                  backgroundColor: "rgba(255, 255, 255, 0.6)",
-                  paddingVertical: 14,
-                }}
+                loading={googleLoading || !isAuthLoaded}
+                style={styles.googleButton}
+                icon={
+                  <Ionicons
+                    name="logo-google"
+                    size={20}
+                    color={COLORS.warmDark}
+                  />
+                }
               >
-                {googleLoading ? (
-                  <ActivityIndicator color={COLORS.secondary} />
-                ) : (
-                  <>
-                    <Ionicons
-                      name="logo-google"
-                      size={20}
-                      color={COLORS.textPrimary}
-                    />
-                    <Text
-                      className="font-semibold"
-                      style={{
-                        color: COLORS.textPrimary,
-                        fontFamily: "DMSans-SemiBold",
-                        fontSize: 15,
-                      }}
-                    >
-                      Continue with Google
-                    </Text>
-                  </>
-                )}
-              </Button>
+                Continue with Google
+              </GradientButton>
 
               {/* Divider */}
               <View className="flex-row items-center mb-5">
@@ -340,13 +304,7 @@ export default function LoginScreen() {
                   className="flex-1 h-[1px]"
                   style={{ backgroundColor: "rgba(139, 154, 125, 0.3)" }}
                 />
-                <Text
-                  className="mx-4 text-sm"
-                  style={{
-                    color: COLORS.textSecondary,
-                    fontFamily: "DMSans-Regular",
-                  }}
-                >
+                <Text className="mx-4 text-sm" color="secondary">
                   or
                 </Text>
                 <View
@@ -356,123 +314,69 @@ export default function LoginScreen() {
               </View>
 
               {/* Email Input */}
-              <View className="mb-4">
-                <View
-                  className="flex-row items-center rounded-xl px-4 py-3.5"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.9)",
-                    borderWidth: 1.5,
-                    borderColor: "rgba(212, 165, 116, 0.25)",
-                  }}
-                >
-                  <Ionicons
-                    name="mail-outline"
-                    size={20}
-                    color={COLORS.textSecondary}
-                  />
-                  <TextInput
-                    className="flex-1 ml-3 text-[16px]"
-                    style={{
-                      color: COLORS.textPrimary,
-                      fontFamily: "DMSans-Regular",
-                    }}
-                    placeholder="Email"
-                    placeholderTextColor={COLORS.textSecondary}
-                    value={email}
-                    onChangeText={setEmail}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    cursorColor={COLORS.primary}
-                  />
-                </View>
-              </View>
+              <Input
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                leftIcon={
+                  <Ionicons name="mail-outline" size={20} color={COLORS.sage} />
+                }
+                animated={true}
+                delay={300}
+              />
 
               {/* Password Input */}
-              <View className="mb-6">
-                <View
-                  className="flex-row items-center rounded-xl px-4 py-3.5"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.9)",
-                    borderWidth: 1.5,
-                    borderColor: "rgba(212, 165, 116, 0.25)",
-                  }}
-                >
+              <Input
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                leftIcon={
                   <Ionicons
                     name="lock-closed-outline"
                     size={20}
-                    color={COLORS.textSecondary}
+                    color={COLORS.sage}
                   />
-                  <TextInput
-                    className="flex-1 ml-3 text-[16px]"
-                    style={{
-                      color: COLORS.textPrimary,
-                      fontFamily: "DMSans-Regular",
-                    }}
-                    placeholder="Password"
-                    placeholderTextColor={COLORS.textSecondary}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    cursorColor={COLORS.primary}
-                  />
-                </View>
-              </View>
+                }
+                animated={true}
+                delay={400}
+              />
 
               {/* Sign In Button */}
-              <Button
-                variant="primary"
-                onPress={handleLogin}
-                disabled={loading}
-                className="w-full rounded-xl"
-                style={{
-                  backgroundColor: COLORS.primary,
-                  paddingVertical: 16,
-                  shadowColor: COLORS.primary,
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 8,
-                  elevation: 5,
-                }}
+              <MotiView
+                from={{ opacity: 0, translateY: 10 }}
+                animate={{ opacity: 1, translateY: 0 }}
+                transition={{ delay: 500 }}
               >
-                {loading ? (
-                  <ActivityIndicator color="#FFF" />
-                ) : (
-                  <Text
-                    style={{
-                      color: "#FFF",
-                      fontFamily: "DMSans-SemiBold",
-                      fontSize: 16,
-                    }}
-                  >
-                    Sign In
-                  </Text>
-                )}
-              </Button>
+                <GradientButton
+                  variant="primary"
+                  onPress={handleLogin}
+                  loading={loading}
+                  size="lg"
+                  style={styles.signInButton}
+                >
+                  Sign In
+                </GradientButton>
+              </MotiView>
 
               {/* Sign Up Link */}
-              <Button
-                variant="ghost"
-                onPress={() => router.push("/(auth)/register")}
-                className="mt-6"
+              <MotiView
+                from={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 600 }}
+                className="mt-6 items-center"
               >
-                <Text
-                  style={{
-                    color: COLORS.textSecondary,
-                    fontFamily: "DMSans-Regular",
-                  }}
+                <GradientButton
+                  variant="ghost"
+                  onPress={() => router.push("/(auth)/register")}
+                  size="md"
                 >
-                  Don't have an account?{" "}
-                  <Text
-                    style={{
-                      color: COLORS.primary,
-                      fontFamily: "DMSans-SemiBold",
-                    }}
-                  >
-                    Sign up
-                  </Text>
-                </Text>
-              </Button>
-            </Card>
+                  Don't have an account? Sign up
+                </GradientButton>
+              </MotiView>
+            </GlassCard>
           </MotiView>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -485,5 +389,22 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     padding: 24,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 380,
+    alignSelf: "center",
+  },
+  errorContainer: {
+    backgroundColor: "rgba(212, 165, 116, 0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(212, 165, 116, 0.3)",
+  },
+  googleButton: {
+    marginBottom: 20,
+  },
+  signInButton: {
+    marginTop: 8,
+    ...SHADOWS.glow,
   },
 });

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -14,9 +15,10 @@ type DiapersApi = {
   deleteDiaper: (args: { id: string }) => Promise<any>;
 };
 
-const diapersApi = (api as any).diapers as DiapersApi;
+const diapersApi = (api as any).diapers as any;
 
 export function useCreateDiaper() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -27,9 +29,9 @@ export function useCreateDiaper() {
       notes?: string;
       startTime: number;
       endTime?: number;
-    }) => diapersApi.createDiaper(data),
-    onSuccess: (_, babyId) => {
-      queryClient.invalidateQueries({ queryKey: ["diapers", babyId] });
+    }) => convex.mutation(diapersApi.createDiaper, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["diapers", variables.babyId] });
     },
   });
 }
@@ -38,27 +40,31 @@ export function useListDiapers(
   babyId: string,
   dateRange?: { start: number; end: number }
 ) {
+  const convex = useConvex();
   return useQuery({
     queryKey: ["diapers", babyId, dateRange],
     queryFn: () =>
-      diapersApi.listDiapers({
+      convex.query(diapersApi.listDiapers, {
         babyId,
         startDate: dateRange?.start,
         endDate: dateRange?.end,
       }),
     staleTime: 5 * 60 * 1000,
+    enabled: Boolean(babyId),
   });
 }
 
 export function useDiaper(id: string) {
+  const convex = useConvex();
   return useQuery({
     queryKey: ["diaper", id],
-    queryFn: () => diapersApi.getDiaper({ id }),
+    queryFn: () => convex.query(diapersApi.getDiaper, { id }),
     enabled: !!id,
   });
 }
 
 export function useUpdateDiaper() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -73,7 +79,7 @@ export function useUpdateDiaper() {
         notes?: string;
         endTime?: number;
       }>;
-    }) => diapersApi.updateDiaper({ id, ...data }),
+    }) => convex.mutation(diapersApi.updateDiaper, { id, ...data }),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["diaper", id] });
     },
@@ -81,10 +87,11 @@ export function useUpdateDiaper() {
 }
 
 export function useDeleteDiaper() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: Id<"diapers">) => diapersApi.deleteDiaper({ id }),
+    mutationFn: (id: Id<"diapers">) => convex.mutation(diapersApi.deleteDiaper, { id }),
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["diaper", id] });
     },

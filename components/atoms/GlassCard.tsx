@@ -2,7 +2,8 @@ import React from "react";
 import { View, StyleSheet, ViewStyle } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { GRADIENTS, SHADOWS, RADIUS, GLASS, BACKGROUND } from "@/lib/theme";
+import { GRADIENTS, RADIUS } from "@/lib/theme";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 interface GlassCardProps {
   children: React.ReactNode;
@@ -21,6 +22,8 @@ export function GlassCard({
   animated = true,
   delay = 0,
 }: GlassCardProps) {
+  const { theme } = useTheme();
+
   const gradientColors = React.useMemo((): [string, string] => {
     switch (variant) {
       case "primary":
@@ -34,9 +37,9 @@ export function GlassCard({
       case "warm":
         return ["#D4A574", "#E8DED1"];
       default:
-        return [BACKGROUND.card, BACKGROUND.secondary];
+        return [theme.background.card, theme.background.secondary];
     }
-  }, [variant]);
+  }, [variant, theme]);
 
   const animationStyle = animated
     ? {
@@ -61,62 +64,65 @@ export function GlassCard({
     }
   }, [size]);
 
+  const dynamicStyles = React.useMemo(
+    () => ({
+      card: {
+        ...theme.shadows.md,
+      },
+      creamCard: {
+        backgroundColor: theme.background.card,
+      },
+      glassOverlay: {
+        borderColor: theme.glass.border,
+      },
+      creamGlass: {
+        backgroundColor: theme.glass.background,
+      },
+      tintedGlass: {
+        backgroundColor:
+          theme.mode === "dark"
+            ? "rgba(45, 42, 38, 0.85)"
+            : "rgba(250, 247, 242, 0.85)",
+      },
+    }),
+    [theme]
+  );
+
+  const CardWrapper = animated ? MotiView : View;
+  const cardWrapperProps = animated ? { ...animationStyle } : {};
+
   return (
     <View style={[styles.container, style]}>
-      {animated ? (
-        <MotiView
-          {...animationStyle}
-          style={[
-            styles.card,
-            sizeStyles,
-            variant !== "default" ? styles.gradientCard : styles.creamCard,
-          ]}
-        >
-          {variant !== "default" && (
-            <LinearGradient
-              colors={gradientColors}
-              style={StyleSheet.absoluteFill}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            />
-          )}
+      <CardWrapper
+        {...cardWrapperProps}
+        style={[
+          styles.card,
+          dynamicStyles.card,
+          sizeStyles,
+          variant !== "default" ? styles.gradientCard : dynamicStyles.creamCard,
+        ]}
+      >
+        {variant !== "default" && (
+          <LinearGradient
+            colors={gradientColors}
+            style={StyleSheet.absoluteFill}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          />
+        )}
 
-          <View
-            style={[
-              styles.glassOverlay,
-              variant === "default" ? styles.creamGlass : styles.tintedGlass,
-            ]}
-          >
-            {children}
-          </View>
-        </MotiView>
-      ) : (
         <View
           style={[
-            styles.card,
-            sizeStyles,
-            variant !== "default" ? styles.gradientCard : styles.creamCard,
+            styles.glassOverlay,
+            dynamicStyles.glassOverlay,
+            variant === "default"
+              ? dynamicStyles.creamGlass
+              : dynamicStyles.tintedGlass,
           ]}
         >
-          {variant !== "default" && (
-            <LinearGradient
-              colors={gradientColors}
-              style={StyleSheet.absoluteFill}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            />
-          )}
-
-          <View
-            style={[
-              styles.glassOverlay,
-              variant === "default" ? styles.creamGlass : styles.tintedGlass,
-            ]}
-          >
-            {children}
-          </View>
+          {children}
         </View>
-      )}
+      </CardWrapper>
     </View>
   );
 }
@@ -126,27 +132,16 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   card: {
-    ...SHADOWS.md,
     position: "relative",
     overflow: "hidden",
   },
   gradientCard: {
     backgroundColor: "transparent",
   },
-  creamCard: {
-    backgroundColor: BACKGROUND.card,
-  },
   glassOverlay: {
     flex: 1,
     borderRadius: RADIUS.lg,
     borderWidth: 1,
-    borderColor: GLASS.light.border,
-  },
-  creamGlass: {
-    backgroundColor: GLASS.light.background,
-  },
-  tintedGlass: {
-    backgroundColor: "rgba(250, 247, 242, 0.85)",
   },
   absoluteFill: {
     position: "absolute" as "absolute",

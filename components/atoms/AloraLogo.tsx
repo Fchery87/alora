@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SvgXml } from "react-native-svg";
+import { COLORS, BACKGROUND } from "@/lib/theme";
 
 interface AloraLogoProps {
   size?: number;
@@ -13,16 +14,16 @@ export function AloraLogo({ size = 120, showText = true }: AloraLogoProps) {
     <svg viewBox="0 0 120 120" width="${size}" height="${size}">
       <defs>
         <linearGradient id="leafGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#22c55e" stop-opacity="1"/>
-          <stop offset="100%" stop-color="#10b981" stop-opacity="1"/>
+          <stop offset="0%" stop-color="${COLORS.sage}" stop-opacity="1"/>
+          <stop offset="100%" stop-color="${COLORS.moss}" stop-opacity="1"/>
         </linearGradient>
         <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#f43f5e" stop-opacity="1"/>
-          <stop offset="100%" stop-color="#ec4899" stop-opacity="1"/>
+          <stop offset="0%" stop-color="${COLORS.terracotta}" stop-opacity="1"/>
+          <stop offset="100%" stop-color="${COLORS.clay}" stop-opacity="1"/>
         </linearGradient>
         <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#6366f1" stop-opacity="1"/>
-          <stop offset="100%" stop-color="#8b5cf6" stop-opacity="1"/>
+          <stop offset="0%" stop-color="${COLORS.gold}" stop-opacity="1"/>
+          <stop offset="100%" stop-color="${COLORS.terracotta}" stop-opacity="1"/>
         </linearGradient>
         <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -59,9 +60,9 @@ export function AloraLogo({ size = 120, showText = true }: AloraLogoProps) {
       </g>
 
       <!-- Protection/Dots (security, trust) -->
-      <circle cx="30" cy="90" r="3" fill="#6366f1" opacity="0.6"/>
-      <circle cx="60" cy="95" r="3" fill="#8b5cf6" opacity="0.6"/>
-      <circle cx="90" cy="90" r="3" fill="#22c55e" opacity="0.6"/>
+      <circle cx="30" cy="90" r="3" fill="${COLORS.gold}" opacity="0.6"/>
+      <circle cx="60" cy="95" r="3" fill="${COLORS.terracotta}" opacity="0.6"/>
+      <circle cx="90" cy="90" r="3" fill="${COLORS.sage}" opacity="0.6"/>
     </svg>
   `;
 
@@ -69,12 +70,17 @@ export function AloraLogo({ size = 120, showText = true }: AloraLogoProps) {
     <View style={[styles.container, { height: size + (showText ? 16 : 0) }]}>
       <View style={styles.logoWrapper}>
         <LinearGradient
-          colors={["#f8fafc", "#f1f5f9"]}
+          colors={[BACKGROUND.card, BACKGROUND.secondary]}
           style={styles.logoBackground}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
         >
-          <SvgXml xml={logoSvg} width={size} height={size} style={styles.logoSvg} />
+          <SvgXml
+            xml={logoSvg}
+            width={size}
+            height={size}
+            style={styles.logoSvg}
+          />
         </LinearGradient>
       </View>
       {showText && (
@@ -93,7 +99,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logoWrapper: {
-    shadowColor: "rgba(99, 102, 241, 0.2)",
+    shadowColor: "rgba(212, 165, 116, 0.3)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 16,
@@ -120,14 +126,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
     letterSpacing: -0.5,
-    color: "#0f172a",
+    color: COLORS.warmDark,
     textTransform: "lowercase",
   },
   tagline: {
     fontSize: 11,
     fontWeight: "400",
     letterSpacing: 2,
-    color: "#64748b",
+    color: COLORS.stone,
     marginTop: 2,
     textTransform: "uppercase",
   },

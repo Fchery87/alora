@@ -56,7 +56,6 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
 
   const toast = useToast();
   const createDiaperMutation = useCreateDiaper();
-  const createDiaper = createDiaperMutation as unknown as (args: any) => void;
 
   const diaperTypes: { value: DiaperType; label: string; icon: string }[] = [
     { value: "wet", label: "Wet", icon: "water-outline" },
@@ -113,7 +112,7 @@ export function DiaperTracker({ babyId, onSuccess }: DiaperTrackerProps) {
     setIsSubmitting(true);
 
     try {
-      await createDiaper({
+      await createDiaperMutation.mutateAsync({
         babyId: babyId as any,
         type,
         color: color || undefined,

@@ -62,9 +62,7 @@ export function SleepTracker({
 
   const toast = useToast();
   const createSleepMutation = useCreateSleep();
-  const createSleep = createSleepMutation as unknown as (args: any) => void;
   const updateSleepMutation = useUpdateSleep();
-  const updateSleep = updateSleepMutation as unknown as (args: any) => void;
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -107,9 +105,9 @@ export function SleepTracker({
   // Validate form in real-time
   const validate = () => {
     const duration = endTime
-      ? Math.floor((endTime.getTime() - startTime.getTime()) / 1000 / 60)
+      ? endTime.getTime() - startTime.getTime()
       : elapsedSeconds
-        ? Math.floor(elapsedSeconds / 60)
+        ? elapsedSeconds * 1000
         : undefined;
 
     const formData: Partial<SleepFormData> = {
@@ -152,13 +150,13 @@ export function SleepTracker({
 
     try {
       const duration = endTime
-        ? Math.floor((endTime.getTime() - startTime.getTime()) / 1000 / 60)
+        ? endTime.getTime() - startTime.getTime()
         : elapsedSeconds
-          ? Math.floor(elapsedSeconds / 60)
+          ? elapsedSeconds * 1000
           : undefined;
 
       if (existingSleepId) {
-        await updateSleep({
+        await updateSleepMutation.mutateAsync({
           id: existingSleepId as any,
           data: {
             startTime: startTime.getTime(),
@@ -167,7 +165,7 @@ export function SleepTracker({
           },
         });
       } else {
-        await createSleep({
+        await createSleepMutation.mutateAsync({
           babyId: babyId as any,
           type,
           startTime: startTime.getTime(),

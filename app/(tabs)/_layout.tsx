@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { View, StyleSheet } from "react-native";
 import { MotiView } from "moti";
 import { ProtectedRoute } from "@/components/atoms/ProtectedRoute";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 // Custom animated tab icon component
 function AnimatedTabIcon({
@@ -38,13 +39,18 @@ function AnimatedTabIcon({
 }
 
 export default function TabsLayout() {
+  const { theme, isDark } = useTheme();
+
   return (
     <ProtectedRoute requireOrganization>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#D4A574", // Terracotta
-          tabBarInactiveTintColor: "#8B8B8B",
-          tabBarStyle: styles.tabBar,
+          tabBarActiveTintColor: theme.colors.primary, // Terracotta
+          tabBarInactiveTintColor: isDark ? "#8A8580" : "#8B8B8B",
+          tabBarStyle: [
+            styles.tabBar,
+            { backgroundColor: theme.background.primary },
+          ],
           tabBarLabelStyle: styles.tabLabel,
           headerShown: false,
         }}
@@ -135,7 +141,6 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: "#FAF7F2", // Warm cream
     borderTopWidth: 0,
     elevation: 0,
     shadowColor: "#000",

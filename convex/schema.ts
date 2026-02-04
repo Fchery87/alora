@@ -92,11 +92,13 @@ export default defineSchema({
     startTime: v.number(),
     endTime: v.optional(v.number()),
     duration: v.optional(v.number()),
-    quality: v.union(
-      v.literal("awake"),
-      v.literal("drowsy"),
-      v.literal("sleeping"),
-      v.literal("deep")
+    quality: v.optional(
+      v.union(
+        v.literal("awake"),
+        v.literal("drowsy"),
+        v.literal("sleeping"),
+        v.literal("deep")
+      )
     ),
     notes: v.optional(v.string()),
     createdById: v.id("users"),

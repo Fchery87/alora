@@ -55,7 +55,6 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
 
   const toast = useToast();
   const createFeedMutation = useCreateFeed();
-  const createFeed = createFeedMutation as unknown as (args: any) => void;
 
   const feedTypes: { value: FeedType; label: string; icon: string }[] = [
     { value: "breast", label: "Breast", icon: "heart-circle-outline" },
@@ -108,7 +107,7 @@ export function FeedForm({ babyId, onSuccess }: FeedFormProps) {
     setIsSubmitting(true);
 
     try {
-      await createFeed({
+      await createFeedMutation.mutateAsync({
         babyId: babyId as any,
         type,
         startTime: Date.now(),

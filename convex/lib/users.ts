@@ -1,7 +1,16 @@
 import type { UserIdentity } from "convex/server";
 import type { Id } from "../_generated/dataModel";
+import { internal } from "../_generated/api";
 
 const DEFAULT_EMAIL = "unknown@local";
+
+function getOrganizationIdFromIdentity(identity: UserIdentity) {
+  return (
+    (identity.org_id as string | undefined) ??
+    (identity.orgId as string | undefined) ??
+    undefined
+  );
+}
 
 export async function getUserId(
   ctx: any,
@@ -21,10 +30,7 @@ export async function getOrCreateUserId(
   ctx: any,
   identity: UserIdentity
 ): Promise<Id<"users">> {
-  const organizationId =
-    (identity.org_id as string | undefined) ??
-    (identity.orgId as string | undefined) ??
-    undefined;
+  const organizationId = getOrganizationIdFromIdentity(identity);
 
   const existingId = await getUserId(ctx, identity);
 
@@ -53,10 +59,7 @@ export async function requireIdentity(ctx: any) {
     throw new Error("Not authenticated");
   }
 
-  const organizationId =
-    (identity.org_id as string | undefined) ??
-    (identity.orgId as string | undefined) ??
-    undefined;
+  const organizationId = getOrganizationIdFromIdentity(identity);
 
   if (!organizationId) {
     if (process.env.NODE_ENV !== "test" && !process.env.VITEST) {
@@ -74,10 +77,7 @@ export async function requireIdentity(ctx: any) {
 
 export async function requireOrganizationId(ctx: any) {
   const identity = await requireIdentity(ctx);
-  const organizationId =
-    (identity.org_id as string | undefined) ??
-    (identity.orgId as string | undefined) ??
-    undefined;
+  const organizationId = getOrganizationIdFromIdentity(identity);
 
   if (!organizationId) {
     throw new Error("Organization not found");
@@ -97,7 +97,25 @@ export async function requireUserId(ctx: any): Promise<Id<"users">> {
 
 export async function requireMutationUserId(ctx: any): Promise<Id<"users">> {
   const identity = await requireIdentity(ctx);
-  return await getOrCreateUserId(ctx, identity);
+
+  // Mutations have writeable `ctx.db`.
+  if (ctx?.db && typeof ctx.db.insert === "function") {
+    return await getOrCreateUserId(ctx, identity);
+  }
+
+  // Actions (including httpAction) must write via `runMutation`.
+  if (typeof ctx?.runMutation === "function") {
+    const organizationId = getOrganizationIdFromIdentity(identity);
+    return await ctx.runMutation(internal.functions.users.index._getOrCreateUserId, {
+      clerkUserId: identity.subject,
+      clerkOrganizationId: organizationId,
+      email: identity.email ?? DEFAULT_EMAIL,
+      name: identity.name,
+      avatarUrl: identity.pictureUrl,
+    });
+  }
+
+  throw new Error("Unsupported Convex context (cannot create user)");
 }
 
 export async function requireBabyAccess(ctx: any, babyId: Id<"babies">) {

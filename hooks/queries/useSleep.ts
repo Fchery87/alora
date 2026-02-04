@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -14,21 +15,24 @@ type SleepApi = {
   deleteSleep: (args: { id: string }) => Promise<any>;
 };
 
-const sleepApi = (api as any).sleep as SleepApi;
+const sleepApi = (api as any).sleep as any;
 
 export function useCreateSleep() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: {
       babyId: Id<"babies">;
+      type: "nap" | "night" | "day";
       startTime: number;
       endTime?: number;
-      quality?: number;
+      duration?: number;
+      quality?: "awake" | "drowsy" | "sleeping" | "deep";
       notes?: string;
-    }) => sleepApi.createSleep(data),
-    onSuccess: (_, babyId) => {
-      queryClient.invalidateQueries({ queryKey: ["sleep", babyId] });
+    }) => convex.mutation(sleepApi.createSleep, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["sleep", variables.babyId] });
     },
   });
 }
@@ -37,27 +41,31 @@ export function useListSleep(
   babyId: string,
   dateRange?: { start: number; end: number }
 ) {
+  const convex = useConvex();
   return useQuery({
     queryKey: ["sleep", babyId, dateRange],
     queryFn: () =>
-      sleepApi.listSleep({
+      convex.query(sleepApi.listSleep, {
         babyId,
         startDate: dateRange?.start,
         endDate: dateRange?.end,
       }),
     staleTime: 5 * 60 * 1000,
+    enabled: Boolean(babyId),
   });
 }
 
 export function useSleep(id: string) {
+  const convex = useConvex();
   return useQuery({
     queryKey: ["sleep", id],
-    queryFn: () => sleepApi.getSleep({ id }),
+    queryFn: () => convex.query(sleepApi.getSleep, { id }),
     enabled: !!id,
   });
 }
 
 export function useUpdateSleep() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -66,8 +74,15 @@ export function useUpdateSleep() {
       data,
     }: {
       id: Id<"sleep">;
-      data: Partial<{ endTime?: number; quality?: number; notes?: string }>;
-    }) => sleepApi.updateSleep({ id, ...data }),
+      data: Partial<{
+        startTime?: number;
+        type?: "nap" | "night" | "day";
+        endTime?: number;
+        duration?: number;
+        quality?: "awake" | "drowsy" | "sleeping" | "deep";
+        notes?: string;
+      }>;
+    }) => convex.mutation(sleepApi.updateSleep, { id, ...data }),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["sleep", id] });
     },
@@ -75,10 +90,11 @@ export function useUpdateSleep() {
 }
 
 export function useDeleteSleep() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: Id<"sleep">) => sleepApi.deleteSleep({ id }),
+    mutationFn: (id: Id<"sleep">) => convex.mutation(sleepApi.deleteSleep, { id }),
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["sleep", id] });
     },

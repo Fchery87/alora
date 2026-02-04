@@ -9,6 +9,20 @@ import {
   TextInput,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { MotiView } from "moti";
+import { GlassCard } from "@/components/atoms/GlassCard";
+import { GradientButton } from "@/components/atoms/GradientButton";
+import { GradientIcon } from "@/components/atoms/GradientIcon";
+import {
+  GRADIENTS,
+  SHADOWS,
+  RADIUS,
+  GLASS,
+  BACKGROUND,
+  TEXT,
+  COLORS,
+  ANIMATION,
+} from "@/lib/theme";
 
 interface Growth {
   id: string;
@@ -43,14 +57,10 @@ const GROWTH_UNITS: Record<string, string[]> = {
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  weight: "#C9A227", // gold
-  length: "#C17A5C", // clay
-  head_circumference: "#6B7A6B", // moss
+  weight: COLORS.gold,
+  length: COLORS.clay,
+  head_circumference: COLORS.moss,
 };
-
-const GOLD = "#C9A227";
-const SAGE = "#8B9A7D";
-const CLAY = "#C17A5C";
 
 export function GrowthDetailsModal({
   visible,
@@ -96,239 +106,314 @@ export function GrowthDetailsModal({
   };
 
   const getPercentileColor = (percentile: number | undefined) => {
-    if (!percentile) return SAGE;
-    if (percentile >= 95) return GOLD;
-    if (percentile <= 5) return CLAY;
-    return SAGE;
+    if (!percentile) return COLORS.sage;
+    if (percentile >= 95) return COLORS.gold;
+    if (percentile <= 5) return COLORS.clay;
+    return COLORS.sage;
   };
 
   if (!growth) return null;
 
-  const typeColor = TYPE_COLORS[growth.type] || GOLD;
+  const typeColor = TYPE_COLORS[growth.type] || COLORS.gold;
   const percentileColor = getPercentileColor(growth.percentile);
 
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
       transparent
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.container}>
-          <ScrollView style={styles.content}>
-            {/* Header */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={onClose}>
-                <Ionicons name="close-outline" size={24} color={typeColor} />
-              </TouchableOpacity>
-              <Text style={styles.headerTitle}>
-                {GROWTH_LABELS[growth.type] || "Growth"} Details
-              </Text>
-              {isEditing ? (
-                <TouchableOpacity onPress={handleSave}>
-                  <Ionicons name="checkmark-outline" size={24} color={SAGE} />
+      <MotiView
+        from={{ opacity: 0 }}
+        animate={{ opacity: visible ? 1 : 0 }}
+        transition={{ duration: ANIMATION.medium }}
+        style={styles.overlay}
+      >
+        <MotiView
+          from={{ translateY: 300, opacity: 0 }}
+          animate={{ translateY: visible ? 0 : 300, opacity: visible ? 1 : 0 }}
+          transition={{
+            type: "spring",
+            dampingRatio: 0.8,
+            stiffness: 150,
+          }}
+          style={styles.container}
+        >
+          <GlassCard
+            variant="default"
+            size="lg"
+            animated={false}
+            style={styles.card}
+          >
+            <ScrollView
+              style={styles.content}
+              showsVerticalScrollIndicator={false}
+            >
+              {/* Header */}
+              <View style={styles.header}>
+                <TouchableOpacity onPress={onClose} style={styles.iconButton}>
+                  <GradientIcon
+                    name="close-outline"
+                    size={20}
+                    variant="calm"
+                    onPress={onClose}
+                    animated={false}
+                  />
                 </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={() => setIsEditing(true)}>
-                  <Ionicons name="create-outline" size={24} color={typeColor} />
-                </TouchableOpacity>
-              )}
-            </View>
+                <Text style={styles.headerTitle}>
+                  {GROWTH_LABELS[growth.type] || "Growth"} Details
+                </Text>
+                {isEditing ? (
+                  <TouchableOpacity
+                    onPress={handleSave}
+                    style={styles.iconButton}
+                  >
+                    <GradientIcon
+                      name="checkmark-outline"
+                      size={20}
+                      variant="success"
+                      onPress={handleSave}
+                      animated={false}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => setIsEditing(true)}
+                    style={styles.iconButton}
+                  >
+                    <GradientIcon
+                      name="create-outline"
+                      size={20}
+                      variant="primary"
+                      onPress={() => setIsEditing(true)}
+                      animated={false}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
 
-            {/* Content */}
-            {!isEditing ? (
-              <>
-                <View style={styles.section}>
-                  <Text style={styles.label}>Measurement</Text>
-                  <View style={styles.measurementContainer}>
-                    <Text style={[styles.value, { color: typeColor }]}>
-                      {growth.value}{" "}
-                      <Text style={styles.unit}>{growth.unit}</Text>
-                    </Text>
-                    {growth.percentile && (
-                      <View
-                        style={[
-                          styles.percentileBadge,
-                          { backgroundColor: `${percentileColor}20` },
-                        ]}
-                      >
-                        <Text
+              {/* Content */}
+              {!isEditing ? (
+                <>
+                  <View style={styles.section}>
+                    <Text style={styles.label}>Measurement</Text>
+                    <View style={styles.measurementContainer}>
+                      <Text style={[styles.value, { color: typeColor }]}>
+                        {growth.value}{" "}
+                        <Text style={styles.unit}>{growth.unit}</Text>
+                      </Text>
+                      {growth.percentile && (
+                        <View
                           style={[
-                            styles.percentileText,
-                            { color: percentileColor },
+                            styles.percentileBadge,
+                            { backgroundColor: `${percentileColor}20` },
                           ]}
                         >
-                          {formatPercentile(growth.percentile)}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-
-                <View style={styles.section}>
-                  <Text style={styles.label}>Date</Text>
-                  <Text style={styles.dateValue}>{growth.date}</Text>
-                </View>
-
-                {growth.percentile !== undefined && (
-                  <View style={styles.section}>
-                    <Text style={styles.label}>Percentile</Text>
-                    <View style={styles.percentileBarContainer}>
-                      <View
-                        style={[
-                          styles.percentileBar,
-                          {
-                            width: `${growth.percentile}%`,
-                            backgroundColor: percentileColor,
-                          },
-                        ]}
-                      />
+                          <Text
+                            style={[
+                              styles.percentileText,
+                              { color: percentileColor },
+                            ]}
+                          >
+                            {formatPercentile(growth.percentile)}
+                          </Text>
+                        </View>
+                      )}
                     </View>
-                    <Text style={styles.percentileInfo}>
-                      {growth.percentile >= 95
-                        ? "Above average range"
-                        : growth.percentile <= 5
-                          ? "Below average range - consider discussing with pediatrician"
-                          : "Normal growth range"}
-                    </Text>
                   </View>
-                )}
 
-                {growth.notes && (
+                  <View style={styles.section}>
+                    <Text style={styles.label}>Date</Text>
+                    <Text style={styles.dateValue}>{growth.date}</Text>
+                  </View>
+
+                  {growth.percentile !== undefined && (
+                    <View style={styles.section}>
+                      <Text style={styles.label}>Percentile</Text>
+                      <View style={styles.percentileBarContainer}>
+                        <MotiView
+                          from={{ width: "0%" }}
+                          animate={{ width: `${growth.percentile}%` }}
+                          transition={{ duration: ANIMATION.slow, delay: 200 }}
+                          style={[
+                            styles.percentileBar,
+                            { backgroundColor: percentileColor },
+                          ]}
+                        />
+                      </View>
+                      <Text style={styles.percentileInfo}>
+                        {growth.percentile >= 95
+                          ? "Above average range"
+                          : growth.percentile <= 5
+                            ? "Below average range - consider discussing with pediatrician"
+                            : "Normal growth range"}
+                      </Text>
+                    </View>
+                  )}
+
+                  {growth.notes && (
+                    <View style={styles.section}>
+                      <Text style={styles.label}>Notes</Text>
+                      <Text style={styles.notes}>{growth.notes}</Text>
+                    </View>
+                  )}
+                </>
+              ) : (
+                <>
+                  <View style={styles.section}>
+                    <Text style={styles.label}>Type</Text>
+                    <View style={styles.chipsContainer}>
+                      {GROWTH_TYPES.map((type, index) => (
+                        <MotiView
+                          key={type}
+                          from={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: index * 50 }}
+                        >
+                          <TouchableOpacity
+                            style={[
+                              styles.chip,
+                              growth.type === type && [
+                                styles.chipActive,
+                                {
+                                  backgroundColor: typeColor,
+                                  borderColor: typeColor,
+                                },
+                              ],
+                              growth.type !== type && {
+                                backgroundColor: BACKGROUND.card,
+                                borderColor: `${COLORS.sage}40`,
+                              },
+                            ]}
+                            disabled
+                          >
+                            <Text
+                              style={[
+                                styles.chipText,
+                                growth.type === type && styles.chipTextActive,
+                                growth.type !== type && {
+                                  color: TEXT.secondary,
+                                },
+                              ]}
+                            >
+                              {GROWTH_LABELS[type]}
+                            </Text>
+                          </TouchableOpacity>
+                        </MotiView>
+                      ))}
+                    </View>
+                  </View>
+
+                  <View style={styles.section}>
+                    <Text style={styles.label}>Value</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={editedValue}
+                      onChangeText={setEditedValue}
+                      placeholder="Enter value"
+                      placeholderTextColor={TEXT.tertiary}
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+
+                  <View style={styles.section}>
+                    <Text style={styles.label}>Unit</Text>
+                    <View style={styles.chipsContainer}>
+                      {(GROWTH_UNITS[growth.type] || []).map((unit, index) => (
+                        <MotiView
+                          key={unit}
+                          from={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: index * 50 }}
+                        >
+                          <TouchableOpacity
+                            style={[
+                              styles.chip,
+                              editedUnit === unit && [
+                                styles.chipActive,
+                                {
+                                  backgroundColor: COLORS.sage,
+                                  borderColor: COLORS.sage,
+                                },
+                              ],
+                              editedUnit !== unit && {
+                                backgroundColor: `${COLORS.sage}15`,
+                                borderColor: `${COLORS.sage}30`,
+                              },
+                            ]}
+                            onPress={() => setEditedUnit(unit)}
+                          >
+                            <Text
+                              style={[
+                                styles.chipText,
+                                editedUnit === unit && styles.chipTextActive,
+                                editedUnit !== unit && {
+                                  color: TEXT.secondary,
+                                },
+                              ]}
+                            >
+                              {unit}
+                            </Text>
+                          </TouchableOpacity>
+                        </MotiView>
+                      ))}
+                    </View>
+                  </View>
+
+                  <View style={styles.section}>
+                    <Text style={styles.label}>Date</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={editedDate}
+                      onChangeText={setEditedDate}
+                      placeholder="YYYY-MM-DD"
+                      placeholderTextColor={TEXT.tertiary}
+                    />
+                  </View>
+
                   <View style={styles.section}>
                     <Text style={styles.label}>Notes</Text>
-                    <Text style={styles.notes}>{growth.notes}</Text>
+                    <TextInput
+                      style={styles.input}
+                      value={editedNotes}
+                      onChangeText={setEditedNotes}
+                      placeholder="Add notes..."
+                      placeholderTextColor={TEXT.tertiary}
+                      multiline
+                      numberOfLines={4}
+                    />
                   </View>
-                )}
-              </>
-            ) : (
-              <>
-                <View style={styles.section}>
-                  <Text style={styles.label}>Type</Text>
-                  <View style={styles.chipsContainer}>
-                    {GROWTH_TYPES.map((type) => (
-                      <TouchableOpacity
-                        key={type}
-                        style={[
-                          styles.chip,
-                          growth.type === type && [
-                            styles.chipActive,
-                            {
-                              backgroundColor: typeColor,
-                              borderColor: typeColor,
-                            },
-                          ],
-                          growth.type !== type && {
-                            backgroundColor: "#ffffff",
-                            borderColor: "rgba(139, 154, 125, 0.3)",
-                          },
-                        ]}
-                        disabled
-                      >
-                        <Text
-                          style={[
-                            styles.chipText,
-                            growth.type === type && styles.chipTextActive,
-                            growth.type !== type && { color: "#6B6560" },
-                          ]}
-                        >
-                          {GROWTH_LABELS[type]}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
+                </>
+              )}
+            </ScrollView>
 
-                <View style={styles.section}>
-                  <Text style={styles.label}>Value</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={editedValue}
-                    onChangeText={setEditedValue}
-                    placeholder="Enter value"
-                    placeholderTextColor="#9B8B7A"
-                    keyboardType="decimal-pad"
-                  />
-                </View>
-
-                <View style={styles.section}>
-                  <Text style={styles.label}>Unit</Text>
-                  <View style={styles.chipsContainer}>
-                    {(GROWTH_UNITS[growth.type] || []).map((unit) => (
-                      <TouchableOpacity
-                        key={unit}
-                        style={[
-                          styles.chip,
-                          editedUnit === unit && [
-                            styles.chipActive,
-                            { backgroundColor: SAGE, borderColor: SAGE },
-                          ],
-                          editedUnit !== unit && {
-                            backgroundColor: "rgba(139, 154, 125, 0.1)",
-                            borderColor: "rgba(139, 154, 125, 0.3)",
-                          },
-                        ]}
-                        onPress={() => setEditedUnit(unit)}
-                      >
-                        <Text
-                          style={[
-                            styles.chipText,
-                            editedUnit === unit && styles.chipTextActive,
-                            editedUnit !== unit && { color: "#6B6560" },
-                          ]}
-                        >
-                          {unit}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-
-                <View style={styles.section}>
-                  <Text style={styles.label}>Date</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={editedDate}
-                    onChangeText={setEditedDate}
-                    placeholder="YYYY-MM-DD"
-                    placeholderTextColor="#9B8B7A"
-                  />
-                </View>
-
-                <View style={styles.section}>
-                  <Text style={styles.label}>Notes</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={editedNotes}
-                    onChangeText={setEditedNotes}
-                    placeholder="Add notes..."
-                    placeholderTextColor="#9B8B7A"
-                    multiline
-                    numberOfLines={4}
-                  />
-                </View>
-              </>
-            )}
-          </ScrollView>
-
-          {/* Footer */}
-          <View style={styles.footer}>
-            {onDelete && !isEditing && (
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => {
-                  onDelete();
-                  onClose();
-                }}
-              >
-                <Ionicons name="trash-outline" size={20} color={CLAY} />
-                <Text style={styles.deleteButtonText}>Delete</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      </View>
+            {/* Footer */}
+            <View style={styles.footer}>
+              {onDelete && !isEditing && (
+                <GradientButton
+                  variant="outline"
+                  size="md"
+                  onPress={() => {
+                    onDelete();
+                    onClose();
+                  }}
+                  icon={
+                    <Ionicons
+                      name="trash-outline"
+                      size={18}
+                      color={COLORS.clay}
+                    />
+                  }
+                  style={styles.deleteButton}
+                >
+                  Delete
+                </GradientButton>
+              )}
+            </View>
+          </GlassCard>
+        </MotiView>
+      </MotiView>
     </Modal>
   );
 }
@@ -336,14 +421,16 @@ export function GrowthDetailsModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(45, 42, 38, 0.5)",
+    backgroundColor: BACKGROUND.overlay,
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: "#FFFBF7", // warm cream
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: "80%",
+    maxHeight: "85%",
+  },
+  card: {
+    borderTopLeftRadius: RADIUS.xxl,
+    borderTopRightRadius: RADIUS.xxl,
+    overflow: "hidden",
   },
   content: {
     padding: 24,
@@ -355,10 +442,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 24,
   },
+  iconButton: {
+    padding: 4,
+  },
   headerTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#2D2A26",
+    color: TEXT.primary,
+    fontFamily: "CrimsonProMedium",
   },
   section: {
     marginBottom: 24,
@@ -366,10 +457,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 12,
     fontWeight: "600",
-    color: "#6B6560",
+    color: TEXT.secondary,
     marginBottom: 10,
     textTransform: "uppercase",
     letterSpacing: 0.8,
+    fontFamily: "DMSansMedium",
   },
   measurementContainer: {
     flexDirection: "row",
@@ -380,24 +472,27 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 32,
     fontWeight: "700",
+    fontFamily: "CrimsonProBold",
   },
   unit: {
     fontSize: 18,
     fontWeight: "500",
-    color: "#6B6560",
+    color: TEXT.secondary,
+    fontFamily: "DMSans",
   },
   percentileBadge: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 10,
+    borderRadius: RADIUS.md,
   },
   percentileText: {
     fontSize: 13,
     fontWeight: "600",
+    fontFamily: "DMSansMedium",
   },
   percentileBarContainer: {
     height: 10,
-    backgroundColor: "rgba(139, 154, 125, 0.15)",
+    backgroundColor: `${COLORS.sage}20`,
     borderRadius: 5,
     overflow: "hidden",
     marginBottom: 10,
@@ -408,18 +503,21 @@ const styles = StyleSheet.create({
   },
   percentileInfo: {
     fontSize: 14,
-    color: "#6B6560",
+    color: TEXT.secondary,
     lineHeight: 20,
+    fontFamily: "DMSans",
   },
   dateValue: {
     fontSize: 16,
-    color: "#2D2A26",
+    color: TEXT.primary,
     fontWeight: "500",
+    fontFamily: "DMSans",
   },
   notes: {
     fontSize: 15,
-    color: "#6B6560",
+    color: TEXT.secondary,
     lineHeight: 22,
+    fontFamily: "DMSans",
   },
   chipsContainer: {
     flexDirection: "row",
@@ -429,7 +527,7 @@ const styles = StyleSheet.create({
   chip: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 24,
+    borderRadius: RADIUS.full,
     borderWidth: 1,
   },
   chipActive: {
@@ -438,38 +536,30 @@ const styles = StyleSheet.create({
   chipText: {
     fontSize: 14,
     fontWeight: "500",
+    fontFamily: "DMSans",
   },
   chipTextActive: {
     color: "#ffffff",
   },
   input: {
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.card,
     borderWidth: 1,
-    borderColor: "rgba(139, 154, 125, 0.3)",
-    borderRadius: 16,
+    borderColor: `${COLORS.sage}40`,
+    borderRadius: RADIUS.lg,
     paddingHorizontal: 18,
     paddingVertical: 14,
     fontSize: 15,
-    color: "#2D2A26",
+    color: TEXT.primary,
+    fontFamily: "DMSans",
+    ...SHADOWS.sm,
   },
   footer: {
     padding: 20,
     paddingTop: 0,
     borderTopWidth: 1,
-    borderTopColor: "rgba(139, 154, 125, 0.15)",
+    borderTopColor: `${COLORS.sage}20`,
   },
   deleteButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    paddingVertical: 14,
-    backgroundColor: "rgba(193, 122, 92, 0.1)",
-    borderRadius: 16,
-  },
-  deleteButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#C17A5C",
+    width: "100%",
   },
 });

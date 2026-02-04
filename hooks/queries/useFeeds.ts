@@ -1,4 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useConvex } from "convex/react";
+import { useAuth } from "@clerk/clerk-expo";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -14,25 +16,31 @@ type FeedsApi = {
   deleteFeed: (args: { id: string }) => Promise<any>;
 };
 
-const feedsApi = (api as any).feeds as FeedsApi;
+const feedsApi = (api as any).feeds as any;
 
 export function useFeeds(
   babyId: string,
   dateRange?: { start: number; end: number }
 ) {
+  const convex = useConvex();
+  const { isLoaded, isSignedIn } = useAuth({
+    treatPendingAsSignedOut: false,
+  });
   return useQuery({
     queryKey: ["feeds", babyId, dateRange],
     queryFn: () =>
-      feedsApi.listFeeds({
+      convex.query(feedsApi.listFeeds, {
         babyId,
         startDate: dateRange?.start,
         endDate: dateRange?.end,
       }),
     staleTime: 5 * 60 * 1000,
+    enabled: Boolean(babyId) && isLoaded && Boolean(isSignedIn),
   });
 }
 
 export function useCreateFeed() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -45,7 +53,7 @@ export function useCreateFeed() {
       startTime: number;
       endTime?: number;
       notes?: string;
-    }) => feedsApi.createFeed(data),
+    }) => convex.mutation(feedsApi.createFeed, data),
     onMutate: async (newFeed) => {
       await queryClient.cancelQueries({ queryKey: ["feeds"] });
 
@@ -71,14 +79,16 @@ export function useCreateFeed() {
 }
 
 export function useFeed(id: string) {
+  const convex = useConvex();
   return useQuery({
     queryKey: ["feed", id],
-    queryFn: () => feedsApi.getFeed({ id }),
+    queryFn: () => convex.query(feedsApi.getFeed, { id }),
     enabled: !!id,
   });
 }
 
 export function useUpdateFeed() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -95,7 +105,7 @@ export function useUpdateFeed() {
         endTime?: number;
         notes?: string;
       }>;
-    }) => feedsApi.updateFeed({ id, ...data }),
+    }) => convex.mutation(feedsApi.updateFeed, { id, ...data }),
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["feed", id] });
     },
@@ -103,10 +113,11 @@ export function useUpdateFeed() {
 }
 
 export function useDeleteFeed() {
+  const convex = useConvex();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: Id<"feeds">) => feedsApi.deleteFeed({ id }),
+    mutationFn: (id: Id<"feeds">) => convex.mutation(feedsApi.deleteFeed, { id }),
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ["feed", id] });
     },

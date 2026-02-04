@@ -2,6 +2,7 @@ import { useEffect, useCallback, useRef, useState } from "react";
 import { useAuth } from "@clerk/clerk-expo";
 import { router } from "expo-router";
 import { captureException, addBreadcrumb } from "@/lib/sentry";
+import { getClerkJwtTemplateCandidates } from "@/lib/clerk-jwt-template";
 
 interface SessionState {
   isValid: boolean;
@@ -34,11 +35,14 @@ export function useSessionManager() {
     try {
       addBreadcrumb("Refreshing auth token", "auth", "info");
 
-      // Get fresh token (this will refresh if needed)
-      const token = await getToken({
-        template: "convex",
-        skipCache: true,
-      });
+      let token: string | null = null;
+      for (const template of getClerkJwtTemplateCandidates()) {
+        token = await getToken({
+          template,
+          skipCache: true,
+        });
+        if (token) break;
+      }
 
       if (token) {
         setSessionState({

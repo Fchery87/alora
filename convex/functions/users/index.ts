@@ -1,6 +1,12 @@
-import { query } from "../../_generated/server";
+import { internalMutation, mutation, query } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireOrganizationId, requireUserId } from "../../lib/users";
+import {
+  requireMutationUserId,
+  requireOrganizationId,
+  requireUserId,
+} from "../../lib/users";
+
+const DEFAULT_EMAIL = "unknown@local";
 
 export const get = query({
   args: {},
@@ -269,5 +275,52 @@ export const exportUserData = query({
     };
 
     return exportData;
+  },
+});
+
+export const ensureUser = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await requireMutationUserId(ctx);
+    return { userId };
+  },
+});
+
+export const _getOrCreateUserId = internalMutation({
+  args: {
+    clerkUserId: v.string(),
+    clerkOrganizationId: v.optional(v.string()),
+    email: v.optional(v.string()),
+    name: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_user_id", (q: any) =>
+        q.eq("clerkUserId", args.clerkUserId)
+      )
+      .first();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        lastActiveAt: Date.now(),
+        clerkOrganizationId: args.clerkOrganizationId,
+        ...(args.email ? { email: args.email } : {}),
+        ...(args.name ? { name: args.name } : {}),
+        ...(args.avatarUrl ? { avatarUrl: args.avatarUrl } : {}),
+      });
+      return existing._id;
+    }
+
+    return await ctx.db.insert("users", {
+      clerkUserId: args.clerkUserId,
+      clerkOrganizationId: args.clerkOrganizationId,
+      email: args.email ?? DEFAULT_EMAIL,
+      name: args.name,
+      avatarUrl: args.avatarUrl,
+      createdAt: Date.now(),
+      lastActiveAt: Date.now(),
+    });
   },
 });

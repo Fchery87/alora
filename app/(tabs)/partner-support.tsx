@@ -6,13 +6,12 @@ import {
   Pressable,
   TextInput,
 } from "react-native";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { REFLECTION_QUESTIONS, getRandomPrompt } from "@/lib/partner-support";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { useSelectedBabyId } from "@/stores/babyStore";
-import { useFeeds } from "@/hooks/queries/useFeeds";
 import {
   computePartnerNudges,
   shouldShowPartnerNudge,
@@ -30,36 +29,52 @@ import {
   RADIUS,
   GLASS,
 } from "@/lib/theme";
+import { useAuth } from "@clerk/clerk-expo";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function PartnerSupportScreen() {
   const [reflection, setReflection] = useState("");
-  const [currentPrompt, setCurrentPrompt] = useState(getRandomPrompt());
+  const [currentPrompt, setCurrentPrompt] = useState(() => getRandomPrompt());
   const [showReflection, setShowReflection] = useState(false);
 
   const selectedBabyId = useSelectedBabyId();
-  const feedsQuery = useFeeds(selectedBabyId ?? "");
+  const { isLoaded: isAuthLoaded, isSignedIn } = useAuth({
+    treatPendingAsSignedOut: false,
+  });
+  const feeds =
+    useQuery(
+      (api as any).feeds.listFeeds,
+      isAuthLoaded && isSignedIn && selectedBabyId
+        ? { babyId: selectedBabyId as any, limit: 50 }
+        : "skip"
+    ) ?? [];
   const { mutedUntilMs, lastShownAtMs } = usePartnerNudgeState();
   const { dismiss, muteForMs } = usePartnerNudgeActions();
 
-  const now = new Date();
-  const nudges = computePartnerNudges({
-    now,
-    feeds: (feedsQuery.data as any[])?.map((f) => ({
-      startTime: f.startTime,
-      createdById: f.createdById,
-    })),
-  });
-  const activeNudge = nudges[0] ?? null;
-  const showNudge =
-    Boolean(selectedBabyId) &&
-    Boolean(activeNudge) &&
-    shouldShowPartnerNudge({
-      nudgeId: activeNudge!.id,
+  const feedSummaries = useMemo(() => {
+    return (feeds as any[]).map((f) => ({
+      startTime: f.startTime as number,
+      createdById: f.createdById as string,
+    }));
+  }, [feeds]);
+
+  const activeNudge = useMemo(() => {
+    const nudges = computePartnerNudges({ now: new Date(), feeds: feedSummaries });
+    return nudges[0] ?? null;
+  }, [feedSummaries]);
+
+  const showNudge = useMemo(() => {
+    if (!selectedBabyId) return false;
+    if (!activeNudge) return false;
+    return shouldShowPartnerNudge({
+      nudgeId: activeNudge.id,
       nowMs: Date.now(),
       mutedUntilMs,
       lastShownAtMs,
       cooldownMs: 12 * 60 * 60 * 1000,
     });
+  }, [activeNudge, lastShownAtMs, mutedUntilMs, selectedBabyId]);
 
   const handleNewPrompt = () => {
     setCurrentPrompt(getRandomPrompt());

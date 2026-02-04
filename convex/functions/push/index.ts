@@ -6,7 +6,13 @@ import {
   query,
 } from "../../_generated/server";
 import { v } from "convex/values";
-import { requireMutationUserId, requireOrganizationId } from "../../lib/users";
+import { internal } from "../../_generated/api";
+import {
+  getUserId,
+  requireIdentity,
+  requireMutationUserId,
+  requireOrganizationId,
+} from "../../lib/users";
 
 function isExpoPushToken(token: string) {
   return (
@@ -17,8 +23,17 @@ function isExpoPushToken(token: string) {
 export const getPushSettings = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await requireMutationUserId(ctx);
-    const orgId = await requireOrganizationId(ctx);
+    const identity = await requireIdentity(ctx);
+    const orgId =
+      (identity.org_id as string | undefined) ??
+      (identity.orgId as string | undefined) ??
+      undefined;
+    if (!orgId) throw new Error("Organization not found");
+
+    const userId = await getUserId(ctx, identity);
+    if (!userId) {
+      return { pushNotificationsEnabled: false };
+    }
 
     const pref = await ctx.db
       .query("userPreferences")
@@ -167,8 +182,6 @@ export const sendTestPush = action({
     const userId = await requireMutationUserId(ctx);
     const orgId = await requireOrganizationId(ctx);
 
-    const { internal } = (await import("../../_generated/api")) as any;
-
     const pref = await ctx.runQuery(
       internal.functions.push.index._getUserPushSettings,
       {
@@ -237,7 +250,6 @@ export const sendAppointmentReminder = internalAction({
     appointmentWhen: v.string(),
   },
   handler: async (ctx, args) => {
-    const { internal } = (await import("../../_generated/api")) as any;
     const tokens: { expoPushToken: string }[] = await ctx.runQuery(
       internal.functions.push.index._getEnabledOrgTokens,
       {

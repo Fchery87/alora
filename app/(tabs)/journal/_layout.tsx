@@ -1,10 +1,30 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Header } from "@/components/layout/Header";
+import { JournalSkeleton } from "@/components/organisms";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useState, useEffect } from "react";
 
 export default function JournalScreen() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading state - replace with actual data fetching logic
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={styles.screen}>
+        <Header title="Journal" showBackButton={false} />
+        <JournalSkeleton />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.screen}>

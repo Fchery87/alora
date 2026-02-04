@@ -15,15 +15,28 @@ import {
   DMSans_500Medium,
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
+import {
+  useFonts as useOutfitFonts,
+  Outfit_400Regular,
+  Outfit_500Medium,
+  Outfit_600SemiBold,
+} from "@expo-google-fonts/outfit";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import { ClerkProviderWrapper } from "@/lib/clerk";
 import { ConvexProviderWrapper } from "@/components/providers/ConvexProviderWrapper";
 import { ToastProvider } from "@/components/atoms/Toast";
 import { QueryClientProviderWrapper } from "@/components/providers/QueryClientProviderWrapper";
 import { initSentry } from "@/lib/sentry";
 import { ErrorBoundary } from "@/components/providers/ErrorBoundary";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 
 // Initialize Sentry before app starts
 initSentry();
@@ -62,52 +75,106 @@ export default function RootLayout() {
     DMSansMedium: DMSans_500Medium,
     DMSansBold: DMSans_700Bold,
   });
+
+  const [loadedUI, errorUI] = useOutfitFonts({
+    Outfit: Outfit_400Regular,
+    OutfitMedium: Outfit_500Medium,
+    OutfitSemiBold: Outfit_600SemiBold,
+  });
+
   const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     // Debug logging
     console.log("[RootLayout] Heading fonts loaded:", loadedHeading);
     console.log("[RootLayout] Body fonts loaded:", loadedBody);
-    console.log("[RootLayout] Fonts error:", errorHeading || errorBody);
+    console.log("[RootLayout] UI fonts loaded:", loadedUI);
+    console.log(
+      "[RootLayout] Fonts error:",
+      errorHeading || errorBody || errorUI
+    );
 
-    if ((loadedHeading && loadedBody) || errorHeading || errorBody) {
+    if (
+      (loadedHeading && loadedBody && loadedUI) ||
+      errorHeading ||
+      errorBody ||
+      errorUI
+    ) {
       console.log("[RootLayout] Hiding splash screen");
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch(() => {});
       // Give a small delay to ensure smooth transition
       const timer = setTimeout(() => setShowLoading(false), 100);
       return () => clearTimeout(timer);
     }
-  }, [loadedHeading, loadedBody, errorHeading, errorBody]);
+  }, [loadedHeading, loadedBody, loadedUI, errorHeading, errorBody, errorUI]);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    if (!showLoading) return;
+
+    const fontError = errorHeading || errorBody || errorUI;
+    if ((loadedHeading && loadedBody && loadedUI) || fontError) return;
+
+    // On web, font loading can hang indefinitely (ad blockers, extensions, dev builds).
+    // Don't hard-block app usage; fall back to system fonts after a short timeout.
+    const timer = setTimeout(() => {
+      console.warn(
+        "[RootLayout] Font loading timed out on web; continuing without custom fonts"
+      );
+      SplashScreen.hideAsync().catch(() => {});
+      setShowLoading(false);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [
+    showLoading,
+    loadedHeading,
+    loadedBody,
+    loadedUI,
+    errorHeading,
+    errorBody,
+    errorUI,
+  ]);
 
   // Show loading screen while fonts are loading
   if (
     showLoading &&
-    !(loadedHeading && loadedBody) &&
-    !(errorHeading || errorBody)
+    !(loadedHeading && loadedBody && loadedUI) &&
+    !(errorHeading || errorBody || errorUI)
   ) {
     console.log("[RootLayout] Showing loading screen");
     return <LoadingScreen />;
   }
 
   // Show error screen if fonts failed to load
-  const fontError = errorHeading || errorBody;
+  const fontError = errorHeading || errorBody || errorUI;
   if (fontError) {
-    console.error("[RootLayout] Font loading error:", fontError);
-    return <FontErrorScreen error={fontError} />;
+    // On web, font loading can time out due to extensions/ad blockers or slow dev builds.
+    // Don't hard-block app usage; fall back to system fonts.
+    if (Platform.OS !== "web") {
+      console.error("[RootLayout] Font loading error:", fontError);
+      return <FontErrorScreen error={fontError} />;
+    }
+    console.warn(
+      "[RootLayout] Font loading error (ignored on web):",
+      fontError
+    );
   }
 
   console.log("[RootLayout] Rendering app");
   return (
     <ErrorBoundary>
-      <QueryClientProviderWrapper>
-        <ToastProvider>
-          <ClerkProviderWrapper>
-            <ConvexProviderWrapper>
-              <Stack screenOptions={{ headerShown: false }} />
-            </ConvexProviderWrapper>
-          </ClerkProviderWrapper>
-        </ToastProvider>
-      </QueryClientProviderWrapper>
+      <ThemeProvider defaultTheme="auto">
+        <QueryClientProviderWrapper>
+          <ToastProvider>
+            <ClerkProviderWrapper>
+              <ConvexProviderWrapper>
+                <Stack screenOptions={{ headerShown: false }} />
+              </ConvexProviderWrapper>
+            </ClerkProviderWrapper>
+          </ToastProvider>
+        </QueryClientProviderWrapper>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

@@ -7,145 +7,186 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { MotiView } from "moti";
 import { GrowthTracker } from "@/components/organisms/growth/GrowthTracker";
-import { FadeContainer } from "@/components/atoms/MotiContainers";
+import { ModernHeader } from "@/components/atoms/ModernHeader";
+import { GlassCard } from "@/components/atoms/GlassCard";
+import { GradientIcon } from "@/components/atoms/GradientIcon";
+import { GradientButton } from "@/components/atoms/GradientButton";
 import { useSelectedBabyId } from "@/stores/babyStore";
 import { BabySelectorModal } from "@/components/organisms";
-
-// Celestial Nurture Design System Colors
-const COLORS = {
-  background: "#FAF7F2",
-  primary: "#D4A574", // Terracotta
-  secondary: "#8B9A7D", // Sage
-  accent: "#C9A227", // Gold
-  textPrimary: "#2D2A26",
-  textSecondary: "#6B6560",
-  clay: "#B8956A",
-  moss: "#7A8B6E",
-};
+import { COLORS, TEXT, GLASS } from "@/lib/theme";
 
 export default function GrowthScreen() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"log" | "history">("log");
   const [showBabySelector, setShowBabySelector] = useState(false);
   const selectedBabyId = useSelectedBabyId();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
+    <View style={styles.screen}>
+      <ModernHeader
+        title="Growth Tracking"
+        subtitle="Monitor your baby's development"
+        showBackButton
+        backgroundColor="glass"
+      />
+
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Tab Navigation */}
+        <MotiView
+          from={{ opacity: 0, translateY: -10 }}
+          animate={{ opacity: 1, translateY: 0 }}
+          transition={{ delay: 150, dampingRatio: 0.8, stiffness: 150 }}
+          style={styles.tabContainer}
         >
-          <Ionicons name="arrow-back" size={24} color="#0f172a" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Growth Tracking</Text>
-      </View>
-
-      <View style={styles.tabContainer}>
-        <View style={styles.segmentedControl}>
-          <TouchableOpacity
-            style={[
-              styles.segmentItem,
-              activeTab === "log" && styles.segmentItemActive,
-            ]}
-            onPress={() => setActiveTab("log")}
-          >
-            <Text
+          <View style={styles.segmentedControl}>
+            <TouchableOpacity
               style={[
-                styles.segmentText,
-                activeTab === "log" && styles.segmentTextActive,
+                styles.segmentItem,
+                activeTab === "log" && styles.segmentItemActive,
               ]}
+              onPress={() => setActiveTab("log")}
             >
-              Log Measurement
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.segmentItem,
-              activeTab === "history" && styles.segmentItemActive,
-            ]}
-            onPress={() => setActiveTab("history")}
-          >
-            <Text
-              style={[
-                styles.segmentText,
-                activeTab === "history" && styles.segmentTextActive,
-              ]}
-            >
-              History
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {activeTab === "log" ? (
-        <FadeContainer>
-          {selectedBabyId ? (
-            <GrowthTracker babyId={selectedBabyId} />
-          ) : (
-            <View style={styles.emptyState}>
-              <Ionicons name="person-outline" size={64} color="#d1d5db" />
-              <Text style={styles.emptyTitle}>No baby selected</Text>
-              <TouchableOpacity
-                style={styles.emptyButton}
-                onPress={() => setShowBabySelector(true)}
+              <Text
+                style={[
+                  styles.segmentText,
+                  activeTab === "log" && styles.segmentTextActive,
+                ]}
               >
-                <Text style={styles.emptyButtonText}>Select Baby</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </FadeContainer>
-      ) : (
-        <FadeContainer>
-          <View style={styles.chartSection}>
-            <Text style={styles.sectionTitle}>Growth Chart</Text>
-            <Text style={styles.chartPlaceholder}>
-              Growth chart visualization will appear here with your baby's
-              measurements.
-            </Text>
+                Log Measurement
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.segmentItem,
+                activeTab === "history" && styles.segmentItemActive,
+              ]}
+              onPress={() => setActiveTab("history")}
+            >
+              <Text
+                style={[
+                  styles.segmentText,
+                  activeTab === "history" && styles.segmentTextActive,
+                ]}
+              >
+                History
+              </Text>
+            </TouchableOpacity>
           </View>
-        </FadeContainer>
-      )}
+        </MotiView>
+
+        {/* Content */}
+        {activeTab === "log" ? (
+          <MotiView
+            key="log"
+            from={{ opacity: 0, translateX: -20 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            exit={{ opacity: 0, translateX: 20 }}
+            transition={{ delay: 200, dampingRatio: 0.8, stiffness: 150 }}
+          >
+            {selectedBabyId ? (
+              <GlassCard variant="accent" size="lg" delay={200}>
+                <View style={styles.cardHeader}>
+                  <GradientIcon
+                    name="analytics"
+                    size={28}
+                    variant="accent"
+                    delay={300}
+                  />
+                  <Text style={styles.cardTitle}>Record Growth</Text>
+                </View>
+                <GrowthTracker babyId={selectedBabyId} />
+              </GlassCard>
+            ) : (
+              <GlassCard variant="default" size="lg" delay={200}>
+                <View style={styles.emptyState}>
+                  <GradientIcon
+                    name="person-outline"
+                    size={32}
+                    variant="accent"
+                    delay={300}
+                  />
+                  <Text style={styles.emptyStateTitle}>No Baby Selected</Text>
+                  <Text style={styles.emptyStateText}>
+                    Please select a baby to start tracking growth measurements
+                  </Text>
+                  <GradientButton
+                    onPress={() => setShowBabySelector(true)}
+                    variant="accent"
+                    style={styles.emptyButton}
+                  >
+                    Select Baby
+                  </GradientButton>
+                </View>
+              </GlassCard>
+            )}
+          </MotiView>
+        ) : (
+          <MotiView
+            key="history"
+            from={{ opacity: 0, translateX: 20 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            exit={{ opacity: 0, translateX: -20 }}
+            transition={{ delay: 200, dampingRatio: 0.8, stiffness: 150 }}
+          >
+            <GlassCard variant="default" size="lg" delay={200}>
+              <View style={styles.cardHeader}>
+                <GradientIcon
+                  name="trending-up"
+                  size={28}
+                  variant="secondary"
+                  delay={300}
+                />
+                <Text style={styles.cardTitle}>Growth Chart</Text>
+              </View>
+              <View style={styles.chartPlaceholder}>
+                <Ionicons
+                  name="bar-chart-outline"
+                  size={64}
+                  color={COLORS.terracotta}
+                  style={{ opacity: 0.5 }}
+                />
+                <Text style={styles.placeholderTitle}>Coming Soon</Text>
+                <Text style={styles.placeholderText}>
+                  Growth chart visualization will appear here with your baby's
+                  measurements over time.
+                </Text>
+              </View>
+            </GlassCard>
+          </MotiView>
+        )}
+      </ScrollView>
 
       <BabySelectorModal
         visible={showBabySelector}
         onClose={() => setShowBabySelector(false)}
       />
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: COLORS.cream,
+  },
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   content: {
     padding: 16,
-    paddingTop: 60,
     paddingBottom: 100,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  backButton: {
-    marginRight: 12,
-  },
-  title: {
-    fontSize: 32,
-    fontFamily: "CrimsonPro-SemiBold",
-    color: COLORS.textPrimary,
-  },
   tabContainer: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   segmentedControl: {
     flexDirection: "row",
-    backgroundColor: "rgba(139, 154, 125, 0.2)",
+    backgroundColor: "rgba(139, 154, 125, 0.15)",
     borderRadius: 14,
     padding: 4,
   },
@@ -157,7 +198,7 @@ const styles = StyleSheet.create({
   },
   segmentItemActive: {
     backgroundColor: "rgba(255, 255, 255, 0.95)",
-    shadowColor: COLORS.primary,
+    shadowColor: COLORS.terracotta,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -166,57 +207,61 @@ const styles = StyleSheet.create({
   segmentText: {
     fontSize: 14,
     fontFamily: "DMSans-Medium",
-    color: COLORS.textSecondary,
+    color: TEXT.secondary,
   },
   segmentTextActive: {
-    color: COLORS.textPrimary,
+    color: TEXT.primary,
     fontFamily: "DMSans-SemiBold",
   },
-  chartSection: {
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: "rgba(212, 165, 116, 0.2)",
+  cardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    gap: 12,
   },
-  sectionTitle: {
+  cardTitle: {
     fontSize: 20,
     fontFamily: "CrimsonPro-SemiBold",
-    color: COLORS.textPrimary,
-    marginBottom: 16,
-  },
-  chartPlaceholder: {
-    color: COLORS.textSecondary,
-    textAlign: "center",
-    marginTop: 32,
-    fontSize: 14,
-    fontFamily: "DMSans-Regular",
+    color: TEXT.primary,
   },
   emptyState: {
     alignItems: "center",
     paddingVertical: 48,
+    gap: 16,
   },
-  emptyTitle: {
+  emptyStateTitle: {
     fontSize: 22,
     fontFamily: "CrimsonPro-SemiBold",
-    color: COLORS.textPrimary,
-    marginTop: 16,
+    color: TEXT.primary,
+    marginTop: 8,
+  },
+  emptyStateText: {
+    fontSize: 14,
+    fontFamily: "DMSans-Regular",
+    color: TEXT.secondary,
+    textAlign: "center",
+    paddingHorizontal: 20,
+    marginBottom: 8,
   },
   emptyButton: {
-    backgroundColor: COLORS.primary,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 14,
-    marginTop: 16,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    marginTop: 8,
   },
-  emptyButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: "DMSans-SemiBold",
+  chartPlaceholder: {
+    alignItems: "center",
+    paddingVertical: 48,
+    gap: 16,
+  },
+  placeholderTitle: {
+    fontSize: 20,
+    fontFamily: "CrimsonPro-SemiBold",
+    color: TEXT.primary,
+    marginTop: 8,
+  },
+  placeholderText: {
+    fontSize: 14,
+    fontFamily: "DMSans-Regular",
+    color: TEXT.secondary,
+    textAlign: "center",
+    paddingHorizontal: 20,
   },
 });

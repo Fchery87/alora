@@ -9,7 +9,8 @@ import { v } from "convex/values";
 import {
   requireMutationUserId,
   requireOrganizationId,
-  requireUserId,
+  requireIdentity,
+  getUserId,
 } from "../../lib/users";
 
 const PROMPT_VERSION = "v1";
@@ -89,22 +90,49 @@ async function geminiGenerateText(params: {
 
 // --- Preferences (opt-in) ---
 
+async function readAiInsightSettings(params: {
+  ctx: any;
+  userId: any;
+  orgId: string;
+}) {
+  const existing = await params.ctx.db
+    .query("userPreferences")
+    .withIndex("by_user_and_org", (q: any) =>
+      q.eq("userId", params.userId).eq("clerkOrganizationId", params.orgId)
+    )
+    .first();
+
+  return {
+    aiInsightsEnabled: existing?.aiInsightsEnabled ?? false,
+  };
+}
+
 export const getAiInsightSettings = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await requireUserId(ctx);
-    const orgId = await requireOrganizationId(ctx);
+    const identity = await requireIdentity(ctx);
+    const orgId =
+      (identity.org_id as string | undefined) ??
+      (identity.orgId as string | undefined) ??
+      undefined;
+    if (!orgId) throw new Error("Organization not found");
 
-    const existing = await ctx.db
-      .query("userPreferences")
-      .withIndex("by_user_and_org", (q) =>
-        q.eq("userId", userId).eq("clerkOrganizationId", orgId)
-      )
-      .first();
+    const userId = await getUserId(ctx, identity);
+    if (!userId) {
+      return { aiInsightsEnabled: false };
+    }
+    return await readAiInsightSettings({ ctx, userId, orgId });
+  },
+});
 
-    return {
-      aiInsightsEnabled: existing?.aiInsightsEnabled ?? false,
-    };
+export const _getAiInsightSettings = internalQuery({
+  args: { userId: v.id("users"), clerkOrganizationId: v.string() },
+  handler: async (ctx, args) => {
+    return await readAiInsightSettings({
+      ctx,
+      userId: args.userId,
+      orgId: args.clerkOrganizationId,
+    });
   },
 });
 
@@ -220,8 +248,8 @@ export const generateDailyInsight = action({
     const { internal } = (await import("../../_generated/api")) as any;
 
     const settings = await ctx.runQuery(
-      internal.functions.insights.index.getAiInsightSettings,
-      {}
+      internal.functions.insights.index._getAiInsightSettings,
+      { userId, clerkOrganizationId: orgId }
     );
     if (!settings.aiInsightsEnabled) return null;
 
