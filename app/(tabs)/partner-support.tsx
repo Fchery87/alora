@@ -42,17 +42,17 @@ export default function PartnerSupportScreen() {
   const { isLoaded: isAuthLoaded, isSignedIn } = useAuth({
     treatPendingAsSignedOut: false,
   });
-  const feeds =
-    useQuery(
-      (api as any).feeds.listFeeds,
-      isAuthLoaded && isSignedIn && selectedBabyId
-        ? { babyId: selectedBabyId as any, limit: 50 }
-        : "skip"
-    ) ?? [];
+  const feeds = useQuery(
+    (api as any).feeds.listFeeds,
+    isAuthLoaded && isSignedIn && selectedBabyId
+      ? { babyId: selectedBabyId as any, limit: 50 }
+      : "skip"
+  );
   const { mutedUntilMs, lastShownAtMs } = usePartnerNudgeState();
   const { dismiss, muteForMs } = usePartnerNudgeActions();
 
   const feedSummaries = useMemo(() => {
+    if (!feeds) return [];
     return (feeds as any[]).map((f) => ({
       startTime: f.startTime as number,
       createdById: f.createdById as string,

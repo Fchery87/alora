@@ -134,6 +134,44 @@ export default function TabsLayout() {
             ),
           }}
         />
+
+        {/* Hidden screens - accessible via navigation but not shown in tab bar */}
+        <Tabs.Screen
+          name="partner-support"
+          options={{
+            href: null, // Hide from tab bar
+          }}
+        />
+        <Tabs.Screen
+          name="wellness"
+          options={{
+            href: null, // Hide from tab bar
+          }}
+        />
+        <Tabs.Screen
+          name="sounds"
+          options={{
+            href: null, // Hide from tab bar
+          }}
+        />
+        <Tabs.Screen
+          name="family"
+          options={{
+            href: null, // Hide from tab bar
+          }}
+        />
+        <Tabs.Screen
+          name="journal"
+          options={{
+            href: null, // Hide from tab bar
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            href: null, // Hide from tab bar
+          }}
+        />
       </Tabs>
     </ProtectedRoute>
   );

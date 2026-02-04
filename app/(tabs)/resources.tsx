@@ -6,6 +6,7 @@ import {
   TextInput,
 } from "react-native";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import { Header } from "@/components/layout/Header";
 import { Text } from "@/components/ui/Text";
 import { Card } from "@/components/ui/Card";
@@ -21,6 +22,7 @@ import { COLORS, SHADOWS } from "@/lib/theme";
 type CategoryId = (typeof CATEGORIES)[number]["id"];
 
 export default function ResourcesScreen() {
+  const router = useRouter();
   const [category, setCategory] = useState<CategoryId>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedResource, setExpandedResource] = useState<string | null>(null);
@@ -33,10 +35,84 @@ export default function ResourcesScreen() {
     setExpandedResource(expandedResource === id ? null : id);
   };
 
+  const exploreItems = [
+    {
+      icon: "people",
+      label: "Partner Support",
+      description: "Strengthen your co-parenting connection",
+      color: COLORS.terracotta,
+      route: "/(tabs)/partner-support",
+    },
+    {
+      icon: "heart",
+      label: "Wellness",
+      description: "Health insights and reminders",
+      color: COLORS.sage,
+      route: "/(tabs)/wellness",
+    },
+    {
+      icon: "musical-notes",
+      label: "Sounds",
+      description: "Calming sounds for baby",
+      color: COLORS.gold,
+      route: "/(tabs)/sounds",
+    },
+    {
+      icon: "home",
+      label: "Family",
+      description: "Manage family access",
+      color: COLORS.moss,
+      route: "/(tabs)/family",
+    },
+    {
+      icon: "book",
+      label: "Journal",
+      description: "Daily reflections and memories",
+      color: COLORS.clay,
+      route: "/(tabs)/journal",
+    },
+  ];
+
   return (
     <OrganicBackground>
       <View style={styles.container}>
-        <Header title="Resource Library" showBackButton={false} />
+        <Header title="Explore" showBackButton={false} />
+
+        {/* Quick Access Menu */}
+        <View style={styles.quickAccessSection}>
+          <Text style={styles.sectionTitle}>Quick Access</Text>
+          <View style={styles.quickAccessGrid}>
+            {exploreItems.map((item) => (
+              <Pressable
+                key={item.label}
+                style={styles.quickAccessCard}
+                onPress={() => router.push(item.route as any)}
+              >
+                <View
+                  style={[
+                    styles.quickAccessIcon,
+                    { backgroundColor: `${item.color}15` },
+                  ]}
+                >
+                  <Ionicons
+                    name={item.icon as any}
+                    size={24}
+                    color={item.color}
+                  />
+                </View>
+                <Text style={styles.quickAccessLabel}>{item.label}</Text>
+                <Text style={styles.quickAccessDescription}>
+                  {item.description}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        {/* Resource Library Section */}
+        <View style={styles.librarySection}>
+          <Text style={styles.sectionTitle}>Resource Library</Text>
+        </View>
 
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
@@ -197,9 +273,60 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  quickAccessSection: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontFamily: "DMSansMedium",
+    color: COLORS.stone,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  quickAccessGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  quickAccessCard: {
+    width: "48%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 16,
+    ...SHADOWS.sm,
+    borderWidth: 1,
+    borderColor: "rgba(212, 165, 116, 0.1)",
+  },
+  quickAccessIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  quickAccessLabel: {
+    fontSize: 16,
+    fontFamily: "DMSansMedium",
+    color: COLORS.warmDark,
+    marginBottom: 4,
+  },
+  quickAccessDescription: {
+    fontSize: 12,
+    fontFamily: "DMSans",
+    color: COLORS.stone,
+    lineHeight: 16,
+  },
+  librarySection: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
   searchContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 12,
   },
   searchBar: {
     flexDirection: "row",
