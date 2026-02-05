@@ -1,6 +1,7 @@
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
+import { isRunningInExpoGo } from "expo";
 import { getRandomSelfCareNudge, getDailyAffirmation } from "./self-care";
 
 export interface NotificationReminder {
@@ -17,6 +18,8 @@ export interface NotificationReminder {
 }
 
 export function isExpoGo(): boolean {
+  if (isRunningInExpoGo()) return true;
+
   const executionEnvironment = (Constants as any)?.executionEnvironment;
   if (executionEnvironment === "storeClient") return true;
 
@@ -27,6 +30,13 @@ export function isExpoGo(): boolean {
 export async function registerForPushNotificationsAsync(): Promise<
   string | null
 > {
+  if (isExpoGo()) {
+    console.warn(
+      "[Notifications] Remote push tokens are not supported in Expo Go. Use a development build to test push notifications."
+    );
+    return null;
+  }
+
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
       name: "Default",
@@ -59,15 +69,6 @@ export async function registerForPushNotificationsAsync(): Promise<
   }
 
   if (finalStatus !== "granted") {
-    return null;
-  }
-
-  // Remote push tokens are not supported in Expo Go as of SDK 53+.
-  // We still allow local notifications (scheduleNotificationAsync), but skip token retrieval.
-  if (isExpoGo()) {
-    console.warn(
-      "[Notifications] Remote push tokens are not supported in Expo Go. Use a development build to test push notifications."
-    );
     return null;
   }
 
