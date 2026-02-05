@@ -16,6 +16,14 @@ export interface NotificationReminder {
   notificationId?: string;
 }
 
+export function isExpoGo(): boolean {
+  const executionEnvironment = (Constants as any)?.executionEnvironment;
+  if (executionEnvironment === "storeClient") return true;
+
+  const appOwnership = (Constants as any)?.appOwnership;
+  return appOwnership === "expo";
+}
+
 export async function registerForPushNotificationsAsync(): Promise<
   string | null
 > {
@@ -51,6 +59,15 @@ export async function registerForPushNotificationsAsync(): Promise<
   }
 
   if (finalStatus !== "granted") {
+    return null;
+  }
+
+  // Remote push tokens are not supported in Expo Go as of SDK 53+.
+  // We still allow local notifications (scheduleNotificationAsync), but skip token retrieval.
+  if (isExpoGo()) {
+    console.warn(
+      "[Notifications] Remote push tokens are not supported in Expo Go. Use a development build to test push notifications."
+    );
     return null;
   }
 

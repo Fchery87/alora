@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { registerForPushNotificationsAsync } from "@/lib/notifications";
+import { isExpoGo, registerForPushNotificationsAsync } from "@/lib/notifications";
 
 export function usePushSync(enabled: boolean) {
   const upsertToken = useMutation(api.functions.push.index.upsertExpoPushToken);
@@ -22,7 +22,11 @@ export function usePushSync(enabled: boolean) {
         const t = await registerForPushNotificationsAsync();
         if (cancelled) return;
         if (!t) {
-          setError("Notifications permission not granted.");
+          setError(
+            isExpoGo()
+              ? "Push notifications aren’t supported in Expo Go. Use a development build to test push notifications."
+              : "Notifications permission not granted."
+          );
           setToken(null);
           return;
         }

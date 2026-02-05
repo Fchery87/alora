@@ -1,5 +1,6 @@
 import { ConvexReactClient } from "convex/react";
 import Constants from "expo-constants";
+import { Platform } from "react-native";
 
 const convexUrl =
   (Constants.expoConfig?.extra?.convexDeployment as string) ||
@@ -18,6 +19,10 @@ if (!convexUrl) {
 export const convex = new ConvexReactClient(
   convexUrl || "http://localhost:3310",
   {
-    unsavedChangesWarning: true,
+    ...(Platform.OS === "web" &&
+    (typeof (globalThis as any)?.addEventListener === "function" ||
+      typeof (globalThis as any)?.window?.addEventListener === "function")
+      ? { unsavedChangesWarning: true }
+      : {}),
   }
 );
