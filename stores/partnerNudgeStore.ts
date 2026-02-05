@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/shallow";
 
 type PartnerNudgeState = {
   mutedUntilMs: number | null;
@@ -13,7 +13,7 @@ type PartnerNudgeState = {
 };
 
 export const usePartnerNudgeStore = create<PartnerNudgeState>()(
-  persist(
+  persist<PartnerNudgeState>(
     (set) => ({
       mutedUntilMs: null,
       lastShownAtMs: null,
@@ -30,11 +30,10 @@ export const usePartnerNudgeStore = create<PartnerNudgeState>()(
 
 export function usePartnerNudgeState() {
   return usePartnerNudgeStore(
-    (s) => ({
+    useShallow((s) => ({
       mutedUntilMs: s.mutedUntilMs,
       lastShownAtMs: s.lastShownAtMs,
-    }),
-    shallow
+    }))
   );
 }
 
