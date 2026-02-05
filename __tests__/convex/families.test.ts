@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   getByClerkOrganizationIdHandler,
   syncHandler,
@@ -39,21 +39,10 @@ function makeCtx(orgId: string) {
 }
 
 describe("families.sync org scoping", () => {
-  it("rejects when args org id differs from identity org id", async () => {
-    const { ctx, inserts } = makeCtx("org_1");
-
-    await expect(
-      syncHandler(ctx as any, { clerkOrganizationId: "org_other", name: "Fam" })
-    ).rejects.toThrow(/Not authorized/i);
-
-    expect(inserts).toHaveLength(0);
-  });
-
   it("inserts with clerkOrganizationId derived from identity", async () => {
     const { ctx, inserts } = makeCtx("org_1");
 
     await syncHandler(ctx as any, {
-      clerkOrganizationId: "org_1",
       name: "Fam",
     });
 
@@ -96,14 +85,27 @@ describe("families.getByClerkOrganizationId org scoping", () => {
 });
 
 describe("families.updateSettings org scoping", () => {
-  it("rejects when args org id differs from identity org id", async () => {
+  it("updates settings for the identity org family", async () => {
     const { ctx } = makeCtx("org_1");
 
-    await expect(
-      updateSettingsHandler(ctx as any, {
-        clerkOrganizationId: "org_other",
-        settings: { premiumPlan: "free" },
-      })
-    ).rejects.toThrow(/Not authorized/i);
+    // Simulate existing family in org_1
+    ctx.db.query = () => ({
+      withIndex: (_name: string, fn: any) => {
+        fn({
+          eq: () => {},
+        });
+        return {
+          first: async () => ({ _id: "family_1", clerkOrganizationId: "org_1" }),
+        };
+      },
+    });
+
+    const patchSpy = vi.spyOn(ctx.db, "patch");
+
+    await updateSettingsHandler(ctx as any, {
+      settings: { premiumPlan: "free" },
+    });
+
+    expect(patchSpy).toHaveBeenCalled();
   });
 });

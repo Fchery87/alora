@@ -45,35 +45,37 @@ export const sync = mutation({
   args: {
     name: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
-    const userOrgId = await requireOrganizationId(ctx);
-
-    const existingFamily = await ctx.db
-      .query("families")
-      .withIndex("by_clerk_org_id", (q) =>
-        q.eq("clerkOrganizationId", userOrgId)
-      )
-      .first();
-
-    if (existingFamily) {
-      await ctx.db.patch(existingFamily._id, {
-        name: args.name || existingFamily.name,
-      });
-      return { action: "updated", familyId: existingFamily._id };
-    }
-
-    const familyId = await ctx.db.insert("families", {
-      clerkOrganizationId: userOrgId,
-      name: args.name,
-      createdAt: Date.now(),
-      settings: {
-        premiumPlan: "free",
-      },
-    });
-
-    return { action: "created", familyId };
-  },
+  handler: syncHandler,
 });
+
+export async function syncHandler(ctx: any, args: { name?: string }) {
+  const userOrgId = await requireOrganizationId(ctx);
+
+  const existingFamily = await ctx.db
+    .query("families")
+    .withIndex("by_clerk_org_id", (q: any) =>
+      q.eq("clerkOrganizationId", userOrgId)
+    )
+    .first();
+
+  if (existingFamily) {
+    await ctx.db.patch(existingFamily._id, {
+      name: args.name || existingFamily.name,
+    });
+    return { action: "updated", familyId: existingFamily._id };
+  }
+
+  const familyId = await ctx.db.insert("families", {
+    clerkOrganizationId: userOrgId,
+    name: args.name,
+    createdAt: Date.now(),
+    settings: {
+      premiumPlan: "free",
+    },
+  });
+
+  return { action: "created", familyId };
+}
 
 export const updateSettings = mutation({
   args: {
@@ -82,24 +84,29 @@ export const updateSettings = mutation({
       premiumExpiry: v.optional(v.number()),
     }),
   },
-  handler: async (ctx, args) => {
-    const userOrgId = await requireOrganizationId(ctx);
-
-    const family = await ctx.db
-      .query("families")
-      .withIndex("by_clerk_org_id", (q) =>
-        q.eq("clerkOrganizationId", userOrgId)
-      )
-      .first();
-
-    if (!family) {
-      throw new Error("Family not found");
-    }
-
-    await ctx.db.patch(family._id, {
-      settings: args.settings,
-    });
-
-    return { status: "updated", familyId: family._id };
-  },
+  handler: updateSettingsHandler,
 });
+
+export async function updateSettingsHandler(
+  ctx: any,
+  args: { settings: { premiumPlan: "free" | "premium"; premiumExpiry?: number } }
+) {
+  const userOrgId = await requireOrganizationId(ctx);
+
+  const family = await ctx.db
+    .query("families")
+    .withIndex("by_clerk_org_id", (q: any) =>
+      q.eq("clerkOrganizationId", userOrgId)
+    )
+    .first();
+
+  if (!family) {
+    throw new Error("Family not found");
+  }
+
+  await ctx.db.patch(family._id, {
+    settings: args.settings,
+  });
+
+  return { status: "updated", familyId: family._id };
+}

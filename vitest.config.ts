@@ -60,9 +60,15 @@ export default defineConfig({
         __dirname,
         "./__tests__/mocks/expo-vector-icons.ts"
       ),
+      "expo-router": resolve(__dirname, "./__tests__/mocks/expo-router.ts"),
       "victory-native": resolve(
         __dirname,
         "./__tests__/mocks/victory-native.ts"
+      ),
+      "convex/react": resolve(__dirname, "./__tests__/mocks/convex-react.ts"),
+      "expo-local-authentication": resolve(
+        __dirname,
+        "./__tests__/mocks/expo-local-authentication.ts"
       ),
       "@testing-library/react-native": resolve(
         __dirname,
