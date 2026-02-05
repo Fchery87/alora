@@ -65,6 +65,7 @@ export default {
       favicon: "./assets/images/app-icon.png",
     },
     plugins: [
+      "expo-router",
       [
         "expo-local-authentication",
         { faceIDPermission: "Allow $(PRODUCT_NAME) to use Face ID." },

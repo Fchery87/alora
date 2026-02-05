@@ -1,12 +1,13 @@
 import { vi, beforeEach, afterEach } from "vitest";
 import "@testing-library/jest-dom";
-import { render as rtlRender } from "@testing-library/react-native";
+import { render as rtlRender, cleanup } from "@testing-library/react-native";
 import React from "react";
 import { ToastProvider } from "@/components/atoms/Toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 globalThis.__DEV__ = true;
 globalThis.React = React;
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
 // Keep test output clean; individual tests can opt-in by spying and asserting.
 vi.spyOn(console, "log").mockImplementation(() => {});
@@ -82,6 +83,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  cleanup();
   vi.restoreAllMocks();
 });
 

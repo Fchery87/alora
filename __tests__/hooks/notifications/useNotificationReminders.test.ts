@@ -55,7 +55,10 @@ describe("useNotificationReminders", () => {
       return null;
     }
 
-    const renderer = TestRenderer.create(React.createElement(TestComponent));
+    let renderer: TestRenderer.ReactTestRenderer;
+    act(() => {
+      renderer = TestRenderer.create(React.createElement(TestComponent));
+    });
 
     return {
       result: {
@@ -63,8 +66,16 @@ describe("useNotificationReminders", () => {
           return hookResult;
         },
       },
-      rerender: () => renderer.update(React.createElement(TestComponent)),
-      unmount: () => renderer.unmount(),
+      rerender: () => {
+        act(() => {
+          renderer.update(React.createElement(TestComponent));
+        });
+      },
+      unmount: () => {
+        act(() => {
+          renderer.unmount();
+        });
+      },
     };
   };
 

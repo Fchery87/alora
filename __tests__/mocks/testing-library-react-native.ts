@@ -12,6 +12,17 @@ type RenderResult = {
 
 let lastRender: RenderResult | null = null;
 
+export const cleanup = () => {
+  if (!lastRender) {
+    return;
+  }
+  try {
+    lastRender.unmount();
+  } finally {
+    lastRender = null;
+  }
+};
+
 const matchesText = (content: string, matcher: string | RegExp) => {
   if (matcher instanceof RegExp) {
     return matcher.test(content);
@@ -64,7 +75,10 @@ const findByPlaceholderText = (
 };
 
 export const render = (ui: React.ReactElement): RenderResult => {
-  const renderer = TestRenderer.create(ui);
+  let renderer: TestRenderer.ReactTestRenderer;
+  TestRenderer.act(() => {
+    renderer = TestRenderer.create(ui);
+  });
 
   const result: RenderResult = {
     getByText: (text: string) => findByText(renderer, text),
@@ -78,8 +92,16 @@ export const render = (ui: React.ReactElement): RenderResult => {
         return null;
       }
     },
-    rerender: (nextUi) => renderer.update(nextUi),
-    unmount: () => renderer.unmount(),
+    rerender: (nextUi) => {
+      TestRenderer.act(() => {
+        renderer.update(nextUi);
+      });
+    },
+    unmount: () => {
+      TestRenderer.act(() => {
+        renderer.unmount();
+      });
+    },
   };
 
   lastRender = result;
@@ -139,7 +161,10 @@ export const renderHook = (hook: () => any) => {
     return null;
   }
 
-  const renderer = TestRenderer.create(React.createElement(TestComponent));
+  let renderer: TestRenderer.ReactTestRenderer;
+  TestRenderer.act(() => {
+    renderer = TestRenderer.create(React.createElement(TestComponent));
+  });
 
   return {
     result: {
@@ -147,8 +172,16 @@ export const renderHook = (hook: () => any) => {
         return hookResult;
       },
     },
-    rerender: () => renderer.update(React.createElement(TestComponent)),
-    unmount: () => renderer.unmount(),
+    rerender: () => {
+      TestRenderer.act(() => {
+        renderer.update(React.createElement(TestComponent));
+      });
+    },
+    unmount: () => {
+      TestRenderer.act(() => {
+        renderer.unmount();
+      });
+    },
   };
 };
 
