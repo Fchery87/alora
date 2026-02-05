@@ -1,6 +1,7 @@
 import React, { type ReactNode } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { JournalScaffold } from "@/components/care-journal/JournalScaffold";
 import { LogRow } from "@/components/care-journal/LogRow";
 import { StampButton } from "@/components/care-journal/StampButton";
@@ -27,6 +28,8 @@ export function Dashboard({
   moodData = [],
   activityFeed,
 }: DashboardStatsProps) {
+  const router = useRouter();
+
   return (
     <JournalScaffold
       title="Today"
@@ -41,7 +44,7 @@ export function Dashboard({
         <View style={styles.stampsRow}>
           <StampButton
             label="Feed"
-            onPress={() => {}}
+            onPress={() => router.push("/(tabs)/trackers/feed")}
             left={
               <Ionicons
                 name="restaurant"
@@ -52,14 +55,14 @@ export function Dashboard({
           />
           <StampButton
             label="Diaper"
-            onPress={() => {}}
+            onPress={() => router.push("/(tabs)/trackers/diaper")}
             left={
               <Ionicons name="water" size={16} color={color.pigment.sage} />
             }
           />
           <StampButton
             label="Sleep"
-            onPress={() => {}}
+            onPress={() => router.push("/(tabs)/trackers/sleep")}
             left={
               <Ionicons
                 name="moon"
@@ -70,7 +73,7 @@ export function Dashboard({
           />
           <StampButton
             label="Check-in"
-            onPress={() => {}}
+            onPress={() => router.push("/(tabs)/trackers/mood")}
             left={
               <Ionicons name="heart" size={16} color={color.pigment.skyInfo} />
             }
@@ -146,7 +149,15 @@ export function Dashboard({
         )}
 
         <Text style={styles.sectionLabel}>Care</Text>
-        <View style={styles.careCard}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open Wellness"
+          onPress={() => router.push("/(tabs)/wellness")}
+          style={({ pressed }) => [
+            styles.careCard,
+            pressed ? styles.pressed : null,
+          ]}
+        >
           <View style={styles.careHeader}>
             <View style={styles.careIcon}>
               <Ionicons name="heart" size={18} color={color.pigment.clay} />
@@ -157,11 +168,14 @@ export function Dashboard({
                 A quick note for how you’re doing.
               </Text>
             </View>
+            <Ionicons name="arrow-forward" size={18} color={color.ink.faint} />
           </View>
           <Text style={styles.careHint}>
-            {moodData.length > 0 ? "Trends available in Wellness." : "Takes under 30 seconds."}
+            {moodData.length > 0
+              ? "Trends available in Wellness."
+              : "Takes under 30 seconds."}
           </Text>
-        </View>
+        </Pressable>
       </ScrollView>
     </JournalScaffold>
   );
@@ -186,6 +200,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: space[2],
+  },
+  pressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.92,
   },
   summaryCard: {
     flexDirection: "row",
@@ -297,4 +315,3 @@ const styles = StyleSheet.create({
     color: color.ink.faint,
   },
 });
-
