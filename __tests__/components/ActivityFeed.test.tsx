@@ -2,6 +2,7 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react-native";
 import { ActivityFeed } from "@/components/organisms/ActivityFeed";
+import { color } from "@/lib/design/careJournal/tokens";
 
 vi.mock("@clerk/clerk-expo", () => ({
   useAuth: () => ({ userId: "user_1" }),
@@ -97,5 +98,21 @@ describe("ActivityFeed", () => {
 
     render(<ActivityFeed limit={5} />);
     expect(screen.getByText(/Live/i)).toBeTruthy();
+  });
+
+  it("uses Care Journal container styling", () => {
+    mockUseActivityFeed.mockReturnValue({
+      groupedActivities: { today: [], yesterday: [], earlier: [] },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<ActivityFeed limit={5} />);
+    const root = screen.getByTestId("activity-feed");
+    const style = root.props.style;
+    const flat = Array.isArray(style) ? Object.assign({}, ...style) : style;
+
+    expect(flat.backgroundColor).toBe(color.paper.wash);
+    expect(flat.borderColor).toBe(color.paper.edge);
   });
 });

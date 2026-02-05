@@ -1,8 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { SvgXml } from "react-native-svg";
-import { COLORS, BACKGROUND } from "@/lib/theme";
+import { COLORS, BACKGROUND, SHADOWS, TEXT as THEME_TEXT } from "@/lib/theme";
 
 interface AloraLogoProps {
   size?: number;
@@ -12,76 +11,29 @@ interface AloraLogoProps {
 export function AloraLogo({ size = 120, showText = true }: AloraLogoProps) {
   const logoSvg = `
     <svg viewBox="0 0 120 120" width="${size}" height="${size}">
-      <defs>
-        <linearGradient id="leafGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="${COLORS.sage}" stop-opacity="1"/>
-          <stop offset="100%" stop-color="${COLORS.moss}" stop-opacity="1"/>
-        </linearGradient>
-        <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="${COLORS.terracotta}" stop-opacity="1"/>
-          <stop offset="100%" stop-color="${COLORS.clay}" stop-opacity="1"/>
-        </linearGradient>
-        <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="${COLORS.gold}" stop-opacity="1"/>
-          <stop offset="100%" stop-color="${COLORS.terracotta}" stop-opacity="1"/>
-        </linearGradient>
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-          <feMerge>
-            <feMergeNode in="coloredBlur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
+      <!-- Outer seal ring -->
+      <circle cx="60" cy="60" r="54" fill="none" stroke="${BACKGROUND.tertiary}" stroke-width="2"/>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="${COLORS.terracotta}" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.55"/>
 
-      <!-- Outer Shield/Protection Circle -->
-      <circle cx="60" cy="60" r="55" fill="none" stroke="url(#shieldGradient)" stroke-width="2" opacity="0.3"/>
+      <!-- Leaf (growth) -->
+      <path d="M60 18 Q78 26 88 38 Q84 58 72 74 Q68 78 60 78 Q52 78 48 74 Q36 58 32 38 Q42 26 60 18"
+            fill="${COLORS.sage}" opacity="0.92"/>
 
-      <!-- Nurturing Leaf (growth, nature) -->
-      <g filter="url(#glow)">
-        <path d="M60 15 Q80 25 90 35 Q85 55 75 70 Q70 75 60 75 Q50 75 45 70 Q35 55 15 35 Q40 25 60 15"
-              fill="url(#leafGradient)" opacity="0.9"/>
+      <!-- Heart (care) -->
+      <path d="M60 56 C51 47 38 47 38 60 C38 74 50 90 60 90 C70 90 82 74 82 60 C82 47 69 47 60 56"
+            fill="${COLORS.terracotta}" opacity="0.92"/>
 
-        <!-- Leaf veins -->
-        <path d="M60 20 L60 40" stroke="#ffffff" stroke-width="1.5" opacity="0.6" stroke-linecap="round"/>
-        <path d="M60 30 L50 35" stroke="#ffffff" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-        <path d="M60 30 L70 35" stroke="#ffffff" stroke-width="1" opacity="0.5" stroke-linecap="round"/>
-      </g>
-
-      <!-- Caring Heart (parental love, wellness) -->
-      <g filter="url(#glow)">
-        <path d="M60 55 C50 45 35 45 35 60 C35 75 50 95 60 95 C70 95 85 75 85 60 C85 45 70 45 60 55"
-              fill="url(#heartGradient)" opacity="0.9"/>
-
-        <!-- Heart glow/sparkles -->
-        <circle cx="45" cy="52" r="2" fill="#ffffff" opacity="0.6"/>
-        <circle cx="75" cy="52" r="2" fill="#ffffff" opacity="0.6"/>
-        <circle cx="60" cy="45" r="1.5" fill="#ffffff" opacity="0.5"/>
-      </g>
-
-      <!-- Protection/Dots (security, trust) -->
-      <circle cx="30" cy="90" r="3" fill="${COLORS.gold}" opacity="0.6"/>
-      <circle cx="60" cy="95" r="3" fill="${COLORS.terracotta}" opacity="0.6"/>
-      <circle cx="90" cy="90" r="3" fill="${COLORS.sage}" opacity="0.6"/>
+      <!-- Center dot (ritual / stamp mark) -->
+      <circle cx="60" cy="56" r="3" fill="${COLORS.gold}" opacity="0.95"/>
     </svg>
   `;
 
   return (
     <View style={[styles.container, { height: size + (showText ? 16 : 0) }]}>
       <View style={styles.logoWrapper}>
-        <LinearGradient
-          colors={[BACKGROUND.card, BACKGROUND.secondary]}
-          style={styles.logoBackground}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <SvgXml
-            xml={logoSvg}
-            width={size}
-            height={size}
-            style={styles.logoSvg}
-          />
-        </LinearGradient>
+        <View style={styles.logoBackground}>
+          <SvgXml xml={logoSvg} width={size} height={size} />
+        </View>
       </View>
       {showText && (
         <View style={styles.textWrapper}>
@@ -99,24 +51,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logoWrapper: {
-    shadowColor: "rgba(212, 165, 116, 0.3)",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 16,
-    elevation: 6,
+    ...SHADOWS.md,
     borderRadius: 24,
     overflow: "hidden",
   },
   logoBackground: {
     padding: 12,
     borderRadius: 24,
-  },
-  logoSvg: {
-    shadowColor: "rgba(0, 0, 0, 0.1)",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 4,
+    backgroundColor: BACKGROUND.secondary,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   textWrapper: {
     marginTop: 8,
@@ -124,16 +68,16 @@ const styles = StyleSheet.create({
   },
   aloraText: {
     fontSize: 24,
-    fontWeight: "700",
-    letterSpacing: -0.5,
-    color: COLORS.warmDark,
+    fontFamily: "CareJournalHeadingSemiBold",
+    letterSpacing: -0.3,
+    color: THEME_TEXT.primary,
     textTransform: "lowercase",
   },
   tagline: {
     fontSize: 11,
-    fontWeight: "400",
-    letterSpacing: 2,
-    color: COLORS.stone,
+    fontFamily: "CareJournalUIMedium",
+    letterSpacing: 1.4,
+    color: THEME_TEXT.tertiary,
     marginTop: 2,
     textTransform: "uppercase",
   },

@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { FadeContainer } from "@/components/atoms/MotiContainers";
 import { MILESTONE_CATEGORIES } from "@/lib/milestones";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 interface MilestoneCardProps {
   milestone: {
@@ -44,13 +45,13 @@ export function MilestoneCard({
         <View
           style={[
             styles.iconContainer,
-            { backgroundColor: (category?.color || "#6366f1") + "20" },
+            { backgroundColor: (category?.color || COLORS.terracotta) + "20" },
           ]}
         >
           <Ionicons
             name={(category?.icon as keyof typeof Ionicons.glyphMap) || "star"}
             size={24}
-            color={category?.color || "#6366f1"}
+            color={category?.color || COLORS.terracotta}
           />
         </View>
 
@@ -59,7 +60,7 @@ export function MilestoneCard({
             <Text style={styles.title}>{milestone.title}</Text>
             {milestone.isCelebrated && (
               <View style={styles.celebratedBadge}>
-                <Ionicons name="checkmark-circle" size={16} color="#22c55e" />
+                <Ionicons name="checkmark-circle" size={16} color={COLORS.sage} />
                 <Text style={styles.celebratedText}>Celebrated</Text>
               </View>
             )}
@@ -85,7 +86,7 @@ export function MilestoneCard({
               style={styles.actionButton}
               onPress={() => onCelebrate(milestone.id)}
             >
-              <Ionicons name="gift-outline" size={20} color="#22c55e" />
+              <Ionicons name="gift-outline" size={20} color={COLORS.sage} />
             </TouchableOpacity>
           )}
           {onDelete && (
@@ -93,7 +94,7 @@ export function MilestoneCard({
               style={styles.actionButton}
               onPress={() => onDelete(milestone.id)}
             >
-              <Ionicons name="trash-outline" size={20} color="#ef4444" />
+              <Ionicons name="trash-outline" size={20} color={COLORS.danger} />
             </TouchableOpacity>
           )}
         </View>
@@ -106,20 +107,17 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.sm,
   },
   celebrated: {
-    backgroundColor: "#f0fdf4",
-    borderWidth: 1,
-    borderColor: "#22c55e40",
+    backgroundColor: "rgba(47, 107, 91, 0.08)",
+    borderColor: "rgba(47, 107, 91, 0.22)",
   },
   iconContainer: {
     width: 48,
@@ -138,13 +136,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#0f172a",
+    ...TYPOGRAPHY.headings.h4,
+    color: THEME_TEXT.primary,
   },
   description: {
-    fontSize: 13,
-    color: "#6b7280",
+    ...TYPOGRAPHY.body.small,
+    color: THEME_TEXT.secondary,
     marginTop: 4,
   },
   footer: {
@@ -154,12 +151,13 @@ const styles = StyleSheet.create({
   },
   age: {
     fontSize: 12,
-    color: "#6366f1",
-    fontWeight: "500",
+    color: THEME_TEXT.tertiary,
+    fontFamily: "CareJournalUIMedium",
   },
   date: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: THEME_TEXT.tertiary,
+    fontFamily: "CareJournalUI",
   },
   celebratedBadge: {
     flexDirection: "row",
@@ -168,8 +166,10 @@ const styles = StyleSheet.create({
   },
   celebratedText: {
     fontSize: 11,
-    color: "#22c55e",
-    fontWeight: "500",
+    color: COLORS.sage,
+    fontFamily: "CareJournalUIMedium",
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
   },
   actions: {
     flexDirection: "column",
@@ -178,6 +178,8 @@ const styles = StyleSheet.create({
   actionButton: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
 });

@@ -6,31 +6,31 @@ import { Dashboard } from "@/components/organisms/Dashboard";
 describe("Dashboard", () => {
   it("renders correctly", () => {
     render(<Dashboard />);
-    expect(screen.getByText("Welcome back!")).toBeTruthy();
+    expect(screen.getByText("Today")).toBeTruthy();
   });
 
   it("shows quick actions section", () => {
     render(<Dashboard />);
-    expect(screen.getByText("Quick Actions")).toBeTruthy();
-    expect(screen.getByText("Log Feed")).toBeTruthy();
-    expect(screen.getByText("Log Diaper")).toBeTruthy();
-    expect(screen.getByText("Log Sleep")).toBeTruthy();
-    expect(screen.getByText("Check In")).toBeTruthy();
+    expect(screen.getByText("Stamps")).toBeTruthy();
+    expect(screen.getByText("Feed")).toBeTruthy();
+    expect(screen.getByText("Diaper")).toBeTruthy();
+    expect(screen.getByText("Sleep")).toBeTruthy();
+    expect(screen.getByText("Check-in")).toBeTruthy();
   });
 
   it("shows today section", () => {
     render(<Dashboard />);
-    expect(screen.getByText("Today")).toBeTruthy();
+    expect(screen.getByText("Today's summary")).toBeTruthy();
   });
 
   it("shows recent activity section", () => {
     render(<Dashboard />);
-    expect(screen.getByText("Recent Activity")).toBeTruthy();
+    expect(screen.getByText("Recent entries")).toBeTruthy();
   });
 
   it("shows mood section", () => {
     render(<Dashboard />);
-    expect(screen.getByText("Mood Trends")).toBeTruthy();
+    expect(screen.getByText("Care")).toBeTruthy();
   });
 
   it("displays today's stats", () => {

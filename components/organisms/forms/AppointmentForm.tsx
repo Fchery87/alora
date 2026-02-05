@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { validateAppointment as validateAppointmentData } from "@/lib/validation";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 export interface AppointmentFormData {
   title: string;
@@ -125,7 +126,11 @@ export function AppointmentForm({
             <Ionicons
               name={type.icon as any}
               size={20}
-              color={formData.type === type.value ? "#fff" : "#6366f1"}
+              color={
+                formData.type === type.value
+                  ? THEME_TEXT.primaryInverse
+                  : COLORS.terracotta
+              }
             />
             <Text
               style={[
@@ -194,7 +199,7 @@ export function AppointmentForm({
 
       <View style={styles.reminderSection}>
         <View style={styles.reminderHeader}>
-          <Ionicons name="notifications" size={20} color="#6366f1" />
+          <Ionicons name="notifications" size={20} color={COLORS.terracotta} />
           <Text style={styles.reminderLabel}>Reminder</Text>
           <Pressable
             style={styles.switch}
@@ -261,43 +266,44 @@ export function AppointmentForm({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    ...TYPOGRAPHY.headings.h2,
+    color: THEME_TEXT.primary,
     marginBottom: 24,
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
     marginBottom: 8,
     marginTop: 8,
   },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.primary,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: BACKGROUND.tertiary,
     borderRadius: 12,
     padding: 14,
     fontSize: 16,
-    color: "#0f172a",
+    fontFamily: "CareJournalUI",
+    color: THEME_TEXT.primary,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.danger,
   },
   textArea: {
     minHeight: 80,
     textAlignVertical: "top",
   },
   errorText: {
-    color: "#ef4444",
+    color: COLORS.danger,
     fontSize: 12,
+    fontFamily: "CareJournalUI",
     marginTop: 4,
     marginBottom: 8,
   },
@@ -320,30 +326,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: BACKGROUND.secondary,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: BACKGROUND.tertiary,
     gap: 6,
   },
   typeButtonActive: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   typeButtonText: {
     fontSize: 13,
-    fontWeight: "500",
-    color: "#64748b",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
   },
   typeButtonTextActive: {
-    color: "#fff",
+    color: THEME_TEXT.primaryInverse,
   },
   reminderSection: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 12,
     padding: 16,
     marginTop: 16,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.sm,
   },
   reminderHeader: {
     flexDirection: "row",
@@ -353,8 +360,8 @@ const styles = StyleSheet.create({
   reminderLabel: {
     flex: 1,
     fontSize: 16,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontFamily: "CareJournalHeadingMedium",
+    color: THEME_TEXT.primary,
   },
   switch: {
     width: 48,
@@ -363,11 +370,11 @@ const styles = StyleSheet.create({
   switchTrack: {
     flex: 1,
     borderRadius: 14,
-    backgroundColor: "#e2e8f0",
+    backgroundColor: BACKGROUND.tertiary,
     padding: 2,
   },
   switchTrackActive: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.sage,
   },
   switchThumb: {
     width: 24,
@@ -389,39 +396,40 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: BACKGROUND.tertiary,
   },
   reminderOption: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 16,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: BACKGROUND.tertiary,
   },
   reminderOptionActive: {
-    backgroundColor: "#6366f1",
-    borderColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   reminderOptionText: {
     fontSize: 12,
-    color: "#64748b",
+    fontFamily: "CareJournalUI",
+    color: THEME_TEXT.secondary,
   },
   reminderOptionTextActive: {
-    color: "#fff",
-    fontWeight: "500",
+    color: THEME_TEXT.primaryInverse,
+    fontFamily: "CareJournalUIMedium",
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
     marginTop: 24,
+    ...SHADOWS.sm,
   },
   submitButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
   cancelButton: {
     padding: 16,
@@ -429,7 +437,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   cancelButtonText: {
-    color: "#64748b",
+    color: THEME_TEXT.secondary,
     fontSize: 16,
+    fontFamily: "CareJournalUIMedium",
   },
 });

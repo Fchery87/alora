@@ -2,15 +2,16 @@ import React from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import { MotiView } from "moti";
 import Svg, { Path, Defs, RadialGradient, Stop } from "react-native-svg";
+import { BACKGROUND, COLORS } from "@/lib/theme";
 
 const { width, height } = Dimensions.get("window");
 
-// Organic blob shapes with warm earth-tone colors
+// Optional organic blob shapes (disabled by default for the Care Journal direction)
 const BLOB_COLORS = [
-  { start: "#D4A574", end: "#C49464", opacity: 0.15 }, // Terracotta
-  { start: "#8B9A7D", end: "#7A896C", opacity: 0.12 }, // Sage
-  { start: "#C9A227", end: "#B89320", opacity: 0.1 }, // Gold
-  { start: "#E8DED4", end: "#D9CFC4", opacity: 0.2 }, // Warm beige
+  { start: COLORS.terracotta, end: COLORS.terracotta, opacity: 0.06 },
+  { start: COLORS.sage, end: COLORS.sage, opacity: 0.05 },
+  { start: COLORS.gold, end: COLORS.gold, opacity: 0.04 },
+  { start: BACKGROUND.tertiary, end: BACKGROUND.secondary, opacity: 0.08 },
 ];
 
 interface OrganicShapeProps {
@@ -100,8 +101,8 @@ interface OrganicBackgroundProps {
 
 export function OrganicBackground({
   children,
-  showBlobs = true,
-  showGrain = true,
+  showBlobs = false,
+  showGrain = false,
 }: OrganicBackgroundProps) {
   return (
     <View style={styles.container}>
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
   },
   baseBackground: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#FAF7F2", // Warm cream
+    backgroundColor: BACKGROUND.primary,
   },
   blobContainer: {
     ...StyleSheet.absoluteFillObject,

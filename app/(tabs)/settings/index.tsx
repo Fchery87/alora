@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginTop: 4,
   },
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 13,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   },
   itemLabel: {
     fontSize: 16,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.primary,
   },
   logoutButton: {
@@ -317,13 +317,13 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.clay,
   },
   version: {
     textAlign: "center",
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.tertiary,
     marginTop: 24,
   },

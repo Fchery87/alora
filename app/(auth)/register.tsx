@@ -14,7 +14,6 @@ import { useAuth, useSignUp, useOAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { cssInterop } from "react-native-css-interop";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { AloraLogo } from "@/components/atoms/AloraLogo";
 import { GlassCard } from "@/components/atoms/GlassCard";
@@ -165,40 +164,6 @@ export default function RegisterScreen() {
 
   return (
     <View className="flex-1" style={{ backgroundColor: BACKGROUND.primary }}>
-      {/* Subtle Organic Background Pattern */}
-      <LinearGradient
-        colors={[BACKGROUND.primary, BACKGROUND.secondary, BACKGROUND.primary]}
-        locations={[0, 0.5, 1]}
-        style={StyleSheet.absoluteFill}
-      />
-
-      {/* Decorative Celestial Elements */}
-      <MotiView
-        from={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.08, scale: 1 }}
-        transition={{
-          type: "timing",
-          duration: 4500,
-          loop: true,
-          repeatReverse: true,
-        }}
-        className="absolute top-[-150px] left-[-100px] w-[500px] h-[500px] rounded-full"
-        style={{ backgroundColor: COLORS.sage }}
-      />
-      <MotiView
-        from={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.06, scale: 1 }}
-        transition={{
-          type: "timing",
-          duration: 5500,
-          loop: true,
-          delay: 2000,
-          repeatReverse: true,
-        }}
-        className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full"
-        style={{ backgroundColor: COLORS.gold }}
-      />
-
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -234,7 +199,6 @@ export default function RegisterScreen() {
                 variant="h2"
                 color="primary"
                 className="text-center mb-2"
-                style={{ fontFamily: "CrimsonPro-SemiBold" }}
               >
                 Create Account
               </Text>
@@ -261,7 +225,6 @@ export default function RegisterScreen() {
                   <Text
                     className="text-sm flex-1"
                     color="terracotta"
-                    style={{ fontFamily: "DMSans-Medium" }}
                   >
                     {error}
                   </Text>
@@ -289,14 +252,14 @@ export default function RegisterScreen() {
               <View className="flex-row items-center mb-5">
                 <View
                   className="flex-1 h-[1px]"
-                  style={{ backgroundColor: "rgba(139, 154, 125, 0.3)" }}
+                  style={{ backgroundColor: BACKGROUND.tertiary }}
                 />
                 <Text className="mx-4 text-sm" color="secondary">
                   or
                 </Text>
                 <View
                   className="flex-1 h-[1px]"
-                  style={{ backgroundColor: "rgba(139, 154, 125, 0.3)" }}
+                  style={{ backgroundColor: BACKGROUND.tertiary }}
                 />
               </View>
 
@@ -383,15 +346,15 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   errorContainer: {
-    backgroundColor: "rgba(212, 165, 116, 0.1)",
+    backgroundColor: BACKGROUND.secondary,
     borderWidth: 1,
-    borderColor: "rgba(212, 165, 116, 0.3)",
+    borderColor: BACKGROUND.tertiary,
   },
   googleButton: {
     marginBottom: 20,
   },
   signUpButton: {
     marginTop: 8,
-    ...SHADOWS.glow,
+    ...SHADOWS.md,
   },
 });

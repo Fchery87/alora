@@ -17,7 +17,7 @@ import {
   searchResources,
 } from "@/lib/resources";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS, SHADOWS } from "@/lib/theme";
+import { BACKGROUND, COLORS, SHADOWS } from "@/lib/theme";
 
 type CategoryId = (typeof CATEGORIES)[number]["id"];
 
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.stone,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -293,12 +293,12 @@ const styles = StyleSheet.create({
   },
   quickAccessCard: {
     width: "48%",
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.card,
     borderRadius: 16,
     padding: 16,
     ...SHADOWS.sm,
     borderWidth: 1,
-    borderColor: "rgba(212, 165, 116, 0.1)",
+    borderColor: BACKGROUND.tertiary,
   },
   quickAccessIcon: {
     width: 48,
@@ -310,13 +310,13 @@ const styles = StyleSheet.create({
   },
   quickAccessLabel: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.warmDark,
     marginBottom: 4,
   },
   quickAccessDescription: {
     fontSize: 12,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: COLORS.stone,
     lineHeight: 16,
   },
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.card,
     borderRadius: 14,
     padding: 14,
     gap: 12,
@@ -341,13 +341,13 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,
-    borderColor: "rgba(212, 165, 116, 0.15)",
+    borderColor: BACKGROUND.tertiary,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
     color: COLORS.warmDark,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   categoryRow: {
     maxHeight: 64,
@@ -365,10 +365,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 24,
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.card,
     marginRight: 4,
     borderWidth: 1,
-    borderColor: "rgba(139, 154, 125, 0.2)",
+    borderColor: BACKGROUND.tertiary,
     shadowColor: COLORS.warmDark,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: COLORS.warmDark,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   categoryTextActive: {
     color: "#fff",
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.stone,
     marginBottom: 16,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     fontWeight: "500",
   },
   cardWrapper: {
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   categoryBadge: {
-    backgroundColor: "rgba(212, 165, 116, 0.15)",
+    backgroundColor: `${COLORS.terracotta}12`,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 16,
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     color: COLORS.terracotta,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUIMedium",
   },
   readTime: {
     flexDirection: "row",
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
   readTimeText: {
     fontSize: 12,
     color: COLORS.stone,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     fontWeight: "500",
   },
   resourceTitle: {
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     color: COLORS.sage,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     fontWeight: "500",
   },
   expandedContent: {
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.terracotta,
     fontWeight: "600",
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUIMedium",
   },
   emptyState: {
     alignItems: "center",

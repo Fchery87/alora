@@ -172,6 +172,12 @@ export default function TabsLayout() {
             href: null, // Hide from tab bar
           }}
         />
+        <Tabs.Screen
+          name="care-journal"
+          options={{
+            href: null, // Hidden demo screen for Care Journal system
+          }}
+        />
       </Tabs>
     </ProtectedRoute>
   );
@@ -190,7 +196,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   tabLabel: {
-    fontFamily: "DMSans_500Medium",
+    fontFamily: "CareJournalUIMedium",
     fontSize: 11,
     marginTop: 4,
   },
@@ -199,6 +205,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   iconContainerFocused: {
-    backgroundColor: "rgba(212, 165, 116, 0.15)",
+    backgroundColor: "rgba(196, 106, 74, 0.12)",
   },
 });

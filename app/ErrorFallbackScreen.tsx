@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 export default function ErrorFallbackScreen() {
   const router = useRouter();
@@ -9,7 +10,7 @@ export default function ErrorFallbackScreen() {
     <View style={styles.container}>
       <View style={styles.errorCard}>
         <View style={styles.iconContainer}>
-          <Ionicons name="alert-circle" size={64} color="#ef4444" />
+          <Ionicons name="alert-circle" size={52} color={COLORS.danger} />
         </View>
 
         <Text style={styles.title}>Something went wrong</Text>
@@ -17,14 +18,17 @@ export default function ErrorFallbackScreen() {
           An unexpected error occurred. Please try again.
         </Text>
 
-        <TouchableOpacity
-          style={styles.resetButton}
+        <Pressable
+          accessibilityRole="button"
+          style={({ pressed }) => [
+            styles.resetButton,
+            pressed ? styles.resetButtonPressed : null,
+          ]}
           onPress={() => router.replace("/")}
-          activeOpacity={0.8}
         >
-          <Ionicons name="home" size={20} color="#ffffff" />
+          <Ionicons name="home" size={18} color={THEME_TEXT.primaryInverse} />
           <Text style={styles.resetButtonText}>Go to Home</Text>
-        </TouchableOpacity>
+        </Pressable>
 
         <Text style={styles.hint}>
           If the problem persists, restart the app
@@ -37,42 +41,41 @@ export default function ErrorFallbackScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
   },
   errorCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.primary,
     borderRadius: 24,
     padding: 32,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.md,
     width: "100%",
   },
   iconContainer: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "#fef2f2",
+    backgroundColor: BACKGROUND.secondary,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#1e293b",
+    ...TYPOGRAPHY.headings.h2,
+    color: THEME_TEXT.primary,
     marginBottom: 12,
     textAlign: "center",
   },
   message: {
-    fontSize: 15,
-    color: "#64748b",
+    ...TYPOGRAPHY.body.regular,
+    color: THEME_TEXT.secondary,
     textAlign: "center",
     marginBottom: 24,
     lineHeight: 22,
@@ -80,26 +83,25 @@ const styles = StyleSheet.create({
   resetButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 32,
     gap: 10,
-    shadowColor: "#6366f1",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    ...SHADOWS.sm,
     marginBottom: 16,
   },
+  resetButtonPressed: {
+    transform: [{ scale: 0.98 }],
+    opacity: 0.92,
+  },
   resetButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#ffffff",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
   hint: {
-    fontSize: 12,
-    color: "#94a3b8",
+    ...TYPOGRAPHY.body.small,
+    color: THEME_TEXT.tertiary,
     textAlign: "center",
   },
 });

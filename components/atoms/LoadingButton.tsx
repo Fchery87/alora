@@ -6,6 +6,7 @@ import {
   ActivityIndicator as RNActivityIndicator,
 } from "react-native";
 import { MotiView } from "moti";
+import { COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 interface LoadingButtonProps {
   loading: boolean;
@@ -49,7 +50,7 @@ interface ActivityIndicatorProps {
 
 export function ActivityIndicator({
   size = "small",
-  color = "#6366f1",
+  color = COLORS.terracotta,
 }: ActivityIndicatorProps) {
   return (
     <View style={styles.activityIndicator}>
@@ -63,19 +64,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
     minWidth: 120,
+    ...SHADOWS.sm,
   },
   disabled: {
     opacity: 0.5,
   },
   text: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "600",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
   activityIndicator: {
     justifyContent: "center",

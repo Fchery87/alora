@@ -14,6 +14,7 @@ import { useNotifications } from "@/hooks/notifications/useNotifications";
 import { useNotificationReminders } from "@/hooks/notifications/useNotificationReminders";
 import { NotificationReminderItem } from "@/components/molecules/notifications/NotificationReminder";
 import { NotificationReminder } from "@/lib/notifications";
+import { BACKGROUND, COLORS } from "@/lib/theme";
 
 interface NotificationSettingsProps {
   babyId: string;
@@ -82,7 +83,11 @@ export function NotificationSettings({ babyId }: NotificationSettingsProps) {
 
       <View style={styles.permissionCard}>
         <View style={styles.permissionHeader}>
-          <Ionicons name="notifications-outline" size={24} color="#6366f1" />
+          <Ionicons
+            name="notifications-outline"
+            size={24}
+            color={COLORS.terracotta}
+          />
           <View style={styles.permissionInfo}>
             <Text style={styles.permissionTitle}>Push Notifications</Text>
             <Text style={styles.permissionStatus}>
@@ -96,7 +101,7 @@ export function NotificationSettings({ babyId }: NotificationSettingsProps) {
                 await requestPermissions();
               }
             }}
-            trackColor={{ false: "#e5e7eb", true: "#6366f1" }}
+            trackColor={{ false: BACKGROUND.tertiary, true: COLORS.sage }}
             thumbColor="#fff"
           />
         </View>
@@ -364,7 +369,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   enableButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
@@ -397,7 +402,7 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -491,7 +496,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   typeButtonActive: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
   },
   typeButtonText: {
     fontSize: 12,
@@ -502,7 +507,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
     borderRadius: 12,
     alignItems: "center",

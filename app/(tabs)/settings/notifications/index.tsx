@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -300,12 +300,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.primary,
   },
   sublabel: {
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginTop: 2,
   },
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   },
   subLabel: {
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginBottom: 8,
   },
@@ -334,12 +334,12 @@ const styles = StyleSheet.create({
   },
   chipText: {
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
   },
   chipTextActive: {
     color: "#fff",
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
   timeRow: {
     flexDirection: "row",
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   },
   timeLabel: {
     fontSize: 12,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginBottom: 6,
   },
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
   },
   timeValue: {
     fontSize: 16,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.primary,
   },
   saveButton: {
@@ -381,6 +381,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
 });

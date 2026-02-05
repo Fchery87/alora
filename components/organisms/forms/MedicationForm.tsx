@@ -9,6 +9,7 @@ import {
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { validateMedication as validateMedicationData } from "@/lib/validation";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 // Helper function to safely combine styles
 function inputStyle(hasError: boolean): any[] {
@@ -125,7 +126,11 @@ export function MedicationForm({
             <Ionicons
               name={type.icon as any}
               size={18}
-              color={formData.type === type.value ? "#fff" : "#22c55e"}
+              color={
+                formData.type === type.value
+                  ? THEME_TEXT.primaryInverse
+                  : COLORS.sage
+              }
             />
             <Text
               style={[
@@ -204,7 +209,7 @@ export function MedicationForm({
 
       <View style={styles.reminderSection}>
         <View style={styles.reminderHeader}>
-          <Ionicons name="notifications" size={20} color="#22c55e" />
+          <Ionicons name="notifications" size={20} color={COLORS.sage} />
           <Text style={styles.reminderLabel}>Reminders</Text>
           <Pressable
             style={styles.switch}
@@ -239,7 +244,11 @@ export function MedicationForm({
                 onChangeText={(text) => updateField("reminderTimes", [text])}
               />
               <Pressable style={styles.addTimeButton}>
-                <Ionicons name="add" size={20} color="#fff" />
+                <Ionicons
+                  name="add"
+                  size={20}
+                  color={THEME_TEXT.primaryInverse}
+                />
               </Pressable>
             </View>
           </View>
@@ -260,43 +269,44 @@ export function MedicationForm({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    ...TYPOGRAPHY.headings.h2,
+    color: THEME_TEXT.primary,
     marginBottom: 24,
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#475569",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
     marginBottom: 8,
     marginTop: 8,
   },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.primary,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: BACKGROUND.tertiary,
     borderRadius: 12,
     padding: 14,
     fontSize: 16,
-    color: "#0f172a",
+    fontFamily: "CareJournalUI",
+    color: THEME_TEXT.primary,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.danger,
   },
   textArea: {
     minHeight: 80,
     textAlignVertical: "top",
   },
   errorText: {
-    color: "#ef4444",
+    color: COLORS.danger,
     fontSize: 12,
+    fontFamily: "CareJournalUI",
     marginTop: 4,
     marginBottom: 8,
   },
@@ -319,27 +329,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: "#ecfdf5",
+    backgroundColor: BACKGROUND.secondary,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: BACKGROUND.tertiary,
     gap: 6,
   },
   typeButtonActive: {
-    backgroundColor: "#22c55e",
-    borderColor: "#22c55e",
+    backgroundColor: COLORS.sage,
+    borderColor: COLORS.sage,
   },
   typeButtonText: {
     fontSize: 13,
-    fontWeight: "500",
-    color: "#64748b",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
   },
   typeButtonTextActive: {
-    color: "#fff",
+    color: THEME_TEXT.primaryInverse,
   },
   pickerTrigger: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.primary,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: BACKGROUND.tertiary,
     borderRadius: 12,
     padding: 14,
     flexDirection: "row",
@@ -348,15 +358,17 @@ const styles = StyleSheet.create({
   },
   pickerText: {
     fontSize: 16,
-    color: "#0f172a",
+    fontFamily: "CareJournalUI",
+    color: THEME_TEXT.primary,
   },
   reminderSection: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 12,
     padding: 16,
     marginTop: 16,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.sm,
   },
   reminderHeader: {
     flexDirection: "row",
@@ -366,12 +378,13 @@ const styles = StyleSheet.create({
   reminderLabel: {
     flex: 1,
     fontSize: 16,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontFamily: "CareJournalHeadingMedium",
+    color: THEME_TEXT.primary,
   },
   reminderSubtitle: {
     fontSize: 12,
-    color: "#64748b",
+    color: THEME_TEXT.tertiary,
+    fontFamily: "CareJournalUI",
     marginTop: 12,
     marginBottom: 8,
   },
@@ -382,11 +395,11 @@ const styles = StyleSheet.create({
   switchTrack: {
     flex: 1,
     borderRadius: 14,
-    backgroundColor: "#e2e8f0",
+    backgroundColor: BACKGROUND.tertiary,
     padding: 2,
   },
   switchTrackActive: {
-    backgroundColor: "#22c55e",
+    backgroundColor: COLORS.sage,
   },
   switchThumb: {
     width: 24,
@@ -405,7 +418,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: BACKGROUND.tertiary,
   },
   timeInputRow: {
     flexDirection: "row",
@@ -413,32 +426,35 @@ const styles = StyleSheet.create({
   },
   timeInput: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: BACKGROUND.tertiary,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+    fontFamily: "CareJournalUI",
+    color: THEME_TEXT.primary,
   },
   addTimeButton: {
     width: 48,
     height: 48,
     borderRadius: 8,
-    backgroundColor: "#22c55e",
+    backgroundColor: COLORS.sage,
     justifyContent: "center",
     alignItems: "center",
+    ...SHADOWS.sm,
   },
   submitButton: {
-    backgroundColor: "#22c55e",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
     marginTop: 24,
+    ...SHADOWS.sm,
   },
   submitButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
   cancelButton: {
     padding: 16,
@@ -446,7 +462,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   cancelButtonText: {
-    color: "#64748b",
+    color: THEME_TEXT.secondary,
     fontSize: 16,
+    fontFamily: "CareJournalUIMedium",
   },
 });

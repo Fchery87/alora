@@ -13,6 +13,7 @@ import { useCreateGrowth } from "@/hooks/queries/useGrowth";
 import { validateGrowth, type GrowthFormData } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 interface GrowthTrackerProps {
   babyId: string;
@@ -173,7 +174,11 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
               <Ionicons
                 name={type.icon as keyof typeof Ionicons.glyphMap}
                 size={24}
-                color={measurementType === type.value ? "#fff" : "#6366f1"}
+                color={
+                  measurementType === type.value
+                    ? THEME_TEXT.primaryInverse
+                    : COLORS.terracotta
+                }
               />
               <Text
                 style={[
@@ -305,15 +310,14 @@ export function GrowthTracker({ babyId, onSuccess }: GrowthTrackerProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     padding: 16,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    ...TYPOGRAPHY.headings.h2,
+    color: THEME_TEXT.primary,
     marginBottom: 24,
   },
   section: {
@@ -321,8 +325,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#374151",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
     marginBottom: 8,
   },
   typeContainer: {
@@ -332,24 +336,27 @@ const styles = StyleSheet.create({
   typeButton: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 12,
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#e5e7eb",
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.sm,
   },
   typeButtonActive: {
-    borderColor: "#6366f1",
-    backgroundColor: "#6366f1",
+    borderColor: COLORS.terracotta,
+    backgroundColor: COLORS.terracotta,
   },
   typeText: {
     marginTop: 8,
     fontSize: 12,
-    fontWeight: "600",
-    color: "#6366f1",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
   },
   typeTextActive: {
-    color: "#ffffff",
+    color: THEME_TEXT.primaryInverse,
   },
   valueRow: {
     flexDirection: "row",
@@ -365,40 +372,43 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 12,
-    borderWidth: 2,
-    borderColor: "#e5e7eb",
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.sm,
   },
   unitButtonActive: {
-    borderColor: "#6366f1",
-    backgroundColor: "#6366f1",
+    borderColor: COLORS.terracotta,
+    backgroundColor: COLORS.terracotta,
   },
   unitText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#6366f1",
+    fontFamily: "CareJournalUISemiBold",
+    color: THEME_TEXT.secondary,
   },
   unitTextActive: {
-    color: "#ffffff",
+    color: THEME_TEXT.primaryInverse,
   },
   unitButtonError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.danger,
   },
   input: {
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.primary,
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
+    fontFamily: "CareJournalUI",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: BACKGROUND.tertiary,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.danger,
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.danger,
+    fontFamily: "CareJournalUI",
     marginTop: 6,
     marginLeft: 4,
   },
@@ -407,18 +417,18 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
     marginTop: 8,
+    ...SHADOWS.sm,
   },
   submitButtonDisabled: {
     opacity: 0.5,
   },
   submitButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "600",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
 });

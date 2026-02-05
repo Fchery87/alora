@@ -164,9 +164,9 @@ export const PREDEFINED_MILESTONES: PredefinedMilestone[] = [
 ];
 
 export const MILESTONE_CATEGORIES = {
-  motor: { label: "Motor Skills", icon: "body", color: "#22c55e" },
-  cognitive: { label: "Cognitive", icon: "bulb", color: "#f59e0b" },
-  language: { label: "Language", icon: "chatbubbles", color: "#6366f1" },
-  social: { label: "Social & Emotional", icon: "people", color: "#ec4899" },
-  custom: { label: "Custom", icon: "star", color: "#8b5cf6" },
+  motor: { label: "Motor Skills", icon: "body", color: "#2F6B5B" },
+  cognitive: { label: "Cognitive", icon: "bulb", color: "#D1A545" },
+  language: { label: "Language", icon: "chatbubbles", color: "#2F5E8C" },
+  social: { label: "Social & Emotional", icon: "people", color: "#C46A4A" },
+  custom: { label: "Custom", icon: "star", color: "#70767D" },
 };

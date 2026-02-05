@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { MotiView } from "moti";
-import { ModernHeader } from "@/components/atoms/ModernHeader";
+import { Header } from "@/components/layout/Header";
 import { GlassCard } from "@/components/atoms/GlassCard";
 import { GradientIcon } from "@/components/atoms/GradientIcon";
 import { DiaperTracker } from "@/components/organisms/DiaperTracker";
 import { useSelectedBabyId } from "@/stores/babyStore";
 import { BabySelectorModal } from "@/components/organisms";
-import { COLORS, TEXT } from "@/lib/theme";
+import { Text } from "@/components/ui/Text";
+import { BACKGROUND, TEXT as THEME_TEXT } from "@/lib/theme";
 
 export default function DiaperTrackerScreen() {
   const [showBabySelector, setShowBabySelector] = useState(false);
@@ -15,11 +16,13 @@ export default function DiaperTrackerScreen() {
 
   return (
     <View style={styles.screen}>
-      <ModernHeader
-        title="Diaper Tracker"
-        subtitle="Log diaper changes and patterns"
+      <Header
+        title="Diaper"
         showBackButton
-        backgroundColor="glass"
+        rightAction={{
+          icon: "people-outline",
+          onPress: () => setShowBabySelector(true),
+        }}
       />
 
       <ScrollView
@@ -41,7 +44,9 @@ export default function DiaperTrackerScreen() {
                   variant="secondary"
                   delay={200}
                 />
-                <Text style={styles.cardTitle}>Log Diaper Change</Text>
+                <Text variant="h3" style={styles.cardTitle}>
+                  Log diaper change
+                </Text>
               </View>
               <DiaperTracker babyId={selectedBabyId} />
             </GlassCard>
@@ -60,8 +65,10 @@ export default function DiaperTrackerScreen() {
                   variant="secondary"
                   delay={200}
                 />
-                <Text style={styles.emptyStateTitle}>No Baby Selected</Text>
-                <Text style={styles.emptyStateText}>
+                <Text variant="h3" style={styles.emptyStateTitle}>
+                  No baby selected
+                </Text>
+                <Text variant="body" color="secondary" style={styles.emptyStateText}>
                   Please select a baby to start tracking diaper changes
                 </Text>
               </View>
@@ -81,7 +88,7 @@ export default function DiaperTrackerScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: COLORS.cream,
+    backgroundColor: BACKGROUND.primary,
   },
   container: {
     flex: 1,
@@ -97,9 +104,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   cardTitle: {
-    fontSize: 20,
-    fontFamily: "CrimsonPro-SemiBold",
-    color: TEXT.primary,
+    color: THEME_TEXT.primary,
   },
   emptyState: {
     alignItems: "center",
@@ -107,15 +112,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   emptyStateTitle: {
-    fontSize: 22,
-    fontFamily: "CrimsonPro-SemiBold",
-    color: TEXT.primary,
+    color: THEME_TEXT.primary,
     marginTop: 8,
   },
   emptyStateText: {
-    fontSize: 14,
-    fontFamily: "DMSans-Regular",
-    color: TEXT.secondary,
     textAlign: "center",
     paddingHorizontal: 20,
   },

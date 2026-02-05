@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 interface Props {
   children: ReactNode;
@@ -142,7 +143,11 @@ function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
             }}
             activeOpacity={0.8}
           >
-            <Ionicons name="help-circle-outline" size={20} color="#6366f1" />
+            <Ionicons
+              name="help-circle-outline"
+              size={20}
+              color={COLORS.terracotta}
+            />
             <Text style={styles.supportButtonText}>Get Help</Text>
           </TouchableOpacity>
         </View>
@@ -158,7 +163,7 @@ function ErrorFallback({ error, onReset }: ErrorFallbackProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     flexGrow: 1,
@@ -166,15 +171,13 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   errorCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.primary,
     borderRadius: 24,
     padding: 32,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.md,
   },
   iconContainer: {
     width: 80,
@@ -233,39 +236,35 @@ const styles = StyleSheet.create({
   resetButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 24,
     gap: 8,
-    shadowColor: "#6366f1",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    ...SHADOWS.sm,
   },
   resetButtonText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#ffffff",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
   supportButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#eef2ff",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 24,
     gap: 8,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   supportButtonText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#6366f1",
+    ...TYPOGRAPHY.button,
+    color: COLORS.terracotta,
   },
   hint: {
-    fontSize: 12,
-    color: "#94a3b8",
+    ...TYPOGRAPHY.body.small,
+    color: THEME_TEXT.tertiary,
     textAlign: "center",
   },
 });

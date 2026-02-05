@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 40,
     fontWeight: "700",
-    fontFamily: "CrimsonProBold",
+    fontFamily: "CareJournalHeadingSemiBold",
   },
   avatarBadge: {
     position: "absolute",
@@ -372,7 +372,7 @@ const styles = StyleSheet.create({
     color: COLORS.clay,
     fontSize: 16,
     fontWeight: "600",
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUIMedium",
   },
   footer: {
     alignItems: "center",

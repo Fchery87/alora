@@ -1,8 +1,7 @@
 import React from "react";
 import { View, StyleSheet, ViewStyle } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { GRADIENTS, RADIUS } from "@/lib/theme";
+import { RADIUS } from "@/lib/theme";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 interface GlassCardProps {
@@ -12,6 +11,15 @@ interface GlassCardProps {
   style?: ViewStyle;
   animated?: boolean;
   delay?: number;
+}
+
+function hexToRgba(hex: string, alpha: number) {
+  const cleaned = hex.replace("#", "").trim();
+  if (cleaned.length !== 6) return `rgba(0,0,0,${alpha})`;
+  const r = parseInt(cleaned.slice(0, 2), 16);
+  const g = parseInt(cleaned.slice(2, 4), 16);
+  const b = parseInt(cleaned.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 export function GlassCard({
@@ -24,22 +32,44 @@ export function GlassCard({
 }: GlassCardProps) {
   const { theme } = useTheme();
 
-  const gradientColors = React.useMemo((): [string, string] => {
+  const cardTone = React.useMemo(() => {
+    const baseBorder =
+      theme.mode === "dark" ? theme.glass.border : theme.background.tertiary;
+
     switch (variant) {
       case "primary":
-        return [GRADIENTS.primary.start, GRADIENTS.primary.end];
+        return {
+          backgroundColor: hexToRgba(theme.colors.terracotta, 0.12),
+          borderColor: hexToRgba(theme.colors.terracotta, 0.22),
+        };
       case "secondary":
-        return [GRADIENTS.secondary.start, GRADIENTS.secondary.end];
+        return {
+          backgroundColor: hexToRgba(theme.colors.sage, 0.12),
+          borderColor: hexToRgba(theme.colors.sage, 0.22),
+        };
       case "accent":
-        return [GRADIENTS.accent.start, GRADIENTS.accent.end];
+        return {
+          backgroundColor: hexToRgba(theme.colors.gold, 0.14),
+          borderColor: hexToRgba(theme.colors.gold, 0.24),
+        };
       case "calm":
-        return [GRADIENTS.calm.start, GRADIENTS.calm.end];
+        return {
+          backgroundColor: theme.background.secondary,
+          borderColor: baseBorder,
+        };
       case "warm":
-        return ["#D4A574", "#E8DED1"];
+        return {
+          backgroundColor: hexToRgba(theme.colors.terracotta, 0.08),
+          borderColor: baseBorder,
+        };
+      case "default":
       default:
-        return [theme.background.card, theme.background.secondary];
+        return {
+          backgroundColor: theme.background.card,
+          borderColor: baseBorder,
+        };
     }
-  }, [variant, theme]);
+  }, [theme, variant]);
 
   const animationStyle = animated
     ? {
@@ -64,90 +94,31 @@ export function GlassCard({
     }
   }, [size]);
 
-  const dynamicStyles = React.useMemo(
-    () => ({
-      card: {
-        ...theme.shadows.md,
-      },
-      creamCard: {
-        backgroundColor: theme.background.card,
-      },
-      glassOverlay: {
-        borderColor: theme.glass.border,
-      },
-      creamGlass: {
-        backgroundColor: theme.glass.background,
-      },
-      tintedGlass: {
-        backgroundColor:
-          theme.mode === "dark"
-            ? "rgba(45, 42, 38, 0.85)"
-            : "rgba(250, 247, 242, 0.85)",
-      },
-    }),
-    [theme]
-  );
-
   const CardWrapper = animated ? MotiView : View;
   const cardWrapperProps = animated ? { ...animationStyle } : {};
 
   return (
-    <View style={[styles.container, style]}>
-      <CardWrapper
-        {...cardWrapperProps}
-        style={[
-          styles.card,
-          dynamicStyles.card,
-          sizeStyles,
-          variant !== "default" ? styles.gradientCard : dynamicStyles.creamCard,
-        ]}
-      >
-        {variant !== "default" && (
-          <LinearGradient
-            colors={gradientColors}
-            style={StyleSheet.absoluteFill}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-          />
-        )}
-
-        <View
-          style={[
-            styles.glassOverlay,
-            dynamicStyles.glassOverlay,
-            variant === "default"
-              ? dynamicStyles.creamGlass
-              : dynamicStyles.tintedGlass,
-          ]}
-        >
-          {children}
-        </View>
-      </CardWrapper>
-    </View>
+    <CardWrapper
+      {...cardWrapperProps}
+      style={[
+        styles.card,
+        theme.shadows.md,
+        sizeStyles,
+        cardTone,
+        style,
+        {
+          borderWidth: 1,
+        },
+      ]}
+    >
+      {children}
+    </CardWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    overflow: "hidden",
-  },
   card: {
     position: "relative",
     overflow: "hidden",
-  },
-  gradientCard: {
-    backgroundColor: "transparent",
-  },
-  glassOverlay: {
-    flex: 1,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-  },
-  absoluteFill: {
-    position: "absolute" as "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
   },
 });

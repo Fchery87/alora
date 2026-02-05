@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   noticeText: {
     color: COLORS.warmDark,
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   loading: {
     padding: 16,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     color: COLORS.warmDark,
     marginTop: 12,
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   modal: {
     flex: 1,
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     color: COLORS.danger,
     marginBottom: 12,
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   saving: {
     paddingVertical: 24,

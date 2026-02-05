@@ -12,7 +12,6 @@ import { useOrganizationList, useAuth } from "@clerk/clerk-expo";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { getClerkJwtTemplateCandidates } from "@/lib/clerk-jwt-template";
 
 import {
@@ -27,7 +26,7 @@ import { GlassCard } from "@/components/atoms/GlassCard";
 import { GradientButton } from "@/components/atoms/GradientButton";
 import { Input } from "@/components/atoms/Input";
 import { Text } from "@/components/ui/Text";
-import { COLORS, SHADOWS, BACKGROUND, GLASS } from "@/lib/theme";
+import { COLORS, SHADOWS, BACKGROUND } from "@/lib/theme";
 
 export default function OnboardingScreen() {
   const {
@@ -170,40 +169,6 @@ export default function OnboardingScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: BACKGROUND.primary }}>
-      {/* Subtle gradient overlay */}
-      <LinearGradient
-        colors={[BACKGROUND.primary, BACKGROUND.secondary, BACKGROUND.primary]}
-        locations={[0, 0.5, 1]}
-        style={StyleSheet.absoluteFill}
-      />
-
-      {/* Decorative Celestial Elements */}
-      <MotiView
-        from={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.06, scale: 1 }}
-        transition={{
-          type: "timing",
-          duration: 5000,
-          loop: true,
-          repeatReverse: true,
-        }}
-        className="absolute top-[-150px] right-[-100px] w-[500px] h-[500px] rounded-full"
-        style={{ backgroundColor: COLORS.gold }}
-      />
-      <MotiView
-        from={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.08, scale: 1 }}
-        transition={{
-          type: "timing",
-          duration: 6000,
-          loop: true,
-          delay: 2000,
-          repeatReverse: true,
-        }}
-        className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] rounded-full"
-        style={{ backgroundColor: COLORS.terracotta }}
-      />
-
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
         animate={{ opacity: 1, translateY: 0 }}
@@ -382,10 +347,9 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     marginTop: 12,
-    fontFamily: "DMSans-Regular",
+    fontFamily: "CareJournalUI",
   },
   title: {
-    fontFamily: "CrimsonPro-SemiBold",
     marginBottom: 8,
     textAlign: "center",
   },
@@ -393,7 +357,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 32,
     maxWidth: 280,
-    fontFamily: "DMSans-Regular",
+    fontFamily: "CareJournalUI",
   },
   card: {
     width: "100%",
@@ -405,7 +369,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    fontFamily: "DMSans-Regular",
+    fontFamily: "CareJournalUI",
     fontSize: 14,
   },
   scrollView: {
@@ -413,7 +377,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 14,
-    fontFamily: "DMSans-SemiBold",
+    fontFamily: "CareJournalUISemiBold",
     marginBottom: 12,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -426,13 +390,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: "rgba(139, 154, 125, 0.25)",
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    borderColor: BACKGROUND.tertiary,
+    backgroundColor: BACKGROUND.primary,
     marginBottom: 10,
   },
   orgButtonActive: {
     borderColor: COLORS.terracotta,
-    backgroundColor: "rgba(212, 165, 116, 0.08)",
+    backgroundColor: BACKGROUND.secondary,
   },
   orgButtonDisabled: {
     opacity: 0.5,
@@ -444,7 +408,7 @@ const styles = StyleSheet.create({
   },
   orgName: {
     fontSize: 16,
-    fontFamily: "DMSans-SemiBold",
+    fontFamily: "CareJournalUISemiBold",
     marginLeft: 12,
   },
   orgNameActive: {
@@ -457,12 +421,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 15,
-    fontFamily: "DMSans-Regular",
+    fontFamily: "CareJournalUI",
     textAlign: "center",
   },
   createTitle: {
     fontSize: 14,
-    fontFamily: "DMSans-SemiBold",
+    fontFamily: "CareJournalUISemiBold",
     marginTop: 24,
     marginBottom: 12,
     textTransform: "uppercase",
@@ -472,18 +436,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "rgba(212, 165, 116, 0.1)",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 10,
     padding: 12,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   errorText: {
-    fontFamily: "DMSans-Medium",
+    fontFamily: "CareJournalUIMedium",
     fontSize: 14,
     flex: 1,
   },
   createButton: {
     marginTop: 8,
-    ...SHADOWS.glow,
+    ...SHADOWS.md,
   },
 });

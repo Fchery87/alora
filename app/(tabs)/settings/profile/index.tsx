@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
   avatarLabel: {
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginTop: 8,
   },
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 14,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.secondary,
     marginBottom: 8,
   },
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
   readonlyValue: {
     flex: 1,
     fontSize: 16,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.primary,
   },
   accountRow: {
@@ -218,12 +218,12 @@ const styles = StyleSheet.create({
   },
   accountName: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.primary,
   },
   accountEmail: {
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
   },
   dangerButton: {
@@ -240,6 +240,6 @@ const styles = StyleSheet.create({
   dangerButtonText: {
     color: COLORS.clay,
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
 });

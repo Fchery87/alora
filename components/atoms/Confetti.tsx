@@ -1,14 +1,19 @@
 import { MotiView } from "moti";
 import { StyleSheet } from "react-native";
+import { COLORS } from "@/lib/theme";
 
 export function Confetti() {
   const particles = Array.from({ length: 50 }, (_, i) => ({
     id: i,
     x: Math.random() * 300,
     y: Math.random() * 300,
-    color: ["#6366f1", "#ec4899", "#10b981", "#f59e0b", "#3b82f6"][
-      Math.floor(Math.random() * 5)
-    ],
+    color: [
+      COLORS.terracotta,
+      COLORS.sage,
+      COLORS.gold,
+      COLORS.info,
+      COLORS.danger,
+    ][Math.floor(Math.random() * 5)],
   }));
 
   return (

@@ -6,9 +6,8 @@ import {
   Pressable,
   ActivityIndicator as RNActivityIndicator,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { GRADIENTS, RADIUS, TYPOGRAPHY } from "@/lib/theme";
+import { RADIUS, TEXT } from "@/lib/theme";
 import { useTheme } from "@/components/providers/ThemeProvider";
 
 interface GradientButtonProps {
@@ -34,56 +33,64 @@ export function GradientButton({
 }: GradientButtonProps) {
   const { theme } = useTheme();
 
-  const gradientColors = React.useMemo((): [string, string] => {
-    switch (variant) {
-      case "primary":
-        return [GRADIENTS.primary.start, GRADIENTS.primary.end];
-      case "secondary":
-        return [GRADIENTS.secondary.start, GRADIENTS.secondary.end];
-      case "accent":
-        return [GRADIENTS.accent.start, GRADIENTS.accent.end];
-      default:
-        return [GRADIENTS.primary.start, GRADIENTS.primary.end];
-    }
-  }, [variant]);
-
   const sizeStyles = React.useMemo(() => {
     switch (size) {
       case "sm":
-        return { paddingVertical: 8, paddingHorizontal: 16, fontSize: 13 };
+        return { paddingVertical: 10, paddingHorizontal: 14, fontSize: 13 };
       case "lg":
-        return { paddingVertical: 16, paddingHorizontal: 32, fontSize: 16 };
+        return { paddingVertical: 16, paddingHorizontal: 18, fontSize: 16 };
       default:
-        return { paddingVertical: 12, paddingHorizontal: 24, fontSize: 15 };
+        return { paddingVertical: 14, paddingHorizontal: 16, fontSize: 15 };
     }
   }, [size]);
 
-  const isGradient =
-    variant === "primary" || variant === "secondary" || variant === "accent";
   const isOutline = variant === "outline";
   const isGhost = variant === "ghost";
 
-  const dynamicStyles = React.useMemo(
+  const fillTone = React.useMemo(() => {
+    switch (variant) {
+      case "secondary":
+        return {
+          backgroundColor: theme.colors.sage,
+          textColor: theme.text.primaryInverse,
+          borderColor: "transparent",
+        };
+      case "accent":
+        return {
+          backgroundColor: theme.colors.gold,
+          textColor: TEXT.primary,
+          borderColor: "transparent",
+        };
+      case "primary":
+      default:
+        return {
+          backgroundColor: theme.colors.terracotta,
+          textColor: theme.text.primaryInverse,
+          borderColor: "transparent",
+        };
+    }
+  }, [theme, variant]);
+
+  const outlineTone = React.useMemo(
     () => ({
-      outline: {
-        backgroundColor: "transparent",
-        borderWidth: 2,
-        borderColor: theme.colors.primary,
-      },
-      ghost: {
-        backgroundColor: "transparent",
-      },
+      backgroundColor: "transparent",
+      borderColor: theme.colors.terracotta,
+      textColor: theme.colors.terracotta,
     }),
     [theme]
   );
 
-  const textColor = isGradient
-    ? "#ffffff"
-    : isOutline || isGhost
-      ? theme.colors.primary
-      : theme.text.primary;
+  const ghostTone = React.useMemo(
+    () => ({
+      backgroundColor: "transparent",
+      borderColor: "transparent",
+      textColor: theme.text.primary,
+    }),
+    [theme]
+  );
 
-  const activityIndicatorColor = isGradient ? "#ffffff" : theme.colors.primary;
+  const tone = isOutline ? outlineTone : isGhost ? ghostTone : fillTone;
+  const activityIndicatorColor = tone.textColor;
 
   return (
     <MotiView
@@ -102,25 +109,20 @@ export function GradientButton({
           styles.pressable,
           pressed && !disabled && !loading && styles.pressed,
         ]}
+        accessibilityRole="button"
       >
         <View
           style={[
             styles.container,
             sizeStyles,
-            isOutline && dynamicStyles.outline,
-            isGhost && dynamicStyles.ghost,
             { borderRadius: RADIUS.md },
+            {
+              backgroundColor: tone.backgroundColor,
+              borderColor: tone.borderColor,
+              borderWidth: isOutline ? 1 : 0,
+            },
           ]}
         >
-          {isGradient && (
-            <LinearGradient
-              colors={gradientColors}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={[StyleSheet.absoluteFill, { borderRadius: RADIUS.md }]}
-            />
-          )}
-
           {loading ? (
             <RNActivityIndicator size="small" color={activityIndicatorColor} />
           ) : (
@@ -131,7 +133,7 @@ export function GradientButton({
                   styles.text,
                   {
                     fontSize: sizeStyles.fontSize,
-                    color: textColor,
+                    color: tone.textColor,
                   },
                 ]}
               >
@@ -158,15 +160,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    zIndex: 1,
   },
   icon: {
     marginRight: 8,
   },
   text: {
-    fontFamily: "OutfitSemiBold",
-    letterSpacing: 0.3,
-    textTransform: "uppercase",
+    fontFamily: "CareJournalUISemiBold",
+    letterSpacing: 0.2,
   },
   pressed: {
     transform: [{ scale: 0.96 }],

@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: COLORS.sage,
   },
   categoryRow: {
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 14,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.secondary,
   },
   categoryTextActive: {
@@ -279,14 +279,14 @@ const styles = StyleSheet.create({
   },
   soundName: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.primary,
     textAlign: "center",
     marginBottom: 4,
   },
   soundDesc: {
     fontSize: 12,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     textAlign: "center",
   },
@@ -325,14 +325,14 @@ const styles = StyleSheet.create({
   },
   playerLabel: {
     fontSize: 11,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: "rgba(255,255,255,0.7)",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   playerSound: {
     fontSize: 16,
-    fontFamily: "CrimsonProMedium",
+    fontFamily: "CareJournalHeadingMedium",
     color: "#fff",
   },
   volumeButton: {

@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { NotificationReminder } from "@/lib/notifications";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT } from "@/lib/theme";
 
 interface NotificationReminderItemProps {
   reminder: NotificationReminder;
@@ -52,7 +53,7 @@ export function NotificationReminderItem({
           <Ionicons
             name={getIcon() as keyof typeof Ionicons.glyphMap}
             size={20}
-            color="#6366f1"
+            color={COLORS.terracotta}
           />
         </View>
         <View style={styles.content}>
@@ -65,7 +66,7 @@ export function NotificationReminderItem({
         <Switch
           value={reminder.isEnabled}
           onValueChange={() => onToggle(reminder.id)}
-          trackColor={{ false: "#e5e7eb", true: "#6366f1" }}
+          trackColor={{ false: BACKGROUND.tertiary, true: COLORS.sage }}
           thumbColor="#fff"
         />
       </View>
@@ -82,7 +83,7 @@ export function NotificationReminderItem({
           style={styles.actionButton}
           onPress={() => onDelete(reminder.id)}
         >
-          <Ionicons name="trash-outline" size={16} color="#ef4444" />
+          <Ionicons name="trash-outline" size={16} color={COLORS.danger} />
           <Text style={[styles.actionText, styles.deleteActionText]}>
             Delete
           </Text>
@@ -94,10 +95,13 @@ export function NotificationReminderItem({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.sm,
   },
   header: {
     flexDirection: "row",
@@ -107,9 +111,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: BACKGROUND.primary,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   content: {
     flex: 1,
@@ -117,23 +123,25 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontFamily: "CareJournalUISemiBold",
+    color: THEME_TEXT.primary,
   },
   message: {
     fontSize: 13,
-    color: "#6b7280",
+    color: THEME_TEXT.secondary,
+    fontFamily: "CareJournalUI",
     marginTop: 2,
   },
   schedule: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: THEME_TEXT.tertiary,
+    fontFamily: "CareJournalUI",
     marginTop: 4,
   },
   actions: {
     flexDirection: "row",
     borderTopWidth: 1,
-    borderTopColor: "#f1f5f9",
+    borderTopColor: BACKGROUND.tertiary,
     marginTop: 12,
     paddingTop: 12,
     gap: 16,
@@ -145,9 +153,10 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 13,
-    color: "#6b7280",
+    color: THEME_TEXT.secondary,
+    fontFamily: "CareJournalUIMedium",
   },
   deleteActionText: {
-    color: "#ef4444",
+    color: COLORS.danger,
   },
 });

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
@@ -9,13 +8,14 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { GrowthTracker } from "@/components/organisms/growth/GrowthTracker";
-import { ModernHeader } from "@/components/atoms/ModernHeader";
+import { Header } from "@/components/layout/Header";
 import { GlassCard } from "@/components/atoms/GlassCard";
 import { GradientIcon } from "@/components/atoms/GradientIcon";
 import { GradientButton } from "@/components/atoms/GradientButton";
 import { useSelectedBabyId } from "@/stores/babyStore";
 import { BabySelectorModal } from "@/components/organisms";
-import { COLORS, TEXT, GLASS } from "@/lib/theme";
+import { Text } from "@/components/ui/Text";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT } from "@/lib/theme";
 
 export default function GrowthScreen() {
   const [activeTab, setActiveTab] = useState<"log" | "history">("log");
@@ -24,11 +24,13 @@ export default function GrowthScreen() {
 
   return (
     <View style={styles.screen}>
-      <ModernHeader
-        title="Growth Tracking"
-        subtitle="Monitor your baby's development"
+      <Header
+        title="Growth"
         showBackButton
-        backgroundColor="glass"
+        rightAction={{
+          icon: "people-outline",
+          onPress: () => setShowBabySelector(true),
+        }}
       />
 
       <ScrollView
@@ -52,10 +54,8 @@ export default function GrowthScreen() {
               onPress={() => setActiveTab("log")}
             >
               <Text
-                style={[
-                  styles.segmentText,
-                  activeTab === "log" && styles.segmentTextActive,
-                ]}
+                variant="body"
+                style={[styles.segmentText, activeTab === "log" && styles.segmentTextActive]}
               >
                 Log Measurement
               </Text>
@@ -68,6 +68,7 @@ export default function GrowthScreen() {
               onPress={() => setActiveTab("history")}
             >
               <Text
+                variant="body"
                 style={[
                   styles.segmentText,
                   activeTab === "history" && styles.segmentTextActive,
@@ -97,7 +98,9 @@ export default function GrowthScreen() {
                     variant="accent"
                     delay={300}
                   />
-                  <Text style={styles.cardTitle}>Record Growth</Text>
+                  <Text variant="h3" style={styles.cardTitle}>
+                    Record growth
+                  </Text>
                 </View>
                 <GrowthTracker babyId={selectedBabyId} />
               </GlassCard>
@@ -110,8 +113,10 @@ export default function GrowthScreen() {
                     variant="accent"
                     delay={300}
                   />
-                  <Text style={styles.emptyStateTitle}>No Baby Selected</Text>
-                  <Text style={styles.emptyStateText}>
+                  <Text variant="h3" style={styles.emptyStateTitle}>
+                    No baby selected
+                  </Text>
+                  <Text variant="body" color="secondary" style={styles.emptyStateText}>
                     Please select a baby to start tracking growth measurements
                   </Text>
                   <GradientButton
@@ -141,7 +146,9 @@ export default function GrowthScreen() {
                   variant="secondary"
                   delay={300}
                 />
-                <Text style={styles.cardTitle}>Growth Chart</Text>
+                <Text variant="h3" style={styles.cardTitle}>
+                  Growth chart
+                </Text>
               </View>
               <View style={styles.chartPlaceholder}>
                 <Ionicons
@@ -150,8 +157,10 @@ export default function GrowthScreen() {
                   color={COLORS.terracotta}
                   style={{ opacity: 0.5 }}
                 />
-                <Text style={styles.placeholderTitle}>Coming Soon</Text>
-                <Text style={styles.placeholderText}>
+                <Text variant="h3" style={styles.placeholderTitle}>
+                  Coming soon
+                </Text>
+                <Text variant="body" color="secondary" style={styles.placeholderText}>
                   Growth chart visualization will appear here with your baby's
                   measurements over time.
                 </Text>
@@ -172,7 +181,7 @@ export default function GrowthScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: COLORS.cream,
+    backgroundColor: BACKGROUND.primary,
   },
   container: {
     flex: 1,
@@ -186,9 +195,11 @@ const styles = StyleSheet.create({
   },
   segmentedControl: {
     flexDirection: "row",
-    backgroundColor: "rgba(139, 154, 125, 0.15)",
-    borderRadius: 14,
+    backgroundColor: BACKGROUND.secondary,
+    borderRadius: 16,
     padding: 4,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   segmentItem: {
     flex: 1,
@@ -197,21 +208,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   segmentItemActive: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    shadowColor: COLORS.terracotta,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: BACKGROUND.primary,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.sm,
   },
   segmentText: {
     fontSize: 14,
-    fontFamily: "DMSans-Medium",
-    color: TEXT.secondary,
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
   },
   segmentTextActive: {
-    color: TEXT.primary,
-    fontFamily: "DMSans-SemiBold",
+    color: THEME_TEXT.primary,
+    fontFamily: "CareJournalUISemiBold",
   },
   cardHeader: {
     flexDirection: "row",
@@ -220,9 +229,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   cardTitle: {
-    fontSize: 20,
-    fontFamily: "CrimsonPro-SemiBold",
-    color: TEXT.primary,
+    color: THEME_TEXT.primary,
   },
   emptyState: {
     alignItems: "center",
@@ -230,15 +237,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   emptyStateTitle: {
-    fontSize: 22,
-    fontFamily: "CrimsonPro-SemiBold",
-    color: TEXT.primary,
+    color: THEME_TEXT.primary,
     marginTop: 8,
   },
   emptyStateText: {
-    fontSize: 14,
-    fontFamily: "DMSans-Regular",
-    color: TEXT.secondary,
     textAlign: "center",
     paddingHorizontal: 20,
     marginBottom: 8,
@@ -252,15 +254,10 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   placeholderTitle: {
-    fontSize: 20,
-    fontFamily: "CrimsonPro-SemiBold",
-    color: TEXT.primary,
+    color: THEME_TEXT.primary,
     marginTop: 8,
   },
   placeholderText: {
-    fontSize: 14,
-    fontFamily: "DMSans-Regular",
-    color: TEXT.secondary,
     textAlign: "center",
     paddingHorizontal: 20,
   },

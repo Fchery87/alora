@@ -1,6 +1,6 @@
 import { View, ViewProps, StyleSheet } from "react-native";
 import { useMemo } from "react";
-import { COLORS, SHADOWS } from "@/lib/theme";
+import { SHADOWS } from "@/lib/theme";
 
 interface CardProps extends ViewProps {
   className?: string;
@@ -34,13 +34,13 @@ export function Card({
       case "glass":
         return {
           container: styles.glass,
-          classes: "bg-white/70 border border-cream-200/50",
+          classes: "bg-cream-50/80 border border-cream-200/70",
         };
       case "default":
       default:
         return {
           container: styles.default,
-          classes: "bg-white border border-cream-200",
+          classes: "bg-cream-50 border border-cream-200",
         };
     }
   }, [variant]);

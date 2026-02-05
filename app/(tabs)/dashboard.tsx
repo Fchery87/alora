@@ -1,9 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
-import { Header } from "@/components/layout/Header";
 import { Dashboard, DashboardSkeleton } from "@/components/organisms";
 import { ActivityFeed } from "@/components/organisms/ActivityFeed";
 import { useSelectedBabyId } from "@/stores/babyStore";
-import { BACKGROUND, TEXT } from "@/lib/theme";
+import { color } from "@/lib/design/careJournal/tokens";
 import { useState, useEffect } from "react";
 
 export default function DashboardScreen() {
@@ -20,7 +19,6 @@ export default function DashboardScreen() {
 
   return (
     <View style={styles.screen}>
-      <Header title="Dashboard" showBackButton={false} />
       {isLoading ? (
         <DashboardSkeleton />
       ) : babyId ? (
@@ -45,22 +43,22 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: BACKGROUND.primary,
+    backgroundColor: color.paper.base,
   },
   emptyState: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: BACKGROUND.primary,
+    backgroundColor: color.paper.base,
   },
   emptyText: {
     fontSize: 18,
     fontWeight: "600",
-    color: TEXT.primary,
+    color: color.ink.strong,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: TEXT.secondary,
+    color: color.ink.muted,
   },
 });

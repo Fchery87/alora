@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 16,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   },
   themeLabel: {
     fontSize: 13,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
   row: {
     flexDirection: "row",
@@ -353,11 +353,11 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
   sublabel: {
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     marginTop: 2,
   },
   fontSizeGrid: {
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   fontSizeText: {
-    fontFamily: "CrimsonProMedium",
+    fontFamily: "CareJournalHeadingMedium",
     fontWeight: "600",
   },
   fontSizeTextActive: {
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   },
   fontSizeLabel: {
     fontSize: 10,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     marginTop: 4,
   },
   fontSizeLabelActive: {
@@ -397,6 +397,6 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
 });

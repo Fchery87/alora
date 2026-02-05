@@ -8,6 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT } from "@/lib/theme";
 
 /**
  * Toast types
@@ -191,31 +192,31 @@ export function Toast({
     switch (type) {
       case "success":
         return {
-          bg: "#ecfdf5",
-          border: "#10b981",
-          text: "#065f46",
-          icon: "#10b981",
+          bg: BACKGROUND.secondary,
+          border: COLORS.sage,
+          text: THEME_TEXT.primary,
+          icon: COLORS.sage,
         };
       case "error":
         return {
-          bg: "#fef2f2",
-          border: "#ef4444",
-          text: "#991b1b",
-          icon: "#ef4444",
+          bg: BACKGROUND.secondary,
+          border: COLORS.danger,
+          text: THEME_TEXT.primary,
+          icon: COLORS.danger,
         };
       case "warning":
         return {
-          bg: "#fffbeb",
-          border: "#f59e0b",
-          text: "#92400e",
-          icon: "#f59e0b",
+          bg: BACKGROUND.secondary,
+          border: COLORS.gold,
+          text: THEME_TEXT.primary,
+          icon: COLORS.gold,
         };
       case "info":
         return {
-          bg: "#eff6ff",
-          border: "#3b82f6",
-          text: "#1e40af",
-          icon: "#3b82f6",
+          bg: BACKGROUND.secondary,
+          border: COLORS.info,
+          text: THEME_TEXT.primary,
+          icon: COLORS.info,
         };
     }
   };
@@ -282,11 +283,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: SHADOWS.sm.shadowColor,
+    shadowOffset: SHADOWS.sm.shadowOffset,
+    shadowOpacity: SHADOWS.sm.shadowOpacity,
+    shadowRadius: SHADOWS.sm.shadowRadius,
+    elevation: SHADOWS.sm.elevation,
     minHeight: 64,
   },
   toastVisible: {
@@ -312,11 +313,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: "600",
+    fontFamily: "CareJournalUISemiBold",
     marginBottom: 2,
   },
   message: {
     fontSize: 13,
+    fontFamily: "CareJournalUI",
     lineHeight: 18,
   },
   closeButton: {

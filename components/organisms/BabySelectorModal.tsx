@@ -11,6 +11,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useBaby } from "@/hooks/useBaby";
 import { CreateBaby } from "./CreateBaby";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT } from "@/lib/theme";
 
 interface BabySelectorModalProps {
   visible: boolean;
@@ -44,22 +45,22 @@ export function BabySelectorModal({
 
   const getPastelColor = (index: number) => {
     const colors = [
-      "#fce7f3", // Pink
-      "#e0e7ff", // Indigo
-      "#dcfce7", // Green
-      "#fef3c7", // Yellow
-      "#e0f2fe", // Sky
+      "rgba(196, 106, 74, 0.14)", // Clay wash
+      "rgba(47, 107, 91, 0.14)", // Sage wash
+      "rgba(209, 165, 69, 0.16)", // Marigold wash
+      "rgba(47, 94, 140, 0.14)", // Sky wash
+      "rgba(31, 35, 40, 0.08)", // Ink wash
     ];
     return colors[index % colors.length];
   };
 
   const getTextColor = (index: number) => {
     const colors = [
-      "#db2777", // Pink
-      "#4f46e5", // Indigo
-      "#059669", // Green
-      "#d97706", // Yellow
-      "#0284c7", // Sky
+      COLORS.terracotta,
+      COLORS.sage,
+      COLORS.gold,
+      COLORS.info,
+      THEME_TEXT.primary,
     ];
     return colors[index % colors.length];
   };
@@ -72,7 +73,7 @@ export function BabySelectorModal({
             <View style={styles.header}>
               <Text style={styles.title}>Select Baby</Text>
               <TouchableOpacity onPress={onClose}>
-                <Ionicons name="close" size={24} color="#0f172a" />
+                <Ionicons name="close" size={22} color={THEME_TEXT.primary} />
               </TouchableOpacity>
             </View>
 
@@ -140,7 +141,7 @@ export function BabySelectorModal({
                       <Ionicons
                         name="checkmark-circle"
                         size={24}
-                        color="#6366f1"
+                        color={COLORS.terracotta}
                       />
                     )}
                   </TouchableOpacity>
@@ -152,7 +153,11 @@ export function BabySelectorModal({
               style={styles.addButton}
               onPress={() => setShowCreateBaby(true)}
             >
-              <Ionicons name="add-circle-outline" size={24} color="#fff" />
+              <Ionicons
+                name="add-circle-outline"
+                size={22}
+                color={THEME_TEXT.primaryInverse}
+              />
               <Text style={styles.addButtonText}>Add New Baby</Text>
             </TouchableOpacity>
           </View>
@@ -170,15 +175,16 @@ export function BabySelectorModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: BACKGROUND.overlay,
     justifyContent: "flex-end",
   },
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.primary,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: "80%",
     paddingBottom: 34,
+    ...SHADOWS.lg,
   },
   header: {
     flexDirection: "row",
@@ -186,12 +192,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: BACKGROUND.tertiary,
   },
   title: {
     fontSize: 20,
-    fontWeight: "700",
-    color: "#0f172a",
+    fontFamily: "CareJournalHeadingMedium",
+    color: THEME_TEXT.primary,
   },
   babyList: {
     paddingHorizontal: 16,
@@ -201,15 +207,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 16,
     marginBottom: 12,
-    borderWidth: 2,
-    borderColor: "transparent",
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   babyCardSelected: {
-    borderColor: "#6366f1",
-    backgroundColor: "#eef2ff",
+    borderColor: COLORS.terracotta,
+    backgroundColor: BACKGROUND.primary,
   },
   avatar: {
     width: 56,
@@ -218,6 +224,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   avatarImage: {
     width: "100%",
@@ -225,7 +233,7 @@ const styles = StyleSheet.create({
   },
   initials: {
     fontSize: 20,
-    fontWeight: "700",
+    fontFamily: "CareJournalHeadingSemiBold",
   },
   babyInfo: {
     flex: 1,
@@ -233,12 +241,12 @@ const styles = StyleSheet.create({
   },
   babyName: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontFamily: "CareJournalUISemiBold",
+    color: THEME_TEXT.primary,
     marginBottom: 4,
   },
   babyNameSelected: {
-    color: "#6366f1",
+    color: COLORS.terracotta,
   },
   babyDetails: {
     flexDirection: "row",
@@ -246,12 +254,13 @@ const styles = StyleSheet.create({
   },
   age: {
     fontSize: 14,
-    color: "#64748b",
-    fontWeight: "500",
+    color: THEME_TEXT.secondary,
+    fontFamily: "CareJournalUIMedium",
   },
   birthDate: {
     fontSize: 14,
-    color: "#94a3b8",
+    color: THEME_TEXT.tertiary,
+    fontFamily: "CareJournalUI",
   },
   addButton: {
     flexDirection: "row",
@@ -259,13 +268,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: 16,
     padding: 16,
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     borderRadius: 12,
     gap: 8,
+    ...SHADOWS.sm,
   },
   addButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    color: THEME_TEXT.primaryInverse,
+    fontSize: 15,
+    fontFamily: "CareJournalUISemiBold",
+    letterSpacing: 0.3,
+    textTransform: "uppercase",
   },
 });

@@ -1,16 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import React from "react";
+import { View, StyleSheet, ScrollView, Pressable, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { MotiView } from "moti";
-import { LinearGradient } from "expo-linear-gradient";
-import { Text } from "@/components/ui/Text";
-import { Card } from "@/components/ui/Card";
-import { OrganicBackground } from "@/components/atoms/OrganicBackground";
-import { ModernHeader } from "@/components/atoms/ModernHeader";
-import { GradientIcon } from "@/components/atoms/GradientIcon";
-import { JournalSkeleton } from "@/components/organisms";
-import { COLORS, GRADIENTS, SHADOWS } from "@/lib/theme";
+import { JournalScaffold } from "@/components/care-journal/JournalScaffold";
+import { color, font, radius, space, typeScale } from "@/lib/design/careJournal/tokens";
 
 const writingPrompts = [
   { icon: "sparkles", text: "What made you smile today?" },
@@ -21,319 +14,231 @@ const writingPrompts = [
 
 export default function JournalScreen() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return (
-      <OrganicBackground>
-        <View style={styles.screen}>
-          <ModernHeader
-            title="Journal"
-            subtitle="Capture your thoughts and memories"
-            showBackButton={false}
-            backgroundColor="transparent"
-          />
-          <JournalSkeleton />
-        </View>
-      </OrganicBackground>
-    );
-  }
 
   return (
-    <OrganicBackground>
-      <View style={styles.screen}>
-        <ModernHeader
-          title="Journal"
-          subtitle="Capture your thoughts and memories"
-          showBackButton={false}
-          backgroundColor="transparent"
-        />
-
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
+    <JournalScaffold
+      title="Journal"
+      subtitle="A note now; a memory later."
+      testID="care-journal-journal"
+    >
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.sectionLabel}>New entry</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Write a new journal entry"
+          onPress={() => router.push("/(tabs)/journal/new")}
+          style={({ pressed }) => [styles.entryCard, pressed && styles.pressed]}
         >
-          {/* Title Section */}
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ delay: 200, dampingRatio: 0.8, stiffness: 150 }}
-          >
-            <Text variant="h1" color="primary" style={styles.title}>
-              Quick Journal
+          <View style={styles.entryIconWrap}>
+            <Ionicons name="book" size={18} color={color.pigment.marigold} />
+          </View>
+          <View style={styles.entryText}>
+            <Text style={styles.entryTitle}>Write a note</Text>
+            <Text style={styles.entryDesc}>
+              A few words about you, your baby, or the day.
             </Text>
-            <Text variant="body" color="secondary" style={styles.subtitle}>
-              Capture your thoughts, gratitude, and milestones
-            </Text>
-          </MotiView>
+          </View>
+          <Ionicons name="arrow-forward" size={18} color={color.ink.faint} />
+        </Pressable>
 
-          {/* New Entry Card */}
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ delay: 300, dampingRatio: 0.8, stiffness: 150 }}
-          >
-            <TouchableOpacity
-              onPress={() => router.push("/(tabs)/journal/new")}
-              activeOpacity={0.8}
-            >
-              <Card variant="elevated" style={styles.entryCard}>
-                <View style={styles.entryIconContainer}>
-                  <GradientIcon
-                    name="book"
-                    size={28}
-                    variant="accent"
-                    animated={false}
-                  />
-                </View>
-                <Text variant="h3" color="primary" style={styles.entryTitle}>
-                  New Entry
-                </Text>
-                <Text
-                  variant="caption"
-                  color="tertiary"
-                  style={styles.entryDescription}
-                >
-                  Write about your day, feelings, or baby's milestones
-                </Text>
-                <View style={styles.entryArrow}>
+        <Text style={styles.sectionLabel}>Prompts</Text>
+        <View style={styles.promptsGrid}>
+          {writingPrompts.map((prompt) => (
+            <View key={prompt.text} style={styles.promptItem}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Use writing prompt: ${prompt.text}`}
+                onPress={() => router.push("/(tabs)/journal/new")}
+                style={({ pressed }) => [
+                  styles.promptCard,
+                  pressed && styles.pressed,
+                ]}
+              >
+                <View style={styles.promptIconWrap}>
                   <Ionicons
-                    name="arrow-forward"
-                    size={20}
-                    color={COLORS.gold}
+                    name={prompt.icon as any}
+                    size={16}
+                    color={color.pigment.clay}
                   />
                 </View>
-              </Card>
-            </TouchableOpacity>
-          </MotiView>
-
-          {/* Writing Prompts Section */}
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ delay: 400, dampingRatio: 0.8, stiffness: 150 }}
-            style={styles.promptsSection}
-          >
-            <Text variant="h3" color="primary" style={styles.sectionTitle}>
-              Writing Prompts
-            </Text>
-
-            <View style={styles.promptsGrid}>
-              {writingPrompts.map((prompt, index) => (
-                <MotiView
-                  key={index}
-                  from={{ opacity: 0, scale: 0.9, translateY: 20 }}
-                  animate={{ opacity: 1, scale: 1, translateY: 0 }}
-                  transition={{
-                    delay: 500 + index * 80,
-                    dampingRatio: 0.7,
-                    stiffness: 180,
-                  }}
-                >
-                  <TouchableOpacity
-                    style={styles.cardWrapper}
-                    onPress={() => router.push("/(tabs)/journal/new")}
-                    activeOpacity={0.8}
-                  >
-                    <Card variant="elevated" style={styles.promptCard}>
-                      <LinearGradient
-                        colors={[GRADIENTS.accent.start, GRADIENTS.accent.end]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={styles.promptIconBg}
-                      >
-                        <Ionicons
-                          name={prompt.icon as any}
-                          size={18}
-                          color="#ffffff"
-                        />
-                      </LinearGradient>
-                      <Text
-                        variant="body"
-                        color="secondary"
-                        style={styles.promptText}
-                      >
-                        {prompt.text}
-                      </Text>
-                    </Card>
-                  </TouchableOpacity>
-                </MotiView>
-              ))}
+                <Text style={styles.promptText} numberOfLines={3}>
+                  {prompt.text}
+                </Text>
+              </Pressable>
             </View>
-          </MotiView>
+          ))}
+        </View>
 
-          {/* Recent Entries Section */}
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ delay: 600, dampingRatio: 0.8, stiffness: 150 }}
-            style={styles.recentSection}
+        <Text style={styles.sectionLabel}>Recent</Text>
+        <View style={styles.emptyCard}>
+          <View style={styles.emptyIconWrap}>
+            <Ionicons
+              name="book-outline"
+              size={20}
+              color={color.pigment.marigold}
+            />
+          </View>
+          <Text style={styles.emptyTitle}>No entries yet</Text>
+          <Text style={styles.emptySubtitle}>
+            When you write, your notes will collect here.
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Write your first journal entry"
+            onPress={() => router.push("/(tabs)/journal/new")}
+            style={({ pressed }) => [
+              styles.emptyButton,
+              pressed && styles.pressed,
+            ]}
           >
-            <Text variant="h3" color="primary" style={styles.sectionTitle}>
-              Recent Entries
-            </Text>
-
-            <Card variant="soft" style={styles.emptyCard}>
-              <View style={styles.emptyState}>
-                <View
-                  style={[
-                    styles.emptyIconContainer,
-                    { backgroundColor: `${COLORS.gold}20` },
-                  ]}
-                >
-                  <Ionicons name="book-outline" size={32} color={COLORS.gold} />
-                </View>
-                <Text
-                  variant="subtitle"
-                  color="primary"
-                  style={styles.emptyTitle}
-                >
-                  No entries yet
-                </Text>
-                <Text
-                  variant="caption"
-                  color="tertiary"
-                  style={styles.emptySubtitle}
-                >
-                  Start writing to see your journal history
-                </Text>
-                <TouchableOpacity
-                  style={styles.emptyButton}
-                  onPress={() => router.push("/(tabs)/journal/new")}
-                >
-                  <Text style={styles.emptyButtonText}>Write First Entry</Text>
-                </TouchableOpacity>
-              </View>
-            </Card>
-          </MotiView>
-        </ScrollView>
-      </View>
-    </OrganicBackground>
+            <Text style={styles.emptyButtonText}>Write first entry</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </JournalScaffold>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
   content: {
-    padding: 20,
-    paddingTop: 8,
-    paddingBottom: 100,
+    paddingTop: space[2],
+    paddingBottom: space[7],
   },
-  title: {
-    marginBottom: 8,
+  sectionLabel: {
+    marginTop: space[4],
+    marginBottom: space[2],
+    fontFamily: font.ui.medium,
+    fontSize: typeScale.caption.fontSize,
+    lineHeight: typeScale.caption.lineHeight,
+    letterSpacing: 0.7,
+    textTransform: "uppercase",
+    color: color.ink.faint,
   },
-  subtitle: {
-    marginBottom: 24,
+  pressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.92,
   },
   entryCard: {
-    padding: 24,
+    borderWidth: 1,
+    borderColor: color.paper.edge,
+    borderRadius: radius.lg,
+    backgroundColor: color.paper.wash,
+    padding: space[3],
+    flexDirection: "row",
     alignItems: "center",
-    ...SHADOWS.md,
-    marginBottom: 8,
+    gap: space[3],
   },
-  entryIconContainer: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: `${COLORS.gold}15`,
-    justifyContent: "center",
+  entryIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: "center",
-    marginBottom: 16,
+    justifyContent: "center",
+    backgroundColor: "rgba(209, 165, 69, 0.14)",
+  },
+  entryText: {
+    flex: 1,
   },
   entryTitle: {
-    marginBottom: 8,
-    textAlign: "center",
+    fontFamily: font.heading.semibold,
+    fontSize: typeScale.h3.fontSize,
+    lineHeight: typeScale.h3.lineHeight,
+    letterSpacing: typeScale.h3.letterSpacing,
+    color: color.ink.strong,
   },
-  entryDescription: {
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  entryArrow: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: `${COLORS.gold}15`,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  promptsSection: {
-    marginTop: 32,
-  },
-  sectionTitle: {
-    marginBottom: 16,
+  entryDesc: {
+    marginTop: 2,
+    fontFamily: font.ui.regular,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    letterSpacing: typeScale.bodySm.letterSpacing,
+    color: color.ink.muted,
   },
   promptsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    gap: space[2],
   },
-  cardWrapper: {
-    width: "47%",
+  promptItem: {
+    width: "48%",
   },
   promptCard: {
-    padding: 16,
-    alignItems: "center",
-    ...SHADOWS.sm,
+    minHeight: 112,
+    borderWidth: 1,
+    borderColor: color.paper.edge,
+    borderRadius: radius.lg,
+    backgroundColor: color.paper.wash,
+    padding: space[3],
+    overflow: "hidden",
   },
-  promptIconBg: {
+  promptIconWrap: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(196, 106, 74, 0.12)",
+    marginBottom: space[2],
+  },
+  promptText: {
+    fontFamily: font.ui.regular,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    letterSpacing: typeScale.bodySm.letterSpacing,
+    color: color.ink.muted,
+  },
+  emptyCard: {
+    borderWidth: 1,
+    borderColor: color.paper.edge,
+    borderRadius: radius.lg,
+    backgroundColor: color.paper.wash,
+    padding: space[4],
+    alignItems: "center",
+  },
+  emptyIconWrap: {
     width: 44,
     height: 44,
     borderRadius: 22,
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  promptText: {
-    textAlign: "center",
-    fontSize: 13,
-  },
-  recentSection: {
-    marginTop: 32,
-  },
-  emptyCard: {
-    padding: 32,
-    alignItems: "center",
-  },
-  emptyState: {
-    alignItems: "center",
-  },
-  emptyIconContainer: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 16,
+    backgroundColor: "rgba(209, 165, 69, 0.14)",
+    marginBottom: space[2],
   },
   emptyTitle: {
-    marginBottom: 4,
+    fontFamily: font.heading.semibold,
+    fontSize: typeScale.h3.fontSize,
+    lineHeight: typeScale.h3.lineHeight,
+    letterSpacing: typeScale.h3.letterSpacing,
+    color: color.ink.strong,
+    textAlign: "center",
   },
   emptySubtitle: {
-    marginBottom: 20,
+    marginTop: 6,
+    marginBottom: space[3],
+    fontFamily: font.ui.regular,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    letterSpacing: typeScale.bodySm.letterSpacing,
+    color: color.ink.muted,
     textAlign: "center",
   },
   emptyButton: {
-    backgroundColor: COLORS.sage,
-    paddingHorizontal: 24,
+    minHeight: 44,
+    paddingHorizontal: space[3],
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: radius.md,
+    backgroundColor: color.pigment.clay,
   },
   emptyButtonText: {
-    color: "#ffffff",
-    fontFamily: "OutfitSemiBold",
-    fontSize: 14,
+    fontFamily: font.ui.semibold,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    letterSpacing: 0.4,
+    color: color.paper.base,
+    textAlign: "center",
+    textTransform: "uppercase",
   },
 });

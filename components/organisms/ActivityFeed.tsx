@@ -7,25 +7,11 @@ import {
   RefreshControl,
   Image,
   StyleSheet,
+  Text,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useActivityFeed, ActivityItem } from "@/hooks/useActivityFeed";
-import { Text } from "@/components/ui/Text";
-
-// Celestial Nurture Design System - Earth Tones
-const COLORS = {
-  cream: "#FAF7F2",
-  terracotta: "#D4A574",
-  sage: "#8B9A7D",
-  moss: "#6B7A6B",
-  gold: "#C9A227",
-  clay: "#C17A5C",
-  warmDark: "#2D2A26",
-  warmGray: "#6B6560",
-  stone: "#8B8680",
-  sand: "#E8E0D5",
-  warmLight: "#F5F0E8",
-};
+import { useActivityFeed, type ActivityItem } from "@/hooks/useActivityFeed";
+import { color, font, radius, space, typeScale } from "@/lib/design/careJournal/tokens";
 
 interface ActivityFeedProps {
   babyId?: string;
@@ -50,7 +36,7 @@ export function ActivityFeed({
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 300,
+      duration: 220,
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
@@ -59,13 +45,13 @@ export function ActivityFeed({
     if (!isLoading) {
       Animated.sequence([
         Animated.timing(liveIndicatorAnim, {
-          toValue: 1.2,
-          duration: 150,
+          toValue: 1.12,
+          duration: 140,
           useNativeDriver: true,
         }),
         Animated.timing(liveIndicatorAnim, {
           toValue: 1,
-          duration: 150,
+          duration: 160,
           useNativeDriver: true,
         }),
       ]).start();
@@ -93,39 +79,18 @@ export function ActivityFeed({
     );
   };
 
-  const renderActivity = (activity: ActivityItem) => {
+  const renderActivity = (activity: ActivityItem, withRule: boolean) => {
     return (
-      <Animated.View
-        key={activity.id}
-        style={[styles.activityContainer, { opacity: fadeAnim }]}
-      >
-        <View style={styles.iconWrapper}>
-          <View
-            style={[
-              styles.iconCircle,
-              { backgroundColor: `${activity.iconColor}20` },
-            ]}
-          >
-            <Ionicons
-              name={activity.icon as any}
-              size={18}
-              color={activity.iconColor}
-            />
-          </View>
+      <View key={activity.id} style={[styles.activityRow, withRule && styles.activityRule]}>
+        {renderAvatar(activity.userName, activity.userAvatarUrl)}
+        <View style={styles.activityText}>
+          <Text style={styles.activityMessage}>{activity.message}</Text>
+          <Text style={styles.timestamp}>{getRelativeTime(activity.timestamp)}</Text>
         </View>
-
-        <View style={styles.contentWrapper}>
-          <View style={styles.activityRow}>
-            {renderAvatar(activity.userName, activity.userAvatarUrl)}
-            <View style={styles.textWrapper}>
-              <Text style={styles.activityMessage}>{activity.message}</Text>
-              <Text style={styles.timestamp}>
-                {getRelativeTime(activity.timestamp)}
-              </Text>
-            </View>
-          </View>
+        <View style={styles.activityIcon}>
+          <Ionicons name={activity.icon as any} size={16} color={color.ink.faint} />
         </View>
-      </Animated.View>
+      </View>
     );
   };
 
@@ -135,7 +100,9 @@ export function ActivityFeed({
     return (
       <View key={title} style={styles.groupContainer}>
         <Text style={styles.groupHeader}>{title}</Text>
-        {activities.map((activity) => renderActivity(activity))}
+        <View style={styles.groupCard}>
+          {activities.map((a, idx) => renderActivity(a, idx !== activities.length - 1))}
+        </View>
       </View>
     );
   };
@@ -143,18 +110,14 @@ export function ActivityFeed({
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <View style={styles.emptyIconCircle}>
-        <Ionicons name="time-outline" size={40} color={COLORS.stone} />
+        <Ionicons name="time-outline" size={34} color={color.ink.faint} />
       </View>
       <Text style={styles.emptyTitle}>No activity yet</Text>
       <Text style={styles.emptySubtitle}>
         Start logging feeds, diapers, sleep, and more to see activity here
       </Text>
-      <TouchableOpacity style={styles.emptyButton}>
-        <Ionicons
-          name="add-circle-outline"
-          size={20}
-          color={COLORS.terracotta}
-        />
+      <TouchableOpacity style={styles.emptyButton} activeOpacity={0.85}>
+        <Ionicons name="add-circle-outline" size={18} color={color.pigment.clay} />
         <Text style={styles.emptyButtonText}>Log first activity</Text>
       </TouchableOpacity>
     </View>
@@ -182,11 +145,11 @@ export function ActivityFeed({
   }
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <Animated.View testID="activity-feed" style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Ionicons name="pulse-outline" size={20} color={COLORS.terracotta} />
-          <Text style={styles.headerTitle}>Activity Feed</Text>
+          <Ionicons name="pulse-outline" size={18} color={color.pigment.clay} />
+          <Text style={styles.headerTitle}>Activity</Text>
         </View>
         {!refreshing && hasActivity && (
           <Animated.View style={{ transform: [{ scale: liveIndicatorAnim }] }}>
@@ -207,7 +170,7 @@ export function ActivityFeed({
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={COLORS.terracotta}
+              tintColor={color.pigment.clay}
             />
           ) : undefined
         }
@@ -228,101 +191,94 @@ export function ActivityFeed({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.cream,
-    borderRadius: 24,
+    backgroundColor: color.paper.wash,
+    borderRadius: radius.lg,
     overflow: "hidden",
-    shadowColor: COLORS.warmDark,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 4,
     borderWidth: 1,
-    borderColor: COLORS.sand,
+    borderColor: color.paper.edge,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: space[4],
+    paddingVertical: space[3],
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.sand,
-    backgroundColor: COLORS.warmLight,
+    borderBottomColor: color.paper.edge,
+    backgroundColor: color.paper.base,
   },
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: space[2],
   },
   headerTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.warmDark,
+    fontFamily: font.heading.semibold,
+    fontSize: typeScale.h3.fontSize,
+    lineHeight: typeScale.h3.lineHeight,
+    letterSpacing: typeScale.h3.letterSpacing,
+    color: color.ink.strong,
   },
   liveBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(139, 154, 125, 0.15)",
+    backgroundColor: "rgba(47, 107, 91, 0.12)",
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 999,
     gap: 6,
+    borderWidth: 1,
+    borderColor: "rgba(47, 107, 91, 0.18)",
   },
   liveDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: COLORS.sage,
+    backgroundColor: color.pigment.sage,
   },
   liveText: {
+    fontFamily: font.ui.medium,
     fontSize: 10,
-    fontWeight: "700",
-    color: COLORS.sage,
+    color: color.pigment.sage,
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
   },
   scrollView: {
-    maxHeight: 400,
+    maxHeight: 420,
   },
   scrollContent: {
-    paddingVertical: 8,
+    paddingVertical: space[2],
   },
   groupContainer: {
-    marginBottom: 8,
+    paddingBottom: space[2],
   },
   groupHeader: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.warmGray,
+    paddingHorizontal: space[4],
+    paddingVertical: space[2],
+    fontFamily: font.ui.medium,
+    fontSize: typeScale.caption.fontSize,
+    lineHeight: typeScale.caption.lineHeight,
+    letterSpacing: 0.8,
     textTransform: "uppercase",
-    letterSpacing: 1.5,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: "rgba(232, 224, 213, 0.5)",
+    color: color.ink.faint,
   },
-  activityContainer: {
-    flexDirection: "row",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    alignItems: "flex-start",
-  },
-  iconWrapper: {
-    marginRight: 12,
-  },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  contentWrapper: {
-    flex: 1,
+  groupCard: {
+    marginHorizontal: space[4],
+    borderWidth: 1,
+    borderColor: color.paper.edge,
+    borderRadius: radius.md,
+    backgroundColor: color.paper.base,
+    paddingHorizontal: space[3],
   },
   activityRow: {
     flexDirection: "row",
     alignItems: "flex-start",
-    gap: 12,
+    gap: space[2],
+    paddingVertical: space[3],
+  },
+  activityRule: {
+    borderBottomWidth: 1,
+    borderBottomColor: color.paper.edge,
   },
   avatar: {
     width: 32,
@@ -335,99 +291,121 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.sand,
+    backgroundColor: color.paper.wash,
+    borderWidth: 1,
+    borderColor: color.paper.edge,
   },
   avatarInitials: {
+    fontFamily: font.ui.semibold,
     fontSize: 11,
-    fontWeight: "700",
-    color: COLORS.warmGray,
+    letterSpacing: 0.4,
+    color: color.ink.muted,
   },
-  textWrapper: {
+  activityText: {
     flex: 1,
   },
   activityMessage: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: COLORS.warmDark,
-    lineHeight: 20,
+    fontFamily: font.ui.medium,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    letterSpacing: typeScale.bodySm.letterSpacing,
+    color: color.ink.strong,
   },
   timestamp: {
-    fontSize: 12,
-    color: COLORS.warmGray,
     marginTop: 4,
+    fontFamily: font.ui.regular,
+    fontSize: typeScale.caption.fontSize,
+    lineHeight: typeScale.caption.lineHeight,
+    letterSpacing: typeScale.caption.letterSpacing,
+    color: color.ink.faint,
+  },
+  activityIcon: {
+    paddingTop: 2,
   },
   emptyContainer: {
-    paddingVertical: 48,
-    paddingHorizontal: 32,
+    paddingVertical: space[8],
+    paddingHorizontal: space[6],
     alignItems: "center",
   },
   emptyIconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.sand,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: color.paper.base,
+    borderWidth: 1,
+    borderColor: color.paper.edge,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: space[3],
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: COLORS.warmDark,
+    fontFamily: font.heading.semibold,
+    fontSize: typeScale.h3.fontSize,
+    lineHeight: typeScale.h3.lineHeight,
+    color: color.ink.strong,
   },
   emptySubtitle: {
-    fontSize: 14,
-    color: COLORS.warmGray,
+    marginTop: space[2],
+    fontFamily: font.ui.regular,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    color: color.ink.muted,
     textAlign: "center",
-    marginTop: 8,
-    lineHeight: 20,
   },
   emptyButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
-    backgroundColor: "rgba(212, 165, 116, 0.15)",
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
-    marginTop: 20,
+    gap: space[2],
+    backgroundColor: "rgba(196, 106, 74, 0.12)",
+    paddingHorizontal: space[4],
+    paddingVertical: space[3],
+    borderRadius: radius.md,
+    marginTop: space[4],
     borderWidth: 1,
-    borderColor: "rgba(212, 165, 116, 0.3)",
+    borderColor: "rgba(196, 106, 74, 0.18)",
   },
   emptyButtonText: {
-    color: COLORS.terracotta,
-    fontWeight: "700",
-    fontSize: 14,
+    fontFamily: font.ui.semibold,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    color: color.pigment.clay,
   },
   loadingContainer: {
-    padding: 20,
+    padding: space[4],
   },
   skeletonRow: {
     flexDirection: "row",
-    marginBottom: 16,
+    marginBottom: space[3],
   },
   skeletonCircle: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.sand,
-    marginRight: 12,
+    backgroundColor: color.paper.wash,
+    borderWidth: 1,
+    borderColor: color.paper.edge,
+    marginRight: space[3],
   },
   skeletonTextWrapper: {
     flex: 1,
-    gap: 8,
+    gap: space[2],
+    paddingTop: 6,
   },
   skeletonLine1: {
     width: "70%",
     height: 12,
-    backgroundColor: COLORS.sand,
+    backgroundColor: color.paper.wash,
     borderRadius: 6,
+    borderWidth: 1,
+    borderColor: color.paper.edge,
   },
   skeletonLine2: {
     width: "40%",
     height: 12,
-    backgroundColor: COLORS.sand,
+    backgroundColor: color.paper.wash,
     borderRadius: 6,
+    borderWidth: 1,
+    borderColor: color.paper.edge,
   },
 });
 
@@ -454,3 +432,4 @@ function getRelativeTime(timestamp: number): string {
     return `${days} days ago`;
   }
 }
+

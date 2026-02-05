@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   },
   categoryBadgeText: {
     fontSize: 12,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
   nudgeBadge: {
     backgroundColor: `${COLORS.sage}20`,
@@ -375,12 +375,12 @@ const styles = StyleSheet.create({
   },
   newPromptText: {
     fontSize: 13,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.terracotta,
   },
   promptMessage: {
     fontSize: 18,
-    fontFamily: "CrimsonProMedium",
+    fontFamily: "CareJournalHeadingMedium",
     color: TEXT.primary,
     lineHeight: 26,
     marginBottom: 20,
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
   discussButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
   reflectionSection: {
     marginBottom: 24,
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
   },
   reflectionLabel: {
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginBottom: 16,
   },
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.md,
     padding: 14,
     fontSize: 16,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.primary,
     textAlignVertical: "top",
     minHeight: 120,
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
   questionsSection: {
     marginBottom: 24,
@@ -475,13 +475,13 @@ const styles = StyleSheet.create({
   },
   questionNumberText: {
     fontSize: 14,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.terracotta,
   },
   questionText: {
     flex: 1,
     fontSize: 15,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.primary,
   },
   tipsSection: {
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
   tipText: {
     flex: 1,
     fontSize: 15,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     lineHeight: 22,
   },

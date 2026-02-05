@@ -4,6 +4,7 @@ import { useEffect, ReactNode, useRef, useState } from "react";
 import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity } from "react-native";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -77,7 +78,7 @@ export function ProtectedRoute({
   if (!isLoaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color={COLORS.terracotta} />
       </View>
     );
   }
@@ -85,7 +86,7 @@ export function ProtectedRoute({
   if (isSignedIn && isEnsuringUser) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color={COLORS.terracotta} />
       </View>
     );
   }
@@ -124,18 +125,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: BACKGROUND.primary,
     padding: 24,
   },
   errorTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    ...TYPOGRAPHY.headings.h3,
     marginBottom: 8,
-    color: "#111827",
+    color: THEME_TEXT.primary,
+    textAlign: "center",
   },
   errorText: {
-    fontSize: 13,
-    color: "#6b7280",
+    ...TYPOGRAPHY.body.small,
+    color: THEME_TEXT.secondary,
     textAlign: "center",
     marginBottom: 12,
   },
@@ -143,10 +144,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    ...SHADOWS.sm,
   },
   retryText: {
-    color: "#ffffff",
-    fontWeight: "600",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
 });

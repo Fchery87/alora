@@ -1,9 +1,9 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { MotiView } from "moti";
-import { GRADIENTS, SHADOWS } from "@/lib/theme";
+import { SHADOWS } from "@/lib/theme";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 interface GradientIconProps {
   name: string;
@@ -15,6 +15,15 @@ interface GradientIconProps {
   delay?: number;
 }
 
+function hexToRgba(hex: string, alpha: number) {
+  const cleaned = hex.replace("#", "").trim();
+  if (cleaned.length !== 6) return `rgba(0,0,0,${alpha})`;
+  const r = parseInt(cleaned.slice(0, 2), 16);
+  const g = parseInt(cleaned.slice(2, 4), 16);
+  const b = parseInt(cleaned.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export function GradientIcon({
   name,
   size = 24,
@@ -24,24 +33,53 @@ export function GradientIcon({
   animated = true,
   delay = 0,
 }: GradientIconProps) {
-  const gradientColors = React.useMemo((): [string, string] => {
+  const { theme } = useTheme();
+
+  const tone = React.useMemo(() => {
+    const alphaWash = theme.mode === "dark" ? 0.18 : 0.12;
+    const alphaRing = theme.mode === "dark" ? 0.32 : 0.22;
+
     switch (variant) {
-      case "primary":
-        return [GRADIENTS.primary.start, GRADIENTS.primary.end];
       case "secondary":
-        return [GRADIENTS.secondary.start, GRADIENTS.secondary.end];
-      case "accent":
-        return [GRADIENTS.accent.start, GRADIENTS.accent.end];
       case "success":
-        return [GRADIENTS.success.start, GRADIENTS.success.end];
+        return {
+          ink: theme.colors.sage,
+          wash: hexToRgba(theme.colors.sage, alphaWash),
+          ring: hexToRgba(theme.colors.sage, alphaRing),
+        };
+      case "accent":
+        return {
+          ink: theme.colors.gold,
+          wash: hexToRgba(theme.colors.gold, alphaWash + 0.03),
+          ring: hexToRgba(theme.colors.gold, alphaRing),
+        };
       case "danger":
-        return [GRADIENTS.danger.start, GRADIENTS.danger.end];
+        return {
+          ink: theme.colors.rust,
+          wash: hexToRgba(theme.colors.rust, alphaWash),
+          ring: hexToRgba(theme.colors.rust, alphaRing),
+        };
       case "calm":
-        return [GRADIENTS.calm.start, GRADIENTS.calm.end];
+        return {
+          ink: theme.text.primary,
+          wash:
+            theme.mode === "dark"
+              ? hexToRgba(theme.text.primary, 0.16)
+              : theme.background.secondary,
+          ring:
+            theme.mode === "dark"
+              ? theme.glass.border
+              : theme.background.tertiary,
+        };
+      case "primary":
       default:
-        return [GRADIENTS.primary.start, GRADIENTS.primary.end];
+        return {
+          ink: theme.colors.terracotta,
+          wash: hexToRgba(theme.colors.terracotta, alphaWash),
+          ring: hexToRgba(theme.colors.terracotta, alphaRing),
+        };
     }
-  }, [variant]);
+  }, [theme, variant]);
 
   const containerStyle = {
     from: { opacity: 0, scale: 0.8 },
@@ -56,66 +94,35 @@ export function GradientIcon({
   const AnimatedContainer = animated ? MotiView : View;
 
   const iconContent = (
-    <>
-      <LinearGradient
-        colors={gradientColors}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={[
-          styles.iconWrapper,
-          {
-            width: size * 1.8,
-            height: size * 1.8,
-            borderRadius: (size * 1.8) / 2,
-          },
-        ]}
-      >
-        <View
-          style={[
-            styles.iconContainer,
-            {
-              width: size * 1.6,
-              height: size * 1.6,
-              borderRadius: (size * 1.6) / 2,
-            },
-          ]}
-        >
-          <Ionicons name={name as any} size={size} color="#ffffff" />
-        </View>
-      </LinearGradient>
-
-      {/* Glow effect behind icon */}
-      <View
-        style={[
-          styles.glow,
-          {
-            width: size * 2.2,
-            height: size * 2.2,
-            borderRadius: (size * 2.2) / 2,
-          },
-        ]}
-      >
-        <View
-          style={[
-            styles.glowInner,
-            {
-              backgroundColor: gradientColors[0],
-            },
-          ]}
-        />
-      </View>
-    </>
+    <View
+      style={[
+        styles.iconWrapper,
+        {
+          width: size * 1.8,
+          height: size * 1.8,
+          borderRadius: (size * 1.8) / 2,
+          backgroundColor: tone.wash,
+          borderColor: tone.ring,
+        },
+      ]}
+    >
+      <Ionicons name={name as any} size={size} color={tone.ink} />
+    </View>
   );
 
   if (onPress) {
     return (
-      <TouchableOpacity
-        style={[styles.container, style]}
+      <Pressable
+        style={({ pressed }) => [
+          styles.container,
+          style,
+          pressed && styles.pressed,
+        ]}
         onPress={onPress}
-        activeOpacity={0.7}
+        accessibilityRole="button"
       >
         {iconContent}
-      </TouchableOpacity>
+      </Pressable>
     );
   }
 
@@ -134,21 +141,12 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     ...SHADOWS.md,
-    overflow: "hidden",
-    position: "absolute",
-  },
-  iconContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  glow: {
-    position: "absolute",
-    zIndex: -1,
-  },
-  glowInner: {
-    flex: 1,
-    borderRadius: 9999,
-    opacity: 0.2,
+  pressed: {
+    transform: [{ scale: 0.98 }],
+    opacity: 0.92,
   },
 });

@@ -154,12 +154,12 @@ const styles = StyleSheet.create({
   },
   memberName: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.primary,
   },
   memberRole: {
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginTop: 2,
   },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   inviteButtonText: {
     fontSize: 14,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.terracotta,
   },
   emptyCaregivers: {
@@ -192,13 +192,13 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    fontFamily: "CrimsonProMedium",
+    fontFamily: "CareJournalHeadingMedium",
     color: TEXT.secondary,
     marginTop: 12,
   },
   emptySubtext: {
     fontSize: 14,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.tertiary,
     marginTop: 4,
     textAlign: "center",
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   settingText: {
     flex: 1,
     fontSize: 16,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.primary,
   },
 });

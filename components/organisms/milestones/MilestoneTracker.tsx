@@ -15,6 +15,7 @@ import { PREDEFINED_MILESTONES, MILESTONE_CATEGORIES } from "@/lib/milestones";
 import { validateMilestone, type MilestoneFormData } from "@/lib/validation";
 import { parseError, logError, getUserFriendlyMessage } from "@/lib/errors";
 import { useToast } from "@/components/atoms/Toast";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 interface MilestoneTrackerProps {
   babyId: string;
@@ -183,7 +184,7 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
           style={[styles.mainButton, styles.secondaryButton]}
           onPress={() => setShowCustomForm(true)}
         >
-          <Ionicons name="create-outline" size={24} color="#6366f1" />
+          <Ionicons name="create-outline" size={22} color={COLORS.terracotta} />
           <Text style={[styles.mainButtonText, styles.secondaryButtonText]}>
             Custom Milestone
           </Text>
@@ -196,7 +197,7 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Add Predefined Milestone</Text>
               <TouchableOpacity onPress={() => setShowPredefined(false)}>
-                <Ionicons name="close" size={24} color="#0f172a" />
+                <Ionicons name="close" size={22} color={THEME_TEXT.primary} />
               </TouchableOpacity>
             </View>
 
@@ -214,7 +215,11 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                   <Ionicons
                     name={cat.icon as keyof typeof Ionicons.glyphMap}
                     size={16}
-                    color={selectedCategory === cat.value ? "#fff" : "#6366f1"}
+                    color={
+                      selectedCategory === cat.value
+                        ? THEME_TEXT.primaryInverse
+                        : COLORS.terracotta
+                    }
                   />
                   <Text
                     style={[
@@ -266,7 +271,7 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                   <Ionicons
                     name="add-circle-outline"
                     size={24}
-                    color="#6366f1"
+                    color={COLORS.terracotta}
                   />
                 </TouchableOpacity>
               ))}
@@ -281,7 +286,7 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Create Custom Milestone</Text>
               <TouchableOpacity onPress={() => setShowCustomForm(false)}>
-                <Ionicons name="close" size={24} color="#0f172a" />
+                <Ionicons name="close" size={22} color={THEME_TEXT.primary} />
               </TouchableOpacity>
             </View>
 
@@ -345,7 +350,11 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
                       <Ionicons
                         name={cat.icon as keyof typeof Ionicons.glyphMap}
                         size={24}
-                        color={customCategory === key ? "#fff" : cat.color}
+                        color={
+                          customCategory === key
+                            ? THEME_TEXT.primaryInverse
+                            : cat.color
+                        }
                       />
                       <Text
                         style={[
@@ -411,15 +420,14 @@ export function MilestoneTracker({ babyId, onSuccess }: MilestoneTrackerProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     padding: 16,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0f172a",
+    ...TYPOGRAPHY.headings.h2,
+    color: THEME_TEXT.primary,
     marginBottom: 24,
   },
   buttonRow: {
@@ -433,34 +441,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     borderRadius: 12,
     gap: 8,
+    ...SHADOWS.sm,
   },
   mainButtonText: {
-    color: "#fff",
+    color: THEME_TEXT.primaryInverse,
     fontSize: 14,
-    fontWeight: "600",
+    fontFamily: "CareJournalUISemiBold",
+    letterSpacing: 0.3,
+    textTransform: "uppercase",
   },
   secondaryButton: {
-    backgroundColor: "#fff",
-    borderWidth: 2,
-    borderColor: "#6366f1",
+    backgroundColor: BACKGROUND.primary,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   secondaryButtonText: {
-    color: "#6366f1",
+    color: COLORS.terracotta,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: BACKGROUND.overlay,
     justifyContent: "flex-end",
   },
   modalContent: {
-    backgroundColor: "#fff",
+    backgroundColor: BACKGROUND.primary,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: "85%",
     paddingBottom: 34,
+    ...SHADOWS.lg,
   },
   modalHeader: {
     flexDirection: "row",
@@ -468,12 +480,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#e5e7eb",
+    borderBottomColor: BACKGROUND.tertiary,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontFamily: "CareJournalHeadingMedium",
+    color: THEME_TEXT.primary,
   },
   categoryRow: {
     flexDirection: "row",
@@ -486,20 +498,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 20,
     gap: 4,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   categoryButtonActive: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   categoryButtonText: {
     fontSize: 12,
-    fontWeight: "500",
-    color: "#6366f1",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
   },
   categoryButtonTextActive: {
-    color: "#fff",
+    color: THEME_TEXT.primaryInverse,
   },
   milestoneList: {
     paddingHorizontal: 16,
@@ -509,9 +524,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 12,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 12,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   milestoneIcon: {
     width: 40,
@@ -526,17 +543,19 @@ const styles = StyleSheet.create({
   },
   milestoneTitle: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#0f172a",
+    fontFamily: "CareJournalUISemiBold",
+    color: THEME_TEXT.primary,
   },
   milestoneDesc: {
     fontSize: 12,
-    color: "#6b7280",
+    color: THEME_TEXT.secondary,
+    fontFamily: "CareJournalUI",
     marginTop: 2,
   },
   milestoneAge: {
     fontSize: 11,
-    color: "#9ca3af",
+    color: THEME_TEXT.tertiary,
+    fontFamily: "CareJournalUI",
     marginTop: 2,
   },
   formContent: {
@@ -547,17 +566,18 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#374151",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.primary,
     padding: 16,
     borderRadius: 12,
     fontSize: 16,
+    fontFamily: "CareJournalUI",
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: BACKGROUND.tertiary,
   },
   notesInput: {
     minHeight: 80,
@@ -573,47 +593,50 @@ const styles = StyleSheet.create({
     minWidth: "45%",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#f8fafc",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 12,
-    borderWidth: 2,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
     gap: 8,
   },
   categoryCardActive: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
+    borderColor: COLORS.terracotta,
   },
   categoryCardError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.danger,
   },
   categoryCardText: {
     fontSize: 12,
-    fontWeight: "500",
-    color: "#374151",
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
   },
   categoryCardTextActive: {
-    color: "#fff",
+    color: THEME_TEXT.primaryInverse,
   },
   inputError: {
-    borderColor: "#ef4444",
+    borderColor: COLORS.danger,
   },
   errorText: {
     fontSize: 12,
-    color: "#ef4444",
+    color: COLORS.danger,
+    fontFamily: "CareJournalUI",
     marginTop: 6,
     marginLeft: 4,
   },
   submitButton: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
     marginTop: 8,
+    ...SHADOWS.sm,
   },
   submitButtonDisabled: {
     opacity: 0.5,
   },
   submitButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
 });

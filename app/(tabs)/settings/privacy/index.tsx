@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.tertiary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -291,12 +291,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.primary,
   },
   sublabel: {
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginTop: 2,
   },
@@ -318,12 +318,12 @@ const styles = StyleSheet.create({
   },
   pillText: {
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
   },
   pillTextActive: {
     color: "#fff",
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
   },
   actionButton: {
     flexDirection: "row",
@@ -345,17 +345,17 @@ const styles = StyleSheet.create({
   },
   actionLabel: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.primary,
   },
   dangerLabel: {
     fontSize: 16,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.clay,
   },
   actionSublabel: {
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
     marginTop: 2,
   },

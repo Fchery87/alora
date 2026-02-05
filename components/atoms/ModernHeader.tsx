@@ -1,19 +1,17 @@
 import React from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import {
-  GRADIENTS,
   SHADOWS,
   TYPOGRAPHY,
   TEXT,
-  GLASS,
   COLORS,
   BACKGROUND,
 } from "@/lib/theme";
 import { softSpring, iconTap } from "@/lib/animations";
 import type { MotiTransition } from "@/lib/moti-types";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 interface ModernHeaderProps {
   title: string;
@@ -40,6 +38,8 @@ export function ModernHeader({
   onNotificationPress,
   backgroundColor = "glass",
 }: ModernHeaderProps) {
+  const { theme } = useTheme();
+
   return (
     <MotiView
       from={{ translateY: -50, opacity: 0 }}
@@ -49,27 +49,15 @@ export function ModernHeader({
         styles.container,
         backgroundColor === "transparent" && styles.transparentBg,
         backgroundColor === "cream" && styles.creamBg,
+        backgroundColor !== "transparent" && {
+          backgroundColor:
+            backgroundColor === "gradient"
+              ? theme.background.secondary
+              : theme.background.primary,
+          borderBottomColor: theme.background.tertiary,
+        },
       ]}
     >
-      {/* Gradient or glass background */}
-      {backgroundColor === "gradient" && (
-        <LinearGradient
-          colors={[GRADIENTS.primary.start, GRADIENTS.primary.end]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-      )}
-
-      {backgroundColor === "glass" && (
-        <LinearGradient
-          colors={[GLASS.light.background, "rgba(250, 247, 242, 0.98)"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-      )}
-
       {/* Left section - Back button */}
       <View style={styles.leftSection}>
         {showBackButton && (
@@ -140,7 +128,7 @@ const styles = StyleSheet.create({
     position: "relative",
     overflow: "hidden",
     borderBottomWidth: 1,
-    borderBottomColor: GLASS.light.border,
+    borderBottomColor: BACKGROUND.tertiary,
   },
   transparentBg: {
     backgroundColor: "transparent",
@@ -177,12 +165,12 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: "rgba(212, 165, 116, 0.1)",
+    backgroundColor: "rgba(196, 106, 74, 0.10)",
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 8,
     borderWidth: 1,
-    borderColor: GLASS.light.border,
+    borderColor: BACKGROUND.tertiary,
   },
   notificationBadge: {
     position: "absolute",
@@ -202,12 +190,5 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: "700",
     lineHeight: 20,
-  },
-  absoluteFill: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
   },
 });

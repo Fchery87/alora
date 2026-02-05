@@ -90,11 +90,11 @@ export function Input({
       },
       inputContainer: {
         backgroundColor:
-          theme.mode === "dark" ? theme.background.card : "#ffffff",
+          theme.mode === "dark" ? theme.background.card : theme.background.card,
         borderColor:
           theme.mode === "dark"
-            ? "rgba(212, 165, 116, 0.2)"
-            : "rgba(212, 165, 116, 0.3)",
+            ? theme.glass.border
+            : theme.background.tertiary,
         ...theme.shadows.sm,
       },
       inputContainerFocused: {
@@ -138,7 +138,7 @@ export function Input({
             style,
           ]}
           value={value}
-          placeholder={isFocused ? placeholder : ""}
+          placeholder={label ? (isFocused ? placeholder : "") : placeholder}
           placeholderTextColor={theme.text.tertiary}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    fontFamily: "OutfitMedium",
+    fontFamily: "CareJournalUIMedium",
     fontSize: 14,
     marginBottom: 8,
     position: "absolute",
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     fontSize: 16,
     paddingVertical: 14,
   },
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   message: {
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     fontSize: 12,
     marginTop: 4,
     marginLeft: 4,

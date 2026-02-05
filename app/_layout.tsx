@@ -4,23 +4,17 @@ import "../global.css";
 
 import { Stack } from "expo-router";
 import {
-  useFonts,
-  CrimsonPro_400Regular,
-  CrimsonPro_500Medium,
-  CrimsonPro_700Bold,
-} from "@expo-google-fonts/crimson-pro";
+  useFonts as useLiterataFonts,
+  Literata_400Regular,
+  Literata_500Medium,
+  Literata_600SemiBold,
+} from "@expo-google-fonts/literata";
 import {
-  useFonts as useDMFonts,
-  DMSans_400Regular,
-  DMSans_500Medium,
-  DMSans_700Bold,
-} from "@expo-google-fonts/dm-sans";
-import {
-  useFonts as useOutfitFonts,
-  Outfit_400Regular,
-  Outfit_500Medium,
-  Outfit_600SemiBold,
-} from "@expo-google-fonts/outfit";
+  useFonts as usePlexSansFonts,
+  IBMPlexSans_400Regular,
+  IBMPlexSans_500Medium,
+  IBMPlexSans_600SemiBold,
+} from "@expo-google-fonts/ibm-plex-sans";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import {
@@ -30,6 +24,7 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
+import { BACKGROUND, COLORS, TEXT as THEME_TEXT } from "@/lib/theme";
 import { ClerkProviderWrapper } from "@/lib/clerk";
 import { ConvexProviderWrapper } from "@/components/providers/ConvexProviderWrapper";
 import { ToastProvider } from "@/components/atoms/Toast";
@@ -47,7 +42,7 @@ SplashScreen.preventAutoHideAsync();
 function LoadingScreen() {
   return (
     <View style={styles.loadingContainer}>
-      <ActivityIndicator size="large" color="#D4A574" />
+      <ActivityIndicator size="large" color={COLORS.terracotta} />
       <Text style={styles.loadingText}>Loading Alora...</Text>
     </View>
   );
@@ -64,41 +59,45 @@ function FontErrorScreen({ error }: { error: Error }) {
 }
 
 export default function RootLayout() {
-  const [loadedHeading, errorHeading] = useFonts({
-    CrimsonPro: CrimsonPro_400Regular,
-    CrimsonProMedium: CrimsonPro_500Medium,
-    CrimsonProBold: CrimsonPro_700Bold,
+  const [loadedCareHeading, errorCareHeading] = useLiterataFonts({
+    CareJournalHeading: Literata_400Regular,
+    CareJournalHeadingMedium: Literata_500Medium,
+    CareJournalHeadingSemiBold: Literata_600SemiBold,
+    // Back-compat aliases for legacy typography keys used across the app
+    CrimsonPro: Literata_400Regular,
+    CrimsonProMedium: Literata_500Medium,
+    CrimsonProBold: Literata_600SemiBold,
   });
 
-  const [loadedBody, errorBody] = useDMFonts({
-    DMSans: DMSans_400Regular,
-    DMSansMedium: DMSans_500Medium,
-    DMSansBold: DMSans_700Bold,
-  });
-
-  const [loadedUI, errorUI] = useOutfitFonts({
-    Outfit: Outfit_400Regular,
-    OutfitMedium: Outfit_500Medium,
-    OutfitSemiBold: Outfit_600SemiBold,
+  const [loadedCareUI, errorCareUI] = usePlexSansFonts({
+    CareJournalUI: IBMPlexSans_400Regular,
+    CareJournalUIMedium: IBMPlexSans_500Medium,
+    CareJournalUISemiBold: IBMPlexSans_600SemiBold,
+    // Back-compat aliases for legacy UI typography keys used across the app
+    DMSans: IBMPlexSans_400Regular,
+    DMSansMedium: IBMPlexSans_500Medium,
+    DMSansBold: IBMPlexSans_600SemiBold,
+    Outfit: IBMPlexSans_400Regular,
+    OutfitMedium: IBMPlexSans_500Medium,
+    OutfitSemiBold: IBMPlexSans_600SemiBold,
+    OutfitBold: IBMPlexSans_600SemiBold,
   });
 
   const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     // Debug logging
-    console.log("[RootLayout] Heading fonts loaded:", loadedHeading);
-    console.log("[RootLayout] Body fonts loaded:", loadedBody);
-    console.log("[RootLayout] UI fonts loaded:", loadedUI);
+    console.log("[RootLayout] Care heading fonts loaded:", loadedCareHeading);
+    console.log("[RootLayout] Care UI fonts loaded:", loadedCareUI);
     console.log(
       "[RootLayout] Fonts error:",
-      errorHeading || errorBody || errorUI
+      errorCareHeading || errorCareUI
     );
 
     if (
-      (loadedHeading && loadedBody && loadedUI) ||
-      errorHeading ||
-      errorBody ||
-      errorUI
+      (loadedCareHeading && loadedCareUI) ||
+      errorCareHeading ||
+      errorCareUI
     ) {
       console.log("[RootLayout] Hiding splash screen");
       SplashScreen.hideAsync().catch(() => {});
@@ -106,14 +105,19 @@ export default function RootLayout() {
       const timer = setTimeout(() => setShowLoading(false), 100);
       return () => clearTimeout(timer);
     }
-  }, [loadedHeading, loadedBody, loadedUI, errorHeading, errorBody, errorUI]);
+  }, [
+    loadedCareHeading,
+    loadedCareUI,
+    errorCareHeading,
+    errorCareUI,
+  ]);
 
   useEffect(() => {
     if (Platform.OS !== "web") return;
     if (!showLoading) return;
 
-    const fontError = errorHeading || errorBody || errorUI;
-    if ((loadedHeading && loadedBody && loadedUI) || fontError) return;
+    const fontError = errorCareHeading || errorCareUI;
+    if ((loadedCareHeading && loadedCareUI) || fontError) return;
 
     // On web, font loading can hang indefinitely (ad blockers, extensions, dev builds).
     // Don't hard-block app usage; fall back to system fonts after a short timeout.
@@ -128,26 +132,24 @@ export default function RootLayout() {
     return () => clearTimeout(timer);
   }, [
     showLoading,
-    loadedHeading,
-    loadedBody,
-    loadedUI,
-    errorHeading,
-    errorBody,
-    errorUI,
+    loadedCareHeading,
+    loadedCareUI,
+    errorCareHeading,
+    errorCareUI,
   ]);
 
   // Show loading screen while fonts are loading
   if (
     showLoading &&
-    !(loadedHeading && loadedBody && loadedUI) &&
-    !(errorHeading || errorBody || errorUI)
+    !(loadedCareHeading && loadedCareUI) &&
+    !(errorCareHeading || errorCareUI)
   ) {
     console.log("[RootLayout] Showing loading screen");
     return <LoadingScreen />;
   }
 
   // Show error screen if fonts failed to load
-  const fontError = errorHeading || errorBody || errorUI;
+  const fontError = errorCareHeading || errorCareUI;
   if (fontError) {
     // On web, font loading can time out due to extensions/ad blockers or slow dev builds.
     // Don't hard-block app usage; fall back to system fonts.
@@ -184,31 +186,31 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAF7F2",
+    backgroundColor: BACKGROUND.primary,
   },
   loadingText: {
     marginTop: 20,
     fontSize: 16,
-    fontFamily: "DMSans",
-    color: "#8B9A7D",
+    fontFamily: "CareJournalUI",
+    color: COLORS.sage,
   },
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FAF7F2",
+    backgroundColor: BACKGROUND.primary,
     padding: 20,
   },
   errorTitle: {
     fontSize: 20,
-    fontFamily: "CrimsonProBold",
-    color: "#D4A574",
+    fontFamily: "CareJournalHeadingSemiBold",
+    color: COLORS.terracotta,
     marginBottom: 10,
   },
   errorMessage: {
     fontSize: 14,
-    fontFamily: "DMSans",
-    color: "#2D2A26",
+    fontFamily: "CareJournalUI",
+    color: THEME_TEXT.primary,
     textAlign: "center",
   },
 });

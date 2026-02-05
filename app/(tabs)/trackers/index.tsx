@@ -1,235 +1,212 @@
-import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { MotiView } from "moti";
-import { Text } from "@/components/ui/Text";
-import { Card } from "@/components/ui/Card";
-import { OrganicBackground } from "@/components/atoms/OrganicBackground";
-import { ModernHeader } from "@/components/atoms/ModernHeader";
-import { GradientIcon } from "@/components/atoms/GradientIcon";
-import { TrackerSkeleton } from "@/components/organisms";
+import React from "react";
+import { ScrollView, StyleSheet, View, Pressable, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { COLORS, SHADOWS, TEXT } from "@/lib/theme";
-import { useState, useEffect } from "react";
+import { JournalScaffold } from "@/components/care-journal/JournalScaffold";
+import { color, font, radius, space, typeScale } from "@/lib/design/careJournal/tokens";
 
-const trackers = [
+type TrackerLink = {
+  key: string;
+  title: string;
+  description: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  href: string;
+  ink: string;
+  wash: string;
+};
+
+const TRACKERS: TrackerLink[] = [
   {
-    id: "feed",
+    key: "feed",
     title: "Feeding",
-    description: "Breast, bottle, or solid foods",
+    description: "Breast, bottle, solids",
     icon: "restaurant",
-    color: COLORS.terracotta,
-    bgColor: "rgba(212, 165, 116, 0.15)",
-    gradientVariant: "primary" as const,
     href: "/(tabs)/trackers/feed",
+    ink: color.pigment.clay,
+    wash: "rgba(196, 106, 74, 0.12)",
   },
   {
-    id: "diaper",
+    key: "diaper",
     title: "Diaper",
-    description: "Wet, dirty, or mixed diapers",
+    description: "Wet, dirty, mixed",
     icon: "water",
-    color: COLORS.sage,
-    bgColor: "rgba(139, 154, 125, 0.15)",
-    gradientVariant: "secondary" as const,
     href: "/(tabs)/trackers/diaper",
+    ink: color.pigment.sage,
+    wash: "rgba(47, 107, 91, 0.12)",
   },
   {
-    id: "sleep",
+    key: "sleep",
     title: "Sleep",
-    description: "Naps and nighttime sleep",
+    description: "Naps & night",
     icon: "moon",
-    color: COLORS.moss,
-    bgColor: "rgba(107, 122, 107, 0.15)",
-    gradientVariant: "calm" as const,
     href: "/(tabs)/trackers/sleep",
+    ink: color.pigment.marigold,
+    wash: "rgba(209, 165, 69, 0.14)",
   },
   {
-    id: "mood",
+    key: "mood",
     title: "Mood",
-    description: "How you're feeling",
+    description: "Quick check-in",
     icon: "heart",
-    color: COLORS.clay,
-    bgColor: "rgba(193, 122, 92, 0.15)",
-    gradientVariant: "danger" as const,
     href: "/(tabs)/trackers/mood",
+    ink: color.pigment.skyInfo,
+    wash: "rgba(47, 94, 140, 0.12)",
   },
   {
-    id: "growth",
+    key: "growth",
     title: "Growth",
-    description: "Weight, length, head circ.",
+    description: "Weight, length, head",
     icon: "analytics",
-    color: COLORS.gold,
-    bgColor: "rgba(201, 162, 39, 0.15)",
-    gradientVariant: "accent" as const,
     href: "/(tabs)/trackers/growth",
+    ink: color.pigment.marigold,
+    wash: "rgba(209, 165, 69, 0.14)",
   },
   {
-    id: "milestones",
+    key: "milestones",
     title: "Milestones",
-    description: "Track developmental milestones",
+    description: "Firsts & progress",
     icon: "trophy",
-    color: COLORS.stone,
-    bgColor: "rgba(155, 139, 123, 0.15)",
-    gradientVariant: "success" as const,
     href: "/(tabs)/trackers/milestones",
+    ink: color.ink.strong,
+    wash: "rgba(31, 35, 40, 0.08)",
   },
 ];
 
-export default function TrackersIndexScreen() {
+function TrackerTile({
+  title,
+  description,
+  icon,
+  href,
+  ink,
+  wash,
+}: TrackerLink) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate loading state - replace with actual data fetching logic
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isLoading) {
-    return (
-      <OrganicBackground>
-        <View style={styles.screen}>
-          <ModernHeader
-            title="Trackers"
-            subtitle="Monitor your baby's daily activities"
-            showBackButton={false}
-            backgroundColor="transparent"
-          />
-          <TrackerSkeleton />
-        </View>
-      </OrganicBackground>
-    );
-  }
 
   return (
-    <OrganicBackground>
-      <View style={styles.screen}>
-        <ModernHeader
-          title="Trackers"
-          subtitle="Monitor your baby's daily activities"
-          showBackButton={false}
-          backgroundColor="transparent"
-        />
-
-        <ScrollView
-          style={styles.container}
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-        >
-          <MotiView
-            from={{ opacity: 0, translateY: 20 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ delay: 200, dampingRatio: 0.8, stiffness: 150 }}
-          >
-            <Text variant="h1" color="primary" style={styles.title}>
-              Log Activity
-            </Text>
-            <Text variant="body" color="secondary" style={styles.subtitle}>
-              Track your baby's daily activities with ease
-            </Text>
-          </MotiView>
-
-          <View style={styles.trackersGrid}>
-            {trackers.map((tracker, index) => (
-              <MotiView
-                key={tracker.id}
-                from={{ opacity: 0, scale: 0.9, translateY: 20 }}
-                animate={{ opacity: 1, scale: 1, translateY: 0 }}
-                transition={{
-                  delay: 300 + index * 80,
-                  dampingRatio: 0.7,
-                  stiffness: 180,
-                }}
-              >
-                <TouchableOpacity
-                  style={styles.cardWrapper}
-                  onPress={() => router.push(tracker.href as any)}
-                  activeOpacity={0.8}
-                >
-                  <Card variant="elevated" style={styles.trackerCard}>
-                    <View
-                      style={[
-                        styles.trackerIcon,
-                        { backgroundColor: tracker.bgColor },
-                      ]}
-                    >
-                      <GradientIcon
-                        name={tracker.icon}
-                        size={24}
-                        variant={tracker.gradientVariant}
-                        animated={false}
-                      />
-                    </View>
-                    <Text
-                      variant="h3"
-                      color="primary"
-                      style={styles.trackerTitle}
-                    >
-                      {tracker.title}
-                    </Text>
-                    <Text
-                      variant="caption"
-                      color="tertiary"
-                      style={styles.trackerDescription}
-                    >
-                      {tracker.description}
-                    </Text>
-                  </Card>
-                </TouchableOpacity>
-              </MotiView>
-            ))}
-          </View>
-        </ScrollView>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Open ${title}`}
+      onPress={() => router.push(href as any)}
+      style={({ pressed }) => [
+        styles.tile,
+        pressed ? styles.tilePressed : null,
+      ]}
+    >
+      <View style={[styles.iconWrap, { backgroundColor: wash }]}>
+        <Ionicons name={icon} size={18} color={ink} />
       </View>
-    </OrganicBackground>
+      <Text style={styles.tileTitle} numberOfLines={1}>
+        {title}
+      </Text>
+      <Text style={styles.tileDesc} numberOfLines={2}>
+        {description}
+      </Text>
+      <View style={styles.cornerArrow} pointerEvents="none">
+        <Ionicons name="arrow-forward" size={16} color={color.ink.faint} />
+      </View>
+    </Pressable>
+  );
+}
+
+export default function TrackersIndexScreen() {
+  return (
+    <JournalScaffold
+      title="Track"
+      subtitle="Stamp a moment. Keep the day legible."
+      testID="care-journal-trackers"
+    >
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.sectionLabel}>Stamps</Text>
+        <View style={styles.grid}>
+          {TRACKERS.map((tracker) => (
+            <View key={tracker.key} style={styles.gridItem}>
+              <TrackerTile {...tracker} />
+            </View>
+          ))}
+        </View>
+
+        <Text style={styles.note}>
+          Tip: pick one stamp, log the minimum, get back to the baby.
+        </Text>
+      </ScrollView>
+    </JournalScaffold>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
   content: {
-    padding: 20,
-    paddingTop: 8,
-    paddingBottom: 100,
+    paddingTop: space[2],
+    paddingBottom: space[7],
   },
-  title: {
-    marginBottom: 8,
+  sectionLabel: {
+    marginTop: space[2],
+    marginBottom: space[2],
+    fontFamily: font.ui.medium,
+    fontSize: typeScale.caption.fontSize,
+    lineHeight: typeScale.caption.lineHeight,
+    letterSpacing: 0.7,
+    textTransform: "uppercase",
+    color: color.ink.faint,
   },
-  subtitle: {
-    marginBottom: 28,
-  },
-  trackersGrid: {
+  grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 16,
+    gap: space[2],
   },
-  cardWrapper: {
-    width: "47%",
+  gridItem: {
+    width: "48%",
   },
-  trackerCard: {
-    padding: 20,
+  tile: {
+    minHeight: 112,
+    borderWidth: 1,
+    borderColor: color.paper.edge,
+    borderRadius: radius.lg,
+    backgroundColor: color.paper.wash,
+    padding: space[3],
+    overflow: "hidden",
+  },
+  tilePressed: {
+    transform: [{ scale: 0.99 }],
+    opacity: 0.92,
+  },
+  iconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     alignItems: "center",
-    ...SHADOWS.sm,
-  },
-  trackerIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
     justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
+    marginBottom: space[2],
   },
-  trackerTitle: {
-    marginBottom: 4,
-    textAlign: "center",
+  tileTitle: {
+    fontFamily: font.heading.semibold,
+    fontSize: typeScale.h3.fontSize,
+    lineHeight: typeScale.h3.lineHeight,
+    letterSpacing: typeScale.h3.letterSpacing,
+    color: color.ink.strong,
   },
-  trackerDescription: {
-    textAlign: "center",
+  tileDesc: {
+    marginTop: 4,
+    fontFamily: font.ui.regular,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    letterSpacing: typeScale.bodySm.letterSpacing,
+    color: color.ink.muted,
+  },
+  cornerArrow: {
+    position: "absolute",
+    right: space[3],
+    top: space[3],
+  },
+  note: {
+    marginTop: space[4],
+    fontFamily: font.ui.regular,
+    fontSize: typeScale.bodySm.fontSize,
+    lineHeight: typeScale.bodySm.lineHeight,
+    letterSpacing: typeScale.bodySm.letterSpacing,
+    color: color.ink.muted,
   },
 });
+

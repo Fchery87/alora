@@ -297,7 +297,7 @@ export function CalendarView({
                     <Ionicons
                       name="checkmark-circle"
                       size={20}
-                      color="#22c55e"
+                      color={COLORS.sage}
                     />
                   )}
                 </TouchableOpacity>
@@ -317,7 +317,7 @@ export function CalendarView({
                   <View
                     style={[styles.medicationIcon, styles.medicationIconBg]}
                   >
-                    <Ionicons name="medical" size={20} color="#22c55e" />
+                    <Ionicons name="medical" size={20} color={COLORS.sage} />
                   </View>
                   <View style={styles.medicationContent}>
                     <Text style={styles.medicationTitle}>{med.name}</Text>

@@ -24,21 +24,21 @@ export async function registerForPushNotificationsAsync(): Promise<
       name: "Default",
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#6366f1",
+      lightColor: "#C46A4A",
     });
 
     await Notifications.setNotificationChannelAsync("reminders", {
       name: "Reminders",
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#22c55e",
+      lightColor: "#2F6B5B",
     });
 
     await Notifications.setNotificationChannelAsync("celebrations", {
       name: "Celebrations",
       importance: Notifications.AndroidImportance.DEFAULT,
       vibrationPattern: [0, 100, 200, 300],
-      lightColor: "#f59e0b",
+      lightColor: "#D1A545",
     });
   }
 

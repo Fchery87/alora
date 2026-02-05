@@ -23,6 +23,8 @@
     "@clerk/expo-passkeys": "0.4.33",
     "@expo-google-fonts/crimson-pro": "^0.4.2",
     "@expo-google-fonts/dm-sans": "^0.4.2",
+    "@expo-google-fonts/ibm-plex-sans": "^0.2.3",
+    "@expo-google-fonts/literata": "^0.2.3",
     "@expo-google-fonts/outfit": "^0.4.3",
     "@expo/vector-icons": "14.1.0",
     "@expo/webpack-config": "^19.0.1",

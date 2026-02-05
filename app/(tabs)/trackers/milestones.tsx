@@ -1,13 +1,11 @@
 import { useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { MilestoneTracker } from "@/components/organisms/milestones/MilestoneTracker";
 import { MilestoneCard } from "@/components/organisms/milestones/MilestoneCard";
 import { MilestoneCelebration } from "@/components/organisms/milestones/MilestoneCelebration";
@@ -19,19 +17,11 @@ import {
 } from "@/hooks/queries/useMilestones";
 import { useSelectedBabyId } from "@/stores/babyStore";
 import { BabySelectorModal } from "@/components/organisms";
-
-// Celestial Nurture Design System Colors
-const COLORS = {
-  background: "#FAF7F2",
-  primary: "#D4A574", // Terracotta
-  secondary: "#8B9A7D", // Sage
-  accent: "#C9A227", // Gold
-  textPrimary: "#2D2A26",
-  textSecondary: "#6B6560",
-};
+import { Header } from "@/components/layout/Header";
+import { Text } from "@/components/ui/Text";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT } from "@/lib/theme";
 
 export default function MilestonesScreen() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"log" | "timeline">("timeline");
   const [celebratingMilestone, setCelebratingMilestone] = useState<
     string | null
@@ -62,16 +52,17 @@ export default function MilestonesScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color="#0f172a" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Milestones</Text>
-      </View>
+    <View style={styles.screen}>
+      <Header
+        title="Milestones"
+        showBackButton
+        rightAction={{
+          icon: "people-outline",
+          onPress: () => setShowBabySelector(true),
+        }}
+      />
+
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
       <View style={styles.tabContainer}>
         <View style={styles.segmentedControl}>
@@ -83,10 +74,8 @@ export default function MilestonesScreen() {
             onPress={() => setActiveTab("timeline")}
           >
             <Text
-              style={[
-                styles.segmentText,
-                activeTab === "timeline" && styles.segmentTextActive,
-              ]}
+              variant="body"
+              style={[styles.segmentText, activeTab === "timeline" && styles.segmentTextActive]}
             >
               Timeline
             </Text>
@@ -99,10 +88,8 @@ export default function MilestonesScreen() {
             onPress={() => setActiveTab("log")}
           >
             <Text
-              style={[
-                styles.segmentText,
-                activeTab === "log" && styles.segmentTextActive,
-              ]}
+              variant="body"
+              style={[styles.segmentText, activeTab === "log" && styles.segmentTextActive]}
             >
               Log New
             </Text>
@@ -170,41 +157,34 @@ export default function MilestonesScreen() {
         visible={showBabySelector}
         onClose={() => setShowBabySelector(false)}
       />
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: BACKGROUND.primary,
+  },
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: BACKGROUND.primary,
   },
   content: {
     padding: 16,
-    paddingTop: 60,
     paddingBottom: 100,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  backButton: {
-    marginRight: 12,
-  },
-  title: {
-    fontSize: 32,
-    fontFamily: "CrimsonPro-SemiBold",
-    color: COLORS.textPrimary,
   },
   tabContainer: {
     marginBottom: 24,
   },
   segmentedControl: {
     flexDirection: "row",
-    backgroundColor: "rgba(139, 154, 125, 0.2)",
-    borderRadius: 14,
+    backgroundColor: BACKGROUND.secondary,
+    borderRadius: 16,
     padding: 4,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   segmentItem: {
     flex: 1,
@@ -213,65 +193,51 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   segmentItemActive: {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: BACKGROUND.primary,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.sm,
   },
   segmentText: {
     fontSize: 14,
-    fontFamily: "DMSans-Medium",
-    color: COLORS.textSecondary,
+    fontFamily: "CareJournalUIMedium",
+    color: THEME_TEXT.secondary,
   },
   segmentTextActive: {
-    color: COLORS.textPrimary,
-    fontFamily: "DMSans-SemiBold",
+    color: THEME_TEXT.primary,
+    fontFamily: "CareJournalUISemiBold",
   },
   timeline: {
     gap: 12,
   },
   loadingText: {
     textAlign: "center",
-    color: COLORS.textSecondary,
     marginTop: 32,
-    fontFamily: "DMSans-Regular",
   },
   emptyState: {
     alignItems: "center",
     paddingVertical: 48,
   },
   emptyTitle: {
-    fontSize: 24,
-    fontFamily: "CrimsonPro-SemiBold",
-    color: COLORS.textPrimary,
     marginTop: 16,
   },
   emptyText: {
-    fontSize: 15,
-    color: COLORS.textSecondary,
     textAlign: "center",
     marginTop: 8,
     marginBottom: 24,
-    fontFamily: "DMSans-Regular",
     maxWidth: 260,
   },
   emptyButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.terracotta,
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 14,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    ...SHADOWS.md,
   },
   emptyButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontFamily: "DMSans-SemiBold",
+    color: THEME_TEXT.primaryInverse,
+    fontSize: 15,
+    fontFamily: "CareJournalUISemiBold",
   },
   babyNotSelected: {
     alignItems: "center",

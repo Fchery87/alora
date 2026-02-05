@@ -13,7 +13,6 @@ import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import { MotiView } from "moti";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { getDailyAffirmation, getRandomSelfCareNudge } from "@/lib/self-care";
 import { MoodTrendChart } from "@/components/organisms/MoodTrendChart";
 import { useListMood } from "@/hooks/queries/useMoodCheckIns";
@@ -24,14 +23,13 @@ import { api } from "@/convex/_generated/api";
 import { usePushSync } from "@/hooks/usePushSync";
 import { RESOURCES } from "@/lib/resources";
 import { recommendResources } from "@/lib/smart-resources";
+import { Header } from "@/components/layout/Header";
 import {
-  GRADIENTS,
   SHADOWS,
   TEXT,
   BACKGROUND,
   COLORS,
   RADIUS,
-  GLASS,
   TYPOGRAPHY,
 } from "@/lib/theme";
 
@@ -153,20 +151,14 @@ export default function WellnessScreen() {
   ];
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Wellness</Text>
-        <TouchableOpacity
-          onPress={resetDailyCards}
-          style={styles.refreshButton}
-        >
-          <Ionicons
-            name="refresh-outline"
-            size={22}
-            color={COLORS.terracotta}
-          />
-        </TouchableOpacity>
-      </View>
+    <View style={styles.screen}>
+      <Header
+        title="Wellness"
+        showBackButton
+        rightAction={{ icon: "refresh-outline", onPress: resetDailyCards }}
+      />
+
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
       {/* Daily Insight Card - Hero Section */}
       <MotiView
@@ -175,12 +167,7 @@ export default function WellnessScreen() {
         transition={{ type: "spring" } as MotiTransition}
         style={styles.affirmationSection}
       >
-        <LinearGradient
-          colors={[GRADIENTS.calm.start, GRADIENTS.calm.end]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.affirmationCard}
-        >
+        <View style={styles.affirmationCard}>
           <View style={styles.affirmationHeader}>
             <View style={styles.affirmationBadge}>
               <Ionicons name="sparkles" size={16} color={COLORS.gold} />
@@ -191,7 +178,7 @@ export default function WellnessScreen() {
               <Switch
                 value={aiEnabled}
                 onValueChange={(v) => void setEnabled({ enabled: v })}
-                trackColor={{ false: "#E8DED1", true: COLORS.sage }}
+                trackColor={{ false: BACKGROUND.tertiary, true: COLORS.sage }}
                 thumbColor="#fff"
               />
             </View>
@@ -227,7 +214,7 @@ export default function WellnessScreen() {
               <Switch
                 value={pushEnabled}
                 onValueChange={(v) => void setPushEnabled({ enabled: v })}
-                trackColor={{ false: "#E8DED1", true: COLORS.sage }}
+                trackColor={{ false: BACKGROUND.tertiary, true: COLORS.sage }}
                 thumbColor="#fff"
               />
             </View>
@@ -262,7 +249,7 @@ export default function WellnessScreen() {
               })}
             </Text>
           </View>
-        </LinearGradient>
+        </View>
       </MotiView>
 
       {/* Daily Affirmation Card */}
@@ -274,23 +261,11 @@ export default function WellnessScreen() {
         }
         style={styles.affirmationSection}
       >
-        <LinearGradient
-          colors={[COLORS.gold, COLORS.terracotta]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={[styles.affirmationCard, styles.affirmationCardSecondary]}
-        >
+        <View style={[styles.affirmationCard, styles.affirmationCardSecondary]}>
           <View style={styles.affirmationHeader}>
             <View style={styles.affirmationBadge}>
-              <Ionicons name="sparkles" size={16} color={BACKGROUND.primary} />
-              <Text
-                style={[
-                  styles.affirmationBadgeText,
-                  styles.affirmationBadgeTextLight,
-                ]}
-              >
-                Today's Affirmation
-              </Text>
+              <Ionicons name="sparkles" size={16} color={COLORS.gold} />
+              <Text style={styles.affirmationBadgeText}>Today's Affirmation</Text>
             </View>
             <TouchableOpacity
               onPress={() => toggleSaveAffirmation(dailyAffirmation.id)}
@@ -305,36 +280,23 @@ export default function WellnessScreen() {
                 size={22}
                 color={
                   savedAffirmations.has(dailyAffirmation.id)
-                    ? BACKGROUND.primary
-                    : `${BACKGROUND.primary}99`
+                    ? COLORS.terracotta
+                    : TEXT.tertiary
                 }
               />
             </TouchableOpacity>
           </View>
 
-          <Text
-            style={[styles.affirmationMessage, styles.affirmationMessageLight]}
-          >
-            {dailyAffirmation.message}
-          </Text>
+          <Text style={styles.affirmationMessage}>{dailyAffirmation.message}</Text>
 
           <View style={styles.affirmationMeta}>
             <View style={styles.affirmationMetaItem}>
-              <Ionicons
-                name="heart-outline"
-                size={14}
-                color={`${BACKGROUND.primary}99`}
-              />
-              <Text
-                style={[
-                  styles.affirmationMetaText,
-                  styles.affirmationMetaTextLight,
-                ]}
-              >
+              <Ionicons name="heart-outline" size={14} color={TEXT.tertiary} />
+              <Text style={styles.affirmationMetaText}>
                 {dailyAffirmation.theme}
               </Text>
             </View>
-            <Text style={[styles.affirmationDate, styles.affirmationDateLight]}>
+            <Text style={styles.affirmationDate}>
               {new Date().toLocaleDateString("en-US", {
                 weekday: "long",
                 month: "long",
@@ -342,7 +304,7 @@ export default function WellnessScreen() {
               })}
             </Text>
           </View>
-        </LinearGradient>
+        </View>
       </MotiView>
 
       {/* Quick Check-In Button */}
@@ -359,7 +321,7 @@ export default function WellnessScreen() {
         >
           <View style={styles.checkInButtonContent}>
             <View style={styles.checkInIcon}>
-              <Ionicons name="heart" size={28} color="#ffffff" />
+              <Ionicons name="heart" size={22} color={COLORS.terracotta} />
             </View>
             <View style={styles.checkInText}>
               <Text style={styles.checkInTitle}>How are you feeling?</Text>
@@ -367,7 +329,7 @@ export default function WellnessScreen() {
                 Take a moment to check in with yourself
               </Text>
             </View>
-            <Ionicons name="arrow-forward" size={24} color="#ffffff" />
+            <Ionicons name="arrow-forward" size={22} color={TEXT.tertiary} />
           </View>
         </Pressable>
       </MotiView>
@@ -530,34 +492,19 @@ export default function WellnessScreen() {
 
       {/* Bottom Padding for Tab Bar */}
       <View style={styles.bottomPadding} />
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: BACKGROUND.primary,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 16,
-  },
-  headerTitle: {
-    ...TYPOGRAPHY.headings.h1,
-    color: TEXT.primary,
-  },
-  refreshButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: `${COLORS.terracotta}15`,
-    alignItems: "center",
-    justifyContent: "center",
+  container: {
+    flex: 1,
+    backgroundColor: BACKGROUND.primary,
   },
   // Affirmation Section
   affirmationSection: {
@@ -568,9 +515,13 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     padding: 24,
     ...SHADOWS.md,
+    backgroundColor: BACKGROUND.secondary,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   affirmationCardSecondary: {
-    // Secondary gradient styling handled by parent
+    borderLeftWidth: 3,
+    borderLeftColor: COLORS.gold,
   },
   affirmationHeader: {
     flexDirection: "row",
@@ -589,7 +540,7 @@ const styles = StyleSheet.create({
   },
   affirmationBadgeText: {
     fontSize: 12,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.gold,
     letterSpacing: 0.5,
     textTransform: "uppercase",
@@ -605,7 +556,7 @@ const styles = StyleSheet.create({
   aiToggleLabel: {
     fontSize: 12,
     color: TEXT.secondary,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   pushSection: {
     marginTop: 14,
@@ -618,7 +569,7 @@ const styles = StyleSheet.create({
   pushLabel: {
     fontSize: 12,
     color: TEXT.secondary,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   testPushButton: {
     marginTop: 10,
@@ -627,25 +578,25 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: GLASS.light.border,
+    borderColor: BACKGROUND.tertiary,
   },
   testPushButtonText: {
     fontSize: 13,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.primary,
   },
   pushErrorText: {
     marginTop: 8,
     fontSize: 12,
     color: COLORS.danger,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   saveButton: {
     padding: 4,
   },
   affirmationMessage: {
     fontSize: 22,
-    fontFamily: "CrimsonProMedium",
+    fontFamily: "CareJournalHeadingMedium",
     color: TEXT.primary,
     lineHeight: 32,
     marginBottom: 20,
@@ -666,7 +617,7 @@ const styles = StyleSheet.create({
   },
   affirmationMetaText: {
     fontSize: 13,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.secondary,
     textTransform: "capitalize",
   },
@@ -675,7 +626,7 @@ const styles = StyleSheet.create({
   },
   affirmationDate: {
     fontSize: 12,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.tertiary,
   },
   affirmationDateLight: {
@@ -689,16 +640,20 @@ const styles = StyleSheet.create({
   checkInButtonContent: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.sage,
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 20,
     padding: 20,
     ...SHADOWS.md,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   checkInIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: `${COLORS.terracotta}12`,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -708,14 +663,14 @@ const styles = StyleSheet.create({
   },
   checkInTitle: {
     fontSize: 18,
-    fontFamily: "CrimsonProMedium",
-    color: "#ffffff",
+    fontFamily: "CareJournalHeadingMedium",
+    color: TEXT.primary,
     marginBottom: 4,
   },
   checkInSubtitle: {
     fontSize: 13,
-    fontFamily: "DMSans",
-    color: "rgba(255, 255, 255, 0.85)",
+    fontFamily: "CareJournalUI",
+    color: TEXT.secondary,
   },
   // Sections
   section: {
@@ -734,7 +689,7 @@ const styles = StyleSheet.create({
   },
   sectionAction: {
     fontSize: 14,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.terracotta,
   },
   // Chart
@@ -744,12 +699,12 @@ const styles = StyleSheet.create({
     padding: 40,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: GLASS.light.border,
+    borderColor: BACKGROUND.tertiary,
   },
   loadingText: {
     fontSize: 14,
     color: TEXT.tertiary,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
   },
   emptyChartState: {
     backgroundColor: BACKGROUND.card,
@@ -757,17 +712,17 @@ const styles = StyleSheet.create({
     padding: 40,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: GLASS.light.border,
+    borderColor: BACKGROUND.tertiary,
   },
   emptyChartTitle: {
     fontSize: 16,
-    fontFamily: "CrimsonProMedium",
+    fontFamily: "CareJournalHeadingMedium",
     color: TEXT.secondary,
     marginTop: 16,
   },
   emptyChartSubtitle: {
     fontSize: 13,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.tertiary,
     marginTop: 4,
     textAlign: "center",
@@ -781,7 +736,7 @@ const styles = StyleSheet.create({
   },
   emptyChartButtonText: {
     fontSize: 14,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.terracotta,
   },
   // Nudges
@@ -794,7 +749,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     ...SHADOWS.sm,
     borderWidth: 1,
-    borderColor: GLASS.light.border,
+    borderColor: BACKGROUND.tertiary,
   },
   nudgeIcon: {
     width: 48,
@@ -815,7 +770,7 @@ const styles = StyleSheet.create({
   },
   nudgeCategory: {
     fontSize: 11,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: COLORS.sage,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -823,7 +778,7 @@ const styles = StyleSheet.create({
   },
   nudgeMessage: {
     fontSize: 15,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.primary,
     lineHeight: 22,
   },
@@ -838,7 +793,7 @@ const styles = StyleSheet.create({
     padding: 20,
     ...SHADOWS.sm,
     borderWidth: 1,
-    borderColor: GLASS.light.border,
+    borderColor: BACKGROUND.tertiary,
   },
   nudgeStat: {
     alignItems: "center",
@@ -846,18 +801,18 @@ const styles = StyleSheet.create({
   },
   nudgeStatValue: {
     fontSize: 24,
-    fontFamily: "CrimsonProBold",
+    fontFamily: "CareJournalHeadingSemiBold",
     color: TEXT.primary,
     marginBottom: 4,
   },
   nudgeStatLabel: {
     fontSize: 12,
-    fontFamily: "DMSans",
+    fontFamily: "CareJournalUI",
     color: TEXT.secondary,
   },
   nudgeStatDivider: {
     width: 1,
-    backgroundColor: GLASS.light.border,
+    backgroundColor: BACKGROUND.tertiary,
   },
   // Quick Actions
   quickActionsSection: {
@@ -876,7 +831,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     ...SHADOWS.sm,
     borderWidth: 1,
-    borderColor: GLASS.light.border,
+    borderColor: BACKGROUND.tertiary,
   },
   quickActionIcon: {
     width: 52,
@@ -888,7 +843,7 @@ const styles = StyleSheet.create({
   },
   quickActionTitle: {
     fontSize: 14,
-    fontFamily: "DMSansMedium",
+    fontFamily: "CareJournalUIMedium",
     color: TEXT.primary,
   },
   // Bottom Padding

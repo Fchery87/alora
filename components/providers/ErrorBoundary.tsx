@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { captureException, addBreadcrumb } from "@/lib/sentry";
+import { BACKGROUND, COLORS, SHADOWS, TEXT as THEME_TEXT, TYPOGRAPHY } from "@/lib/theme";
 
 interface Props {
   children: ReactNode;
@@ -105,57 +106,59 @@ export class ErrorBoundary extends Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: BACKGROUND.primary,
     padding: 24,
     justifyContent: "center",
   },
   card: {
-    backgroundColor: "#1e293b",
+    backgroundColor: BACKGROUND.primary,
     borderRadius: 16,
     padding: 24,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: BACKGROUND.tertiary,
+    ...SHADOWS.md,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#ffffff",
+    ...TYPOGRAPHY.headings.h2,
+    color: THEME_TEXT.primary,
     marginBottom: 16,
   },
   message: {
-    fontSize: 16,
-    color: "#94a3b8",
+    ...TYPOGRAPHY.body.regular,
+    color: THEME_TEXT.secondary,
     marginBottom: 16,
   },
   errorContainer: {
     maxHeight: 200,
-    backgroundColor: "#0f172a",
+    backgroundColor: BACKGROUND.secondary,
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: BACKGROUND.tertiary,
   },
   errorText: {
-    color: "#f87171",
+    color: COLORS.danger,
     fontFamily: "monospace",
     fontSize: 12,
   },
   stackText: {
-    color: "#64748b",
+    color: THEME_TEXT.tertiary,
     fontFamily: "monospace",
     fontSize: 10,
     marginTop: 8,
   },
   button: {
-    backgroundColor: "#6366f1",
+    backgroundColor: COLORS.terracotta,
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: "center",
+    ...SHADOWS.sm,
   },
   buttonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "600",
+    ...TYPOGRAPHY.button,
+    color: THEME_TEXT.primaryInverse,
   },
 });
 
